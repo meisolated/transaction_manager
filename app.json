@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "transaction_manager",
+    "slug": "transaction_manager",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
