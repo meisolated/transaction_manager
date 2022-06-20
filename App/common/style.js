@@ -24,4 +24,14 @@ export default {
         fontFamily: font.bold,
         fontSize: 22,
     },
+    number_text: {
+        fontFamily: font.bold,
+        fontSize: 16,
+    },
+    pd_left: {
+        paddingLeft: 10,
+    },
+    pd_right: {
+        paddingRight: 10,
+    }
 }

@@ -1,44 +1,26 @@
 import React from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
-import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, Alert, Image, ScrollView, FlatList, AsyncStorage } from "react-native"
+import { StyleSheet, Text, View, Pressable, Button, TextInput, TouchableOpacity, Alert, Image, ScrollView, FlatList, AsyncStorage } from "react-native"
 import NavBar from "../Navigation/bottomNavbar.js"
 import TopNavbar from "../Navigation/topNavbar.js"
 import color from "../constant/color.js"
 import font from "../constant/font.js"
-import { _tempCategories, _tempCompany, _tempOrder } from "../temp/testingData.js"
-import _ from "lodash"
+import { _tempCategories, _tempCompany, _tempOrder, _tempProducts, _getProductName, _getProductAttribute } from "../temp/testingData.js"
+import _, { lowerFirst } from "lodash"
 import LoadingCircle from "../components/widgets/loding/index.js"
-import checkout from "./addOrder/checkout.js"
 import commonStyle from "../common/style.js"
-// ----------------------------------------------------------------------------------------------------------------------
+import { numberSeparator } from "../util/functions.js"
+import Checkout from "./addOrder/Checkout.js"
 
+// ------------------------------------------------------AddOrder----------------------------------------------------------------
 export default function AddOrder(props) {
-    const [order, setOrder] = React.useState({
-        company: "",
-        category: "",
-        products: _tempOrder,
-        total: 0,
-        date: new Date().toLocaleDateString(),
-        time: new Date().toLocaleTimeString(),
-        status: "pending",
-        id: "",
-    })
-    const [state, setState] = React.useState({ title: "Checkout", string: "checkout", component: () => checkout(orderStateUpdate) })
-
-    function orderStateUpdate(state) {
-        let setThis = Object.keys(state)[0]
-        order[setThis] = state[setThis]
-        console.log(order)
-        setOrder(order)
-    }
+    const [state, setState] = React.useState({ title: "Checkout", string: "checkout", component: () => <Checkout /> })
 
     return (
         <SafeAreaView style={styles.container}>
             <TopNavbar title={state.title} />
-            {/* <Text style={styles.title}>{state.title}</Text> */}
-            {state.string === "chooseItem" ? chooseItem(orderStateUpdate) : state.string === "checkout" ? checkout(orderStateUpdate) : chooseCompany(orderStateUpdate)}
-            {/* {state.component()} */}
+            {state.component()}
             <NavBar navigation={props.navigation} />
         </SafeAreaView>
     )
@@ -56,9 +38,8 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
 })
-
+// --------------------------------------------------END--------------------------------------------------------------------
 // -------------------------------------------------------chooseItem---------------------------------------------------------------
-
 const chooseItemStyle = StyleSheet.create({
     title_text: {
         fontFamily: font.bold,
@@ -86,15 +67,14 @@ const chooseItemStyle = StyleSheet.create({
     },
 })
 
-function chooseItem(orderStateUpdate) {
-    const onPress = (category) => orderStateUpdate({ category: category })
+function chooseItem() {
     return (
         <View style={commonStyle.container}>
             {_tempCategories.map((item, index) => {
                 let category = Object.keys(item)[0]
                 return (
                     <View style={commonStyle.center} key={"category" + index}>
-                        <TouchableOpacity style={chooseItemStyle.item} onPress={() => onPress(category)}>
+                        <TouchableOpacity style={chooseItemStyle.item} onPress={() => { }}>
                             <Image style={{ width: 70, height: 70 }} source={require("../assets/img/milk.png")} />
                             <View style={chooseItemStyle.itemDetailsWrapper}>
                                 <Text style={chooseItemStyle.title_text}>{category}</Text>
@@ -109,11 +89,9 @@ function chooseItem(orderStateUpdate) {
         </View>
     )
 }
-// ----------------------------------------------------------------------------------------------------------------------
-
+// ------------------------------------------------------END----------------------------------------------------------------
 // --------------------------------------------------chooseCompany--------------------------------------------------------------------
-function chooseCompany(orderStateUpdate) {
-    const onPress = (company) => orderStateUpdate({ company: company })
+function chooseCompany() {
     return (
         <View style={commonStyle.container}>
             {_tempCompany.map((item, index) => {
@@ -122,7 +100,7 @@ function chooseCompany(orderStateUpdate) {
                 let img = company == "madhusudan" ? "https://isosad.com/transaction_manager/img/madhusudan_logo.png" : "https://isosad.com/transaction_manager/img/amul_logo.png"
                 return (
                     <View style={commonStyle.center} key={"company" + index}>
-                        <TouchableOpacity style={chooseItemStyle.item} onPress={() => onPress(item)}>
+                        <TouchableOpacity style={chooseItemStyle.item} onPress={() => { }}>
                             <Image style={{ resizeMode: "contain", width: 70, height: 70 }} source={{ uri: img }} />
                             <View style={chooseItemStyle.itemDetailsWrapper}>
                                 <Text style={chooseItemStyle.title_text}>{item}</Text>
@@ -137,3 +115,4 @@ function chooseCompany(orderStateUpdate) {
     )
 }
 const chooseCompanyStyle = StyleSheet.create({})
+// --------------------------------------------------END----------------------------------------------------------------

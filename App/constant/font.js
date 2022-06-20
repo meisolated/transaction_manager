@@ -4,4 +4,5 @@ export default {
     light: "THICCCBOILight",
     medium: "THICCCBOIMedium",
     semiBold: "THICCCBOISemiBold",
+    numberFont: "LatoRegular"
 }
