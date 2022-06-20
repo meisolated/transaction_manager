@@ -19,6 +19,11 @@ export default {
         alignItems: "center",
         justifyContent: "center",
     },
+    center_container: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+    },
 
     basic_text: {
         fontFamily: font.bold,
@@ -33,5 +38,11 @@ export default {
     },
     pd_right: {
         paddingRight: 10,
-    }
+    },
+    btn_primary: {
+        backgroundColor: color.primary,
+        borderRadius: 10,
+        padding: 10,
+        margin: 10,
+    },
 }

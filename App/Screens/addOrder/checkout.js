@@ -7,6 +7,8 @@ import color from "../../constant/color.js"
 import font from "../../constant/font.js"
 import { connect } from "react-redux"
 import { numberSeparator } from "../../util/functions.js"
+import { PrimaryButton } from "../../components/button/index.js"
+import SelectButton from "../../components/button/selectButton.js"
 
 function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
     const [total, setTotal] = React.useState(0)
@@ -38,10 +40,10 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
             <View style={[checkoutStyle.container]}>
                 <Button title="Add Dummy Product" onPress={() => handlePress()} />
                 <Text style={commonStyle.basic_text}>Review Items</Text>
-                <ScrollView>
+                <ScrollView >
                     {cart.map((item, index) => {
                         return (
-                            <View key={index} style={checkoutStyle.item_container}>
+                            <View key={index} style={[checkoutStyle.item_container, commonStyle.center]}>
                                 <View style={checkoutStyle.basic_wrapper}>
                                     <View style={checkoutStyle.product_details}>
                                         <Text style={checkoutStyle.item_title}>{item.name}</Text>
@@ -51,14 +53,14 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
                                         <Pressable onPress={() => _updateCart(item, -1)}>
                                             <MaterialCommunityIcons style={commonStyle.pd_right} name="minus" size={20} color={color.black} />
                                         </Pressable>
-                                        <Text style={commonStyle.number_text}>{item.quantity}</Text>
+                                        <Text style={[commonStyle.number_text, checkoutStyle.quantity_number]}>{item.quantity}</Text>
                                         <Pressable onPress={() => _updateCart(item, +1)}>
                                             <MaterialCommunityIcons style={commonStyle.pd_left} name="plus" size={20} color={color.black} />
                                         </Pressable>
                                     </View>
                                 </View>
 
-                                <View style={checkoutStyle.total_price}>
+                                <View style={checkoutStyle.total_cart_item_price}>
                                     <Text style={commonStyle.number_text}>{numberSeparator(item.price * item.quantity)}</Text>
                                 </View>
                             </View>
@@ -66,9 +68,22 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
                     })}
                 </ScrollView>
             </View>
-            <View style={checkoutStyle.total_price_wrapper}>
-                <Text style={commonStyle.basic_text}>Total</Text>
-                <Text style={commonStyle.number_text}>{numberSeparator(total)}</Text>
+            <View style={checkoutStyle.order_details}>
+                <View style={checkoutStyle.order_settings_wrapper}>
+                    <Text style={checkoutStyle.order_settings_title}>Order Settings</Text>
+                    <View style={[checkoutStyle.order_settings]}>
+                        <SelectButton></SelectButton>
+                        <View style={checkoutStyle.shop_selected}>
+                            <Text>Not Selected</Text>
+                        </View>
+                    </View>
+                </View>
+                <View style={checkoutStyle.total_price_wrapper}>
+                    <Text style={[commonStyle.basic_text, checkoutStyle.total_text]}>Total:</Text>
+                    <Text style={[commonStyle.number_text, checkoutStyle.total_price]}>{numberSeparator(total)}</Text>
+                    {/* <Button title="Checkout" onPress={() => handlePress()} /> */}
+                    <PrimaryButton name="Checkout" onPress={() => handlePress()} />
+                </View>
             </View>
         </View>
     )
@@ -92,6 +107,7 @@ const checkoutStyle = StyleSheet.create({
         marginTop: 10,
     },
     item_title: {
+        fontSize: font.md,
         fontFamily: font.semiBold,
     },
     basic_wrapper: {
@@ -107,6 +123,11 @@ const checkoutStyle = StyleSheet.create({
         color: color.darkGrey,
     },
 
+    quantity_number: {
+        width: 20,
+        justifyContent: "center",
+        textAlign: "center",
+    },
     quantity_selector: {
         flexDirection: "row",
         justifyContent: "center",
@@ -116,32 +137,63 @@ const checkoutStyle = StyleSheet.create({
         padding: 5,
         borderRadius: 5,
     },
-    total_price: {
+    total_cart_item_price: {
+        alignItems: "flex-end",
         width: "20%",
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        padding: 5,
-        borderRadius: 5,
-        backgroundColor: color.primary,
-        color: color.white,
-        marginRight: 10,
+    },
+    total_price: {
+        fontSize: font.md,
         marginLeft: 10,
+        flex: 1,
     },
     total_price_wrapper: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 10,
+    },
+    order_details: {
         width: "100%",
+        backgroundColor: color.white,
+        position: "absolute",
         bottom: 60,
+        flexDirection: "column",
+        justifyContent: "space-between",
+        alignItems: "center",
         borderTopWidth: 1,
         borderBottomWidth: 1,
         borderColor: color.littleDarkGrey,
-        position: "absolute",
+    },
+    order_settings_wrapper: {
+        flex: 1,
+        width: "100%",
+        borderBottomWidth: 1,
+        borderColor: color.littleDarkGrey,
+        flexDirection: "column",
+        textAlign: "left",
+    },
+    order_settings: {
+        margin: 10,
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: "center",
         alignItems: "center",
-        padding: 10,
-        backgroundColor: color.white
-
-    }
+    },
+    shop_selected: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: color.littleDarkGrey,
+        padding: 15,
+        borderRadius: 5,
+        marginLeft: 10,
+    },
+    order_settings_title: {
+        marginTop: 8,
+        fontSize: font.md,
+        fontFamily: font.semiBold,
+        marginLeft: 10,
+    },
 })
 
 const mapStateToProps = (state) => {
