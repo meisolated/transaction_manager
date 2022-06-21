@@ -23,7 +23,7 @@ export async function createTables(cb) {
         `DROP TABLE IF EXISTS ordered_items`,
 
         `CREATE TABLE orders (
-            id bigint,
+            id bigint AUTO_INCREMENT,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL,
             total_amount bigint NOT NULL,
@@ -32,15 +32,16 @@ export async function createTables(cb) {
             shop_id text NOT NULL);`,
 
         `CREATE TABLE ordered_items (
-            id bigint,
+            id bigint AUTO_INCREMENT,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL,
             order_id bigint NOT NULL,
             product_name text NOT NULL,
             product_price text NOT NULL,
             payment_status text NOT NULL);`,
+
         `CREATE TABLE shops (
-            id bigint,
+            id bigint AUTO_INCREMENT,
             name text NOT NULL,
             address text NOT NULL,
             phone text NOT NULL,
@@ -50,7 +51,7 @@ export async function createTables(cb) {
             modified_at bigint NOT NULL);`,
 
         `CREATE TABLE products (
-            id bigint,
+            id bigint AUTO_INCREMENT,
             name text NOT NULL,
             picture text NOT NULL,
             price bigint NOT NULL,
@@ -58,6 +59,29 @@ export async function createTables(cb) {
             qr_code text NOT NULL,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
+
+        `CREATE TABLE products_attributes (
+            id bigint AUTO_INCREMENT,
+            product_id bigint NOT NULL,
+            quantity bigint NOT NULL,
+            metric text NOT NULL,
+            price bigint NOT NULL,
+            created_at bigint NOT NULL,
+            modified_at bigint NOT NULL);`,
+
+        `CREATE TABLE categories (
+            id bigint AUTO_INCREMENT,
+            name text NOT NULL,
+            created_at bigint NOT NULL,
+            modified_at bigint NOT NULL);`,
+
+        `CREATE TABLE suppliers (
+            id bigint AUTO_INCREMENT,
+            name text NOT NULL,
+            created_at bigint NOT NULL,
+            modified_at bigint NOT NULL);`,
+
+
     ]
     db.transaction((tx) => {
         for (let i = 0; i < queries.length; i++) {
@@ -79,11 +103,10 @@ export function insertDummyData() {
     for (let i = 0; i < 100; i++) {
         // generate random number
         let randomNumber = Math.floor(Math.random() * 100)
-        console.log(randomNumber)
         db.transaction((tx) => {
             tx.executeSql(
-                "insert into orders (id,created_at, modified_at, total_amount, items, payment_status, shop_id) values (?, ?, ?, ?, ?, ?, ?)",
-                [i, "2020-01-01", "2020-01-01", randomNumber, '["151x1","151x1", "151x1"]', "paid", "1"],
+                "insert into orders (created_at, modified_at, total_amount, items, payment_status, shop_id) values (?, ?, ?, ?, ?, ?)",
+                ["2020-01-01", "2020-01-01", randomNumber, '["151x1","151x1", "151x1"]', "paid", "1"],
                 (_, result) => console.log(result),
                 (_, error) => console.log(error)
             )

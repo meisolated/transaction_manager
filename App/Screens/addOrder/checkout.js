@@ -1,5 +1,5 @@
 import React from "react"
-import { ScrollView, View, Text, Animated, StyleSheet, Easing, Pressable, Button } from "react-native"
+import { ScrollView, View, Text, Animated, StyleSheet, Easing, Pressable, Button, Image } from "react-native"
 import commonStyle from "../../common/style.js"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { _tempOrder, _tempProducts, _getProductName, _getProductAttribute } from "../../temp/testingData.js"
@@ -38,13 +38,15 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
     return (
         <View style={checkoutStyle.main_container}>
             <View style={[checkoutStyle.container]}>
-                <Button title="Add Dummy Product" onPress={() => handlePress()} />
-                <Text style={commonStyle.basic_text}>Review Items</Text>
-                <ScrollView >
+                <ScrollView style={{}}>
+                    <Button title="Add Dummy Product" onPress={() => handlePress()} />
+                    <Text style={commonStyle.basic_text}>Review Items</Text>
                     {cart.map((item, index) => {
                         return (
                             <View key={index} style={[checkoutStyle.item_container, commonStyle.center]}>
                                 <View style={checkoutStyle.basic_wrapper}>
+                                    <View style={checkoutStyle.cart_item_image_wrapper}>
+                                        <Image source={require("../../assets/img/milk.png")} style={checkoutStyle.cart_item_image} /></View>
                                     <View style={checkoutStyle.product_details}>
                                         <Text style={checkoutStyle.item_title}>{item.name}</Text>
                                         <Text style={checkoutStyle.item_subtitle}>{item.metric}</Text>
@@ -66,6 +68,7 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
                             </View>
                         )
                     })}
+                    <View style={{ height: 250 }}></View>
                 </ScrollView>
             </View>
             <View style={checkoutStyle.order_details}>
@@ -103,19 +106,34 @@ const checkoutStyle = StyleSheet.create({
     },
     item_container: {
         flexDirection: "row",
-        justifyContent: "space-between",
         marginTop: 10,
     },
     item_title: {
         fontSize: font.md,
         fontFamily: font.semiBold,
     },
+    cart_item_image_wrapper: {
+        justifyContent: "center",
+        alignItems: "center",
+        width: 45,
+        height: 45,
+        backgroundColor: color.backgroundColor,
+        borderRadius: 5,
+        marginRight: 10,
+
+    },
+    cart_item_image: {
+        width: 40,
+        height: 40,
+        padding: 5,
+    },
     basic_wrapper: {
         flex: 1,
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: "flex-start",
     },
     product_details: {
+        flex: 1,
         flexDirection: "column",
         justifyContent: "center",
     },
@@ -124,7 +142,6 @@ const checkoutStyle = StyleSheet.create({
     },
 
     quantity_number: {
-        width: 20,
         justifyContent: "center",
         textAlign: "center",
     },
@@ -136,10 +153,11 @@ const checkoutStyle = StyleSheet.create({
         borderColor: color.littleDarkGrey,
         padding: 5,
         borderRadius: 5,
+
     },
     total_cart_item_price: {
-        alignItems: "flex-end",
         width: "20%",
+        alignItems: "flex-end",
     },
     total_price: {
         fontSize: font.md,
@@ -184,7 +202,7 @@ const checkoutStyle = StyleSheet.create({
         alignItems: "center",
         borderWidth: 1,
         borderColor: color.littleDarkGrey,
-        padding: 15,
+        padding: 10,
         borderRadius: 5,
         marginLeft: 10,
     },

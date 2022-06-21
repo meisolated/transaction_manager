@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         alignContent: "center",
     },
     bottomNavText: {
-        fontFamily: font.primary,
+        fontFamily: font.semiBold,
         color: "#808080",
         fontSize: 15,
     },
