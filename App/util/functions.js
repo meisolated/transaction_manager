@@ -7,3 +7,8 @@ export function numberSeparator(_num) {
     var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree
     return "₹" + res
 }
+
+
+export function currentTimestamp() {
+    return Math.floor(Date.now() / 1000)
+}

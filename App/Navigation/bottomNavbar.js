@@ -4,7 +4,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { Home, Transactions, Add, Shop, Settings } from "../assets/svg"
 import color from "../constant/color.js"
 import font from "../constant/font.js"
-function NavBar({ navigation }) {
+
+function BottomNavBar({ navigation }) {
     return (
         <View style={styles.bottomNav}>
             <Pressable onPress={() => navigation.navigate("Home")}>
@@ -46,7 +47,7 @@ function NavBar({ navigation }) {
     )
 }
 
-export default NavBar
+export default BottomNavBar
 
 const styles = StyleSheet.create({
     bottomNav: {

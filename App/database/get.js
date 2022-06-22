@@ -1,9 +1,10 @@
 import db from "./db"
+
 export function getAllTransactions() {
     return new Promise((resolve, reject) => {
         db.transaction((tx) => {
             tx.executeSql(
-                "select * from orders",
+                "select * from orders LIMIT 10",
                 [],
                 (_, result) => resolve(result),
                 (_, error) => reject(error)
@@ -11,3 +12,5 @@ export function getAllTransactions() {
         })
     })
 }
+
+

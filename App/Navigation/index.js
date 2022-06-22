@@ -5,12 +5,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import HomeScreen from "../Screens/HomeScreen.js"
 import TransactionsScreen from "../Screens/TransactionsScreen.js"
-import AddTransaction from "../Screens/AddOrderScreen.js"
+import AddTransaction from "../Screens/NewOrderScreen.js"
 import AdminScreen from "../Screens/AdminScreen.js"
 import color from "../constant/color.js"
+import ProductEditScreen from "../Screens/Edit/ProductEditScreen.js"
 const Tab = createMaterialBottomTabNavigator()
 const Stack = createNativeStackNavigator()
-
 export function Navigation() {
     return (
         <NavigationContainer>
@@ -22,6 +22,7 @@ export function Navigation() {
                 <Stack.Screen name="Transactions" component={TransactionsScreen} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="AddTransactions" component={AddTransaction} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false, animation: "none" }} />
+                <Stack.Screen name="EditProduct" component={ProductEditScreen} options={{ headerShown: false, animation: "none" }} />
             </Stack.Navigator>
         </NavigationContainer>
     )

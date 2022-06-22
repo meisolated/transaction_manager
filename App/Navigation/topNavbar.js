@@ -3,7 +3,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import color from "../constant/color.js"
 import font from "../constant/font.js"
 
-function topNavbar(props) {
+function TopNavbar(props) {
     return (
         <View style={style.container}>
             <View style={style.topNavItem_wrapper}>
@@ -59,4 +59,4 @@ const style = StyleSheet.create({
     }
 })
 
-export default topNavbar
+export default TopNavbar

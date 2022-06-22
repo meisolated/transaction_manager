@@ -22,6 +22,7 @@ function HomeScreen(props) {
                 <Button title="Go to Transactions" onPress={() => props.navigation.navigate("Transactions")} />
                 <Button title="Add Transactions" onPress={() => props.navigation.navigate("AddTransactions")} />
                 <Button title="Admin" onPress={() => props.navigation.navigate("Admin")} />
+                <Button title="EditProduct" onPress={() => props.navigation.navigate("EditProduct")} />
                 <Button title="Insert dummy data" onPress={() => insertDummyData()} />
                 <Button title="Create Tables" onPress={() => createTables((x) => set(x))} />
                 <Text>{JSON.stringify(get)}</Text>

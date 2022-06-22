@@ -1,8 +1,6 @@
 import { localStorage } from "./localStorage.js"
 import db from "./db"
 
-
-
 // create table if not exists
 export async function createTables(cb) {
     // check if tables exists for not
@@ -24,21 +22,21 @@ export async function createTables(cb) {
 
         `CREATE TABLE orders (
             id bigint AUTO_INCREMENT,
-            created_at bigint NOT NULL,
-            modified_at bigint NOT NULL,
-            total_amount bigint NOT NULL,
+            shop_id text,
             items text NOT NULL,
+            total_amount bigint NOT NULL,
             payment_status text NOT NULL,
-            shop_id text NOT NULL);`,
+            modified_at bigint NOT NULL,
+            created_at bigint NOT NULL);`,
 
         `CREATE TABLE ordered_items (
             id bigint AUTO_INCREMENT,
-            created_at bigint NOT NULL,
-            modified_at bigint NOT NULL,
             order_id bigint NOT NULL,
             product_name text NOT NULL,
+            quantity bigint NOT NULL,
             product_price text NOT NULL,
-            payment_status text NOT NULL);`,
+            modified_at bigint NOT NULL,
+            created_at bigint NOT NULL,);`,
 
         `CREATE TABLE shops (
             id bigint AUTO_INCREMENT,
@@ -47,6 +45,7 @@ export async function createTables(cb) {
             phone text NOT NULL,
             email text NOT NULL,
             picture text NOT NULL,
+            qr_code text NOT NULL,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
 
@@ -56,7 +55,7 @@ export async function createTables(cb) {
             picture text NOT NULL,
             price bigint NOT NULL,
             description text NOT NULL,
-            qr_code text NOT NULL,
+            picture text NOT NULL,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
 
@@ -80,8 +79,6 @@ export async function createTables(cb) {
             name text NOT NULL,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
-
-
     ]
     db.transaction((tx) => {
         for (let i = 0; i < queries.length; i++) {
@@ -113,6 +110,3 @@ export function insertDummyData() {
         })
     }
 }
-
-
-

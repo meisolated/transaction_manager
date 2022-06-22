@@ -1,28 +1,61 @@
-const categories = (data) => {
-    let define = {
-        id: {
-            type: "INTEGER",
-            primaryKey: true,
-        },
-        created_at: {
-            type: "INTEGER",
-        },
-        modified_at: {
-            type: "INTEGER",
-        },
-        name: {
-            type: "TEXT",
-        },
+import db from "../db.js"
 
+export default class categoriesModel {
+    constructor() {
+        this.#db = db
+    }
+
+    getAllCategories() {
+        return new Promise((resolve, reject) => {
+            this.db.transaction(tx => {
+                tx.executeSql(
+                    "SELECT * FROM categories",
+                    [],
+                    (_, { rows }) => {
+                        resolve(rows._array)
+                    }
+                )
+            })
+        })
 
     }
+    addCategory(name) {
+        return new Promise((resolve, reject) => {
+            this.db.transaction(tx => {
+                tx.executeSql(
+                    "INSERT INTO categories (name) VALUES (?)",
+                    [name],
+                    (_, { rows }) => {
+                        resolve(rows._array)
+                    }
+                )
+            })
+        })
+    }
+    deleteCategory(id) {
+        return new Promise((resolve, reject) => {
+            this.db.transaction(tx => {
+                tx.executeSql(
+                    "DELETE FROM categories WHERE id = ?",
+                    [id],
+                    (_, { rows }) => {
+                        resolve(rows._array)
+                    }
+                )
+            })
+        })
+    }
+    updateCategory(id, name) {
+        return new Promise((resolve, reject) => {
+            this.db.transaction(tx => {
+                tx.executeSql(
+                    "UPDATE categories SET name = ? WHERE id = ?",
+                    [name, id],
+                    (_, { rows }) => {
+                        resolve(rows._array)
+                    }
+                )
+            })
+        })
+    }
 }
-
-let x = `CREATE TABLE orders (
-    id bigint AUTO_INCREMENT,
-    created_at bigint NOT NULL,
-    modified_at bigint NOT NULL,
-    total_amount bigint NOT NULL,
-    items text NOT NULL,
-    payment_status text NOT NULL,
-    shop_id text NOT NULL);`
