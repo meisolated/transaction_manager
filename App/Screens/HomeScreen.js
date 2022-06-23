@@ -4,7 +4,7 @@ import { View, Text, Button, StyleSheet } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import color from "../constant/color.js"
 import font from "../constant/font.js"
-import { createTables, insertDummyData, localStorage } from "../database/initializeDatabase.js"
+import { createTables, deleteAllTables, insertDummyData, localStorage } from "../database/initializeDatabase.js"
 import BottomNavBar from "../Navigation/bottomNavbar.js"
 import TopNavbar from "../Navigation/topNavbar.js"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
@@ -25,6 +25,7 @@ function HomeScreen(props) {
                 <Button title="EditProduct" onPress={() => props.navigation.navigate("EditProduct")} />
                 <Button title="Insert dummy data" onPress={() => insertDummyData()} />
                 <Button title="Create Tables" onPress={() => createTables((x) => set(x))} />
+                <Button title="Delete All Tables" onPress={() => deleteAllTables((x) => set(x))} />
                 <Text>{JSON.stringify(get)}</Text>
             </View>
             <BottomNavBar navigation={props.navigation} />

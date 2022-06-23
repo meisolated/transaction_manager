@@ -25,7 +25,7 @@ export default class ordersModel {
      * @memberof ordersModel
      */
     getOrderByTime(after, before) {
-        new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
                     `SELECT * FROM ${this.table_orders} WHERE created_at BETWEEN ${after} AND ${before}`,
@@ -80,12 +80,11 @@ export default class ordersModel {
         })
     }
 
-
     /**
      * @description to update order data by id
      * @author meisolated
      * @date 22/06/2022
-     * @param {*} id NUMBER 
+     * @param {*} id NUMBER
      * @param {*} data ARRAY [shop_id, items, total_amount, payment_status]
      * @memberof ordersModel
      */

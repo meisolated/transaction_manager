@@ -1,15 +1,43 @@
 import { localStorage } from "./localStorage.js"
 import db from "./db"
 
+
+export async function deleteAllTables(cb) {
+    let queries = [
+        `DROP TABLE IF EXISTS orders`,
+
+        `DROP TABLE IF EXISTS ordered_items`,
+
+        `DROP TABLE IF EXISTS shops`,
+
+        `DROP TABLE IF EXISTS products`,
+
+        `DROP TABLE IF EXISTS products_attributes`,
+
+        `DROP TABLE IF EXISTS categories`,
+
+        `DROP TABLE IF EXISTS suppliers`,
+
+    ]
+
+    let donebefore = await localStorage.retrieveData("tablesExists")
+    if (donebefore == "true") return localStorage.storeData("tablesExists", "false")
+
+    db.transaction((tx) => {
+        for (let i = 0; i < queries.length; i++) {
+            tx.executeSql(queries[i], [], (tx, results) => {
+                cb({ done: i + 1, total: queries.length })
+            }, (_, error) => console.log(error))
+        }
+    })
+}
+
 // create table if not exists
 export async function createTables(cb) {
     // check if tables exists for not
     let donebefore = await localStorage.retrieveData("tablesExists")
     if (donebefore == "true") return cb({ done: 0, total: 0 })
 
-    db.transaction((tx) => {
-        tx.executeSql("SELECT * FROM orders", [], (_, { rows }) => { })
-    })
 
     let queries = [
         `DROP TABLE IF EXISTS orders`,
@@ -36,15 +64,15 @@ export async function createTables(cb) {
             quantity bigint NOT NULL,
             product_price text NOT NULL,
             modified_at bigint NOT NULL,
-            created_at bigint NOT NULL,);`,
+            created_at bigint NOT NULL);`,
 
         `CREATE TABLE shops (
             id bigint AUTO_INCREMENT,
-            name text NOT NULL,
+            name text,
             address text,
-            phone text NOT NULL,
+            phone text,
             picture text,
-            qr_code text NOT NULL,
+            qr_code text,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
 
@@ -84,7 +112,7 @@ export async function createTables(cb) {
             tx.executeSql(queries[i], [], (tx, results) => {
                 if (i === queries.length - 1) localStorage.storeData("tablesExists", "true")
                 cb({ done: i + 1, total: queries.length })
-            })
+            }, (_, error) => console.log(error))
         }
     })
 }
@@ -102,7 +130,7 @@ export function insertDummyData() {
         db.transaction((tx) => {
             tx.executeSql(
                 "insert into orders (created_at, modified_at, total_amount, items, payment_status, shop_id) values (?, ?, ?, ?, ?, ?)",
-                ["2020-01-01", "2020-01-01", randomNumber, '["151x1","151x1", "151x1"]', "paid", "1"],
+                ["0", "1", randomNumber, '["151x1","151x1", "151x1"]', "paid", "1"],
                 (_, result) => console.log(result),
                 (_, error) => console.log(error)
             )
