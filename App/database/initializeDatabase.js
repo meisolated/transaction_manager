@@ -41,10 +41,9 @@ export async function createTables(cb) {
         `CREATE TABLE shops (
             id bigint AUTO_INCREMENT,
             name text NOT NULL,
-            address text NOT NULL,
+            address text,
             phone text NOT NULL,
-            email text NOT NULL,
-            picture text NOT NULL,
+            picture text,
             qr_code text NOT NULL,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
@@ -52,17 +51,15 @@ export async function createTables(cb) {
         `CREATE TABLE products (
             id bigint AUTO_INCREMENT,
             name text NOT NULL,
-            picture text NOT NULL,
+            picture text,
             price bigint NOT NULL,
-            description text NOT NULL,
-            picture text NOT NULL,
+            description text,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
 
         `CREATE TABLE products_attributes (
             id bigint AUTO_INCREMENT,
             product_id bigint NOT NULL,
-            quantity bigint NOT NULL,
             metric text NOT NULL,
             price bigint NOT NULL,
             created_at bigint NOT NULL,
@@ -71,12 +68,14 @@ export async function createTables(cb) {
         `CREATE TABLE categories (
             id bigint AUTO_INCREMENT,
             name text NOT NULL,
+            image text,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
 
         `CREATE TABLE suppliers (
             id bigint AUTO_INCREMENT,
             name text NOT NULL,
+            image text,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
     ]

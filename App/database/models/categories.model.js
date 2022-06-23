@@ -5,6 +5,13 @@ export default class categoriesModel {
         this.#db = db
     }
 
+    /**
+     * @description get all categories 
+     * @author meisolated
+     * @date 22/06/2022
+     * @returns {*}  
+     * @memberof categoriesModel
+     */
     getAllCategories() {
         return new Promise((resolve, reject) => {
             this.db.transaction(tx => {
@@ -19,6 +26,15 @@ export default class categoriesModel {
         })
 
     }
+
+    /**
+     * @description add a Category 
+     * @author meisolated
+     * @date 22/06/2022
+     * @param {*} name string
+     * @returns {*}  
+     * @memberof categoriesModel
+     */
     addCategory(name) {
         return new Promise((resolve, reject) => {
             this.db.transaction(tx => {
