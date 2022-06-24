@@ -2,9 +2,9 @@ import db from "../db.js"
 
 export default class ordersModel {
     constructor() {
-        this.db = db
-        this.table_orders = "orders"
-        this.table_ordered_items = "ordered_items"
+        this.#db = db
+        this.#table_orders = "orders"
+        this.#table_ordered_items = "ordered_items"
     }
 
     /**
@@ -16,6 +16,11 @@ export default class ordersModel {
      */
     static TSinSecs = () => Math.floor(Date.now() / 1000)
 
+
+    addNewOrder = (data) => new Promise((resolve, reject) => {
+
+    })
+
     /**
      * @description this function to get orders after and before a particular time
      * @author meisolated
@@ -24,8 +29,8 @@ export default class ordersModel {
      * @param {*} before time in seconds
      * @memberof ordersModel
      */
-    getOrderByTime(after, before) {
-        return new Promise((resolve, reject) => {
+    getOrderByTime = (after, before) =>
+        new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
                     `SELECT * FROM ${this.table_orders} WHERE created_at BETWEEN ${after} AND ${before}`,
@@ -37,7 +42,6 @@ export default class ordersModel {
                 )
             })
         })
-    }
 
     /**
      * @description use this function to get an order items `we are using a separate table to store ordered items`
@@ -46,13 +50,12 @@ export default class ordersModel {
      * @param {*} id
      * @memberof ordersModel
      */
-    getOrderItems(id) {
+    getOrderItems = (id) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(`SELECT * FROM ${this.table_ordered_items} WHERE id = ${id}`, [], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
             })
         })
-    }
 
     /**
      * @description to update ordered item by id [only single item can be update with this]
@@ -62,7 +65,7 @@ export default class ordersModel {
      * @param {*} data ARRAY [product_name, quantity, product_price]
      * @memberof ordersModel
      */
-    updateOrderedItems(id, data) {
+    updateOrderedItems = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
@@ -78,7 +81,6 @@ export default class ordersModel {
                 )
             })
         })
-    }
 
     /**
      * @description to update order data by id
@@ -88,7 +90,7 @@ export default class ordersModel {
      * @param {*} data ARRAY [shop_id, items, total_amount, payment_status]
      * @memberof ordersModel
      */
-    updateOrder(id, data) {
+    updateOrder = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
@@ -99,5 +101,4 @@ export default class ordersModel {
                 )
             })
         })
-    }
 }

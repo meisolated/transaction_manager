@@ -104,6 +104,7 @@ export async function createTables(cb) {
             id bigint AUTO_INCREMENT,
             name text NOT NULL,
             image text,
+            picture text,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
     ]

@@ -3,75 +3,84 @@ import db from "../db.js"
 export default class categoriesModel {
     constructor() {
         this.#db = db
+        this.#table = "categories"
     }
+
 
     /**
-     * @description get all categories 
+     * @description get all Categories 
      * @author meisolated
-     * @date 22/06/2022
-     * @returns {*}  
+     * @date 24/06/2022
      * @memberof categoriesModel
      */
-    getAllCategories() {
-        return new Promise((resolve, reject) => {
-            this.db.transaction(tx => {
-                tx.executeSql(
-                    "SELECT * FROM categories",
-                    [],
-                    (_, { rows }) => {
-                        resolve(rows._array)
-                    }
-                )
-            })
+    getAllCategories = () => new Promise((resolve, reject) => {
+        this.db.transaction(tx => {
+            tx.executeSql(
+                `SELECT * FROM ${this.table}`,
+                [],
+                (_, { rows }) => {
+                    resolve(rows._array)
+                }, (_, error) => reject(error)
+            )
         })
+    })
 
-    }
 
     /**
-     * @description add a Category 
+     * @description add new Category
      * @author meisolated
-     * @date 22/06/2022
-     * @param {*} name string
-     * @returns {*}  
+     * @date 24/06/2022
+     * @param {*} name STRING
      * @memberof categoriesModel
      */
-    addCategory(name) {
-        return new Promise((resolve, reject) => {
-            this.db.transaction(tx => {
-                tx.executeSql(
-                    "INSERT INTO categories (name) VALUES (?)",
-                    [name],
-                    (_, { rows }) => {
-                        resolve(rows._array)
-                    }
-                )
-            })
+    addCategory = (name) => new Promise((resolve, reject) => {
+        this.db.transaction(tx => {
+            tx.executeSql(
+                `INSERT INTO ${this.table} (name) VALUES (?)`,
+                [name],
+                (_, { rows }) => {
+                    resolve(rows._array)
+                }, (_, error) => reject(error)
+            )
         })
-    }
-    deleteCategory(id) {
-        return new Promise((resolve, reject) => {
-            this.db.transaction(tx => {
-                tx.executeSql(
-                    "DELETE FROM categories WHERE id = ?",
-                    [id],
-                    (_, { rows }) => {
-                        resolve(rows._array)
-                    }
-                )
-            })
+    })
+
+    /**
+     * @description delete a category
+     * @author meisolated
+     * @date 24/06/2022
+     * @param {*} id NUMBER
+     * @memberof categoriesModel
+     */
+    deleteCategory = (id) => new Promise((resolve, reject) => {
+        this.db.transaction(tx => {
+            tx.executeSql(
+                `DELETE FROM ${this.table} WHERE id = ?`,
+                [id],
+                (_, { rows }) => {
+                    resolve(rows._array)
+                }, (_, error) => reject(error)
+            )
         })
-    }
-    updateCategory(id, name) {
-        return new Promise((resolve, reject) => {
-            this.db.transaction(tx => {
-                tx.executeSql(
-                    "UPDATE categories SET name = ? WHERE id = ?",
-                    [name, id],
-                    (_, { rows }) => {
-                        resolve(rows._array)
-                    }
-                )
-            })
+    })
+
+    /**
+     * @description update a category 
+     * @author meisolated
+     * @date 24/06/2022
+     * @param {*} id NUMBER
+     * @param {*} name STRING 
+     * @memberof categoriesModel
+     */
+    updateCategory = (id, name) => new Promise((resolve, reject) => {
+        this.db.transaction(tx => {
+            tx.executeSql(
+                `UPDATE ${this.table} SET name = ? WHERE id = ?`,
+                [name, id],
+                (_, { rows }) => {
+                    resolve(rows._array)
+                }, (_, error) => reject(error)
+            )
         })
-    }
+    })
 }
