@@ -1,6 +1,7 @@
+export { default as Subtract } from "./Subtract"
 export { default as Add } from "./Add"
 export { default as Home } from "./Home"
 export { default as Settings } from "./Settings"
 export { default as Shop } from "./Shop"
 export { default as Transactions } from "./Transactions"
-export { default as Loading } from "./Loading_Circle"
+export { default as Loading } from "./Loading_Circle.js"

@@ -1,6 +1,6 @@
 import React from "react"
 import { View, Text, StyleSheet, Pressable } from "react-native"
-import color from "../../constant/color.js"
+import * as colors from "../../constant/color.js"
 import font from "../../constant/font.js"
 
 const SelectButton = (props) => {
@@ -16,7 +16,7 @@ const SelectButton = (props) => {
             </View>
         </Pressable>
         <Pressable onPress={() => handlePress()}>
-            <View style={selected == 1 ? [styles.secound_selected, styles.not_selected] : [styles.secound_selected]}>
+            <View style={selected == 1 ? [styles.first_selected, styles.not_selected] : [styles.first_selected]}>
                 <Text style={styles.text_style}>Unpaid</Text>
             </View>
         </Pressable>
@@ -33,29 +33,17 @@ const styles = StyleSheet.create({
         overflow: "hidden",
     },
     not_selected: {
-        backgroundColor: color.darkGrey,
+        backgroundColor: colors.default.darkGrey,
     },
     first_selected: {
+        marginRight: 5,
         borderRadius: 5,
         flex: 1,
-        backgroundColor: "#3EB489",
+        backgroundColor: colors.purple400,
         alignItems: "center",
         justifyContent: "center",
         paddingLeft: 15,
         paddingRight: 15,
-        flexDirection: "row",
-    },
-    secound_selected: {
-        flex: 1,
-        marginLeft: 5,
-        backgroundColor: "#3EB489",
-        borderRadius: 5,
-        alignItems: "center",
-        justifyContent: "center",
-        paddingLeft: 15,
-        paddingRight: 15,
-        paddingTop: 10,
-        paddingBottom: 10,
         flexDirection: "row",
     },
     text_style: {

@@ -2,9 +2,9 @@ import db from "../db.js"
 
 export default class ordersModel {
     constructor() {
-        this.#db = db
-        this.#table_orders = "orders"
-        this.#table_ordered_items = "ordered_items"
+        this.db = db
+        this.table_orders = "orders"
+        this.table_ordered_items = "ordered_items"
     }
 
     /**
@@ -16,10 +16,26 @@ export default class ordersModel {
      */
     static TSinSecs = () => Math.floor(Date.now() / 1000)
 
-
-    addNewOrder = (data) => new Promise((resolve, reject) => {
-
-    })
+    /**
+     * @description
+     * @author meisolated
+     * @date 24/06/2022
+     * @param {*} data [shop_id, items, total_price, payment_status]
+     * @memberof ordersModel
+     */
+    addNewOrder = (data) =>
+        new Promise((resolve, reject) => {
+            this.db.transaction((tx) => {
+                tx.executeSql(
+                    `INSERT INTO ${this.table_orders} (shop_id, items, total_amount, payment_status, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ?)`,
+                    [data.shop_id, data.items, data.total_amount, data.payment_status, ordersModel.TSinSecs(), ordersModel.TSinSecs()],
+                    (_, { rows }) => {
+                        resolve(rows._array)
+                    },
+                    (_, error) => reject(error)
+                )
+            })
+        })
 
     /**
      * @description this function to get orders after and before a particular time
@@ -31,7 +47,7 @@ export default class ordersModel {
      */
     getOrderByTime = (after, before) =>
         new Promise((resolve, reject) => {
-            db.transaction((tx) => {
+            this.db.transaction((tx) => {
                 tx.executeSql(
                     `SELECT * FROM ${this.table_orders} WHERE created_at BETWEEN ${after} AND ${before}`,
                     [],
@@ -52,7 +68,7 @@ export default class ordersModel {
      */
     getOrderItems = (id) =>
         new Promise((resolve, reject) => {
-            db.transaction((tx) => {
+            this.db.transaction((tx) => {
                 tx.executeSql(`SELECT * FROM ${this.table_ordered_items} WHERE id = ${id}`, [], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
             })
         })
@@ -67,9 +83,9 @@ export default class ordersModel {
      */
     updateOrderedItems = (id, data) =>
         new Promise((resolve, reject) => {
-            db.transaction((tx) => {
+            this.db.transaction((tx) => {
                 tx.executeSql(
-                    `UPDATE ${this.table_ordered_items} 
+                    `UPDATE ${this.table_ordered_items} SET
                     product_name = ?,
                     quantity = ?,
                     product_price = ?,
@@ -92,9 +108,9 @@ export default class ordersModel {
      */
     updateOrder = (id, data) =>
         new Promise((resolve, reject) => {
-            db.transaction((tx) => {
+            this.db.transaction((tx) => {
                 tx.executeSql(
-                    `UPDATE ${this.table_orders} shop_id = ?, items = ?, total_amount = ?, payment_status = ?, modified_at = ${ordersModel.TSinSecs()} WHERE id = ${id}`,
+                    `UPDATE ${this.table_orders} SET shop_id = ?, items = ?, total_amount = ?, payment_status = ?, modified_at = ${ordersModel.TSinSecs()} WHERE id = ${id}`,
                     [data],
                     (_, result) => resolve(result.rows),
                     (_, (error) => reject(error))

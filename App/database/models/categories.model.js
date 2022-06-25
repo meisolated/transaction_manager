@@ -2,9 +2,20 @@ import db from "../db.js"
 
 export default class categoriesModel {
     constructor() {
-        this.#db = db
-        this.#table = "categories"
+        this.db = db
+        this.table = "categories"
     }
+
+
+
+    /**
+     * @description this element will return timestamp in seconds
+     * @author meisolated
+     * @date 22/06/2022
+     * @static
+     * @memberof ordersModel
+     */
+    static TSinSecs = () => Math.floor(Date.now() / 1000)
 
 
     /**
@@ -36,8 +47,8 @@ export default class categoriesModel {
     addCategory = (name) => new Promise((resolve, reject) => {
         this.db.transaction(tx => {
             tx.executeSql(
-                `INSERT INTO ${this.table} (name) VALUES (?)`,
-                [name],
+                `INSERT INTO ${this.table} (name, created_at, modified_at) VALUES (?, ?, ?)`,
+                [name, categoriesModel.TSinSecs(), categoriesModel.TSinSecs()],
                 (_, { rows }) => {
                     resolve(rows._array)
                 }, (_, error) => reject(error)
@@ -75,8 +86,8 @@ export default class categoriesModel {
     updateCategory = (id, name) => new Promise((resolve, reject) => {
         this.db.transaction(tx => {
             tx.executeSql(
-                `UPDATE ${this.table} SET name = ? WHERE id = ?`,
-                [name, id],
+                `UPDATE ${this.table} SET name = ?, created_at, modified_at = ? WHERE id = ?`,
+                [name, id, categoriesModel.TSinSecs(), categoriesModel.TSinSecs()],
                 (_, { rows }) => {
                     resolve(rows._array)
                 }, (_, error) => reject(error)

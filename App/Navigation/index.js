@@ -4,11 +4,12 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import HomeScreen from "../Screens/HomeScreen.js"
-import TransactionsScreen from "../Screens/TransactionsScreen.js"
+import TransactionsScreen from "../Screens/OrdersScreen.js"
 import AddTransaction from "../Screens/NewOrderScreen.js"
 import AdminScreen from "../Screens/AdminScreen.js"
 import color from "../constant/color.js"
-import ProductEditScreen from "../Screens/Edit/ProductEditScreen.js"
+import ProductDataScreen from "../Screens/DataScreens/ProductDataScreen.js"
+import TestScreen from "../Screens/TestScreen.js"
 const Tab = createMaterialBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 export function Navigation() {
@@ -22,7 +23,8 @@ export function Navigation() {
                 <Stack.Screen name="Transactions" component={TransactionsScreen} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="AddTransactions" component={AddTransaction} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false, animation: "none" }} />
-                <Stack.Screen name="EditProduct" component={ProductEditScreen} options={{ headerShown: false, animation: "none" }} />
+                <Stack.Screen name="EditProduct" component={ProductDataScreen} options={{ headerShown: false, animation: "none" }} />
+                <Stack.Screen name="TestScreen" component={TestScreen} options={{ headerShown: false, animation: "none" }} />
             </Stack.Navigator>
         </NavigationContainer>
     )

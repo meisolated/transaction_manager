@@ -2,8 +2,8 @@ import db from "../db.js"
 
 export default class productsModel {
     constructor() {
-        this.#db = db
-        this.#table = "shops"
+        this.db = db
+        this.table = "shops"
     }
 
     /**
@@ -44,7 +44,7 @@ export default class productsModel {
     updateShopById = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table} name = ?, address = ?, phone = ?, qr_code = ? WHERE id = ${id}`, [data], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
+                tx.executeSql(`UPDATE ${this.table} SET name = ?, address = ?, phone = ?, qr_code = ? WHERE id = ${id}`, [data], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
             })
         })
 
@@ -59,7 +59,7 @@ export default class productsModel {
     updateShopPicture = (id, picture) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table} picture = ${picture} WHERE id = ${id}`, [], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
+                tx.executeSql(`UPDATE ${this.table} SET picture = ${picture} WHERE id = ${id}`, [], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
             })
         })
 }

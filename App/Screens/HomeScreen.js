@@ -23,6 +23,8 @@ function HomeScreen(props) {
                 <Button title="Add Transactions" onPress={() => props.navigation.navigate("AddTransactions")} />
                 <Button title="Admin" onPress={() => props.navigation.navigate("Admin")} />
                 <Button title="EditProduct" onPress={() => props.navigation.navigate("EditProduct")} />
+                <Button title="TestScreen" onPress={() => props.navigation.navigate("TestScreen")} />
+                <Text>Change Things into Database</Text>
                 <Button title="Insert dummy data" onPress={() => insertDummyData()} />
                 <Button title="Create Tables" onPress={() => createTables((x) => set(x))} />
                 <Button title="Delete All Tables" onPress={() => deleteAllTables((x) => set(x))} />

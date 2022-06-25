@@ -1,1 +1,1 @@
-export { default as PrimaryButton } from "./primary.button.js"
+export { default as PrimaryButton } from "./primaryButton.js"

@@ -49,7 +49,7 @@ export async function createTables(cb) {
         `DROP TABLE IF EXISTS ordered_items`,
 
         `CREATE TABLE orders (
-            id bigint AUTO_INCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             shop_id text,
             items text NOT NULL,
             total_amount bigint NOT NULL,
@@ -58,7 +58,7 @@ export async function createTables(cb) {
             created_at bigint NOT NULL);`,
 
         `CREATE TABLE ordered_items (
-            id bigint AUTO_INCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             order_id bigint NOT NULL,
             product_name text NOT NULL,
             quantity bigint NOT NULL,
@@ -67,7 +67,7 @@ export async function createTables(cb) {
             created_at bigint NOT NULL);`,
 
         `CREATE TABLE shops (
-            id bigint AUTO_INCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name text,
             address text,
             phone text,
@@ -77,16 +77,15 @@ export async function createTables(cb) {
             modified_at bigint NOT NULL);`,
 
         `CREATE TABLE products (
-            id bigint AUTO_INCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name text NOT NULL,
             picture text,
-            price bigint NOT NULL,
             description text,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
 
         `CREATE TABLE products_attributes (
-            id bigint AUTO_INCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             product_id bigint NOT NULL,
             metric text NOT NULL,
             price bigint NOT NULL,
@@ -94,14 +93,14 @@ export async function createTables(cb) {
             modified_at bigint NOT NULL);`,
 
         `CREATE TABLE categories (
-            id bigint AUTO_INCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name text NOT NULL,
             image text,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
 
         `CREATE TABLE suppliers (
-            id bigint AUTO_INCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name text NOT NULL,
             image text,
             picture text,
@@ -131,8 +130,19 @@ export function insertDummyData() {
         db.transaction((tx) => {
             tx.executeSql(
                 "insert into orders (created_at, modified_at, total_amount, items, payment_status, shop_id) values (?, ?, ?, ?, ?, ?)",
-                ["0", "1", randomNumber, '["151x1","151x1", "151x1"]', "paid", "1"],
-                (_, result) => console.log(result),
+                [Math.floor(Date.now()), Math.floor(Date.now()), randomNumber, '["151x1","151x1", "151x1"]', ["paid", "unpaid"][Math.floor(Math.random() * 2)], "1"],
+                (_, result) => {
+                    // add attributes to order
+                    for (let j = 0; j < 3; j++) {
+                        tx.executeSql(
+                            "insert into ordered_items (created_at, modified_at, order_id, product_name, quantity, product_price) values (?, ?, ?, ?, ?, ?)",
+                            [Math.floor(Date.now()), Math.floor(Date.now()), result.insertId, "product " + j, j, j * 10],
+                            (_, result) => console.log("inserted ordered_items"),
+                            (_, error) => console.log(error)
+                        )
+                    }
+
+                },
                 (_, error) => console.log(error)
             )
         })

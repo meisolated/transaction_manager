@@ -1,8 +1,11 @@
 import React, { useEffect } from "react"
-import { View, Text, StyleSheet, TextInput as RNTextInput } from "react-native"
+import { View, Text, StyleSheet, TextInput as RNTextInput, Dimensions } from "react-native"
 import { Feather as Icons } from "@expo/vector-icons"
 import color from "../../constant/color.js"
 import * as otherColors from "../../constant/color.js"
+
+
+let window = Dimensions.get("window")
 
 export default function TextInput(props) {
     const [text, onChangeText] = React.useState("")
@@ -26,14 +29,15 @@ export default function TextInput(props) {
         <View style={focus || text.length > 0 ? [style.input_text_container, style.input_text_on_focus] : [style.input_text_container]}>
             <Icons name={icon} style={style.icon} size={20} />
             <RNTextInput maxLength={10} onEndEditing={() => setFocus(false)} onFocus={() => setFocus(true)} style={style.input} onChangeText={onInputChange} value={text} placeholder={placeholder} keyboardType="numeric" />
+            {text.length > 0 && <Icons name="check-circle" style={{ color: otherColors.green500, alignContent: "flex-end" }} size={20} />}
         </View>
     )
 }
 
 const style = StyleSheet.create({
     input_text_container: {
-        width: "80%",
-        height: 40,
+        width: window.width - 40,
+        height: 50,
         marginTop: 5,
         marginBottom: 5,
         padding: 5,
@@ -44,7 +48,6 @@ const style = StyleSheet.create({
         justifyContent: "flex-start",
         alignItems: "center",
         borderRadius: 5,
-        elevation: 2,
         borderWidth: 1,
         borderColor: otherColors.transparent,
     },
@@ -54,5 +57,8 @@ const style = StyleSheet.create({
     input_text_on_focus: {
         borderWidth: 1,
         borderColor: otherColors.deepPurpleA100,
+    },
+    input: {
+        width: window.width * 0.7,
     }
 })

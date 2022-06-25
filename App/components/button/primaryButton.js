@@ -1,6 +1,6 @@
 import React from "react"
 import { View, Text, StyleSheet } from "react-native"
-import color from "../../constant/color.js"
+import * as color from "../../constant/color.js"
 
 const componentName = (props) => (
     <View style={styles.container}>
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#3EB489",
+        backgroundColor: color.purple400,
         elevation: 1,
         paddingTop: 10,
         paddingBottom: 10,
