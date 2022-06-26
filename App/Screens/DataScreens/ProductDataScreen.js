@@ -12,11 +12,13 @@ import Popup from "../../components/popup/index.js"
 import font from "../../constant/font.js"
 import { Feather as Icons } from "@expo/vector-icons"
 import OuterLineBtn from "../../components/button/outerlineButton.js"
-
-const window = Dimensions.get("window")
-const screen = Dimensions.get("window")
+import { PrimaryButton } from "../../components/button"
+import { default as D } from "../../handler/Dimensions.handler.js"
+let d = new D()
 
 export default function ProductEditScreen(props) {
+
+    let ScreenState = props.screenState || "add" // Edit or Add
     let emptyAttribute = [{ id: 1, number: "1", metric: "liter(l)", price: numberSeparator("50") }]
     let suggestedNumbers = [
         { number: "1/2", metrics: "liter(l)" },
@@ -34,7 +36,6 @@ export default function ProductEditScreen(props) {
 
     let [product, setProduct] = React.useState({ attribute: emptyAttribute })
 
-    let type = props.type //add new product or edit product
     let [productData, setProductData] = React.useState({ one: "", two: "" })
     let [picking, setPicking] = React.useState({ show: false, data: null })
 
@@ -103,15 +104,6 @@ export default function ProductEditScreen(props) {
         setSelectedImage({ localUri: pickerResult.uri })
     }
 
-    // ---------------------------------------------------------------------------------------------------------------------
-    const [dimensions, setDimensions] = React.useState({ window, screen })
-
-    React.useEffect(() => {
-        const subscription = Dimensions.addEventListener("change", ({ window, screen }) => {
-            setDimensions({ window, screen })
-        })
-        return () => subscription?.remove()
-    })
     // KEYBOARD HANDLER
     const [keyboardStatus, setKeyboardStatus] = React.useState(false)
 
@@ -166,7 +158,7 @@ export default function ProductEditScreen(props) {
                                     </Pressable>
                                     <InputText
                                         keyboardType="numeric"
-                                        style={[style.attribute_text_input, { width: window.width * 0.2 }]}
+                                        style={[style.attribute_text_input, { width: d.width * 0.2 }]}
                                         placeholder="₹ Price"
                                         defaultValue={item.price.toString()}
                                         onChangeText={(data) => updateAttribute(item.id, null, data)}
@@ -189,6 +181,7 @@ export default function ProductEditScreen(props) {
                         <Pressable style={{ alignSelf: "center" }} onPress={addNewAttribute}>
                             <OuterLineBtn text="Add New Attribute" />
                         </Pressable>
+                        <PrimaryButton width={d.width * .9} name="Save" onPress={() => console.log('pressed')} />
                     </View>
                     {picking.show && <Popup return={(x) => pickingOption(x)} options={metrics} />}
                 </KeyboardAvoidingView>
@@ -208,7 +201,7 @@ const style = StyleSheet.create({
         marginLeft: 20,
         alignItems: "flex-start",
         textAlign: "center",
-        marginBottom: window.height * 0.1,
+        marginBottom: d.height * 0.1,
     },
     thumbnail: {
         width: 150,
@@ -219,7 +212,7 @@ const style = StyleSheet.create({
         borderColor: colors.deepPurple100,
     },
     image: {
-        width: window.width - 40,
+        width: d.width - 40,
         justifyContent: "center",
         alignItems: "center",
     },

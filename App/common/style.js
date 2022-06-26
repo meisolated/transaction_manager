@@ -29,6 +29,10 @@ export default {
         fontFamily: font.bold,
         fontSize: 22,
     },
+    basic_text_semiBold_20: {
+        fontFamily: font.semiBold,
+        fontSize: 20,
+    },
     number_text: {
         fontFamily: font.bold,
         fontSize: 16,
@@ -45,4 +49,10 @@ export default {
         padding: 10,
         margin: 10,
     },
+    text_lite: (size) => {
+        return {
+            fontFamily: font.lite,
+            fontSize: size,
+        }
+    }
 }

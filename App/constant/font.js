@@ -1,7 +1,7 @@
 export default {
     primary: "THICCCBOIRegular",
     bold: "THICCCBOIBold",
-    light: "THICCCBOILight",
+    lite: "THICCCBOILight",
     medium: "THICCCBOIMedium",
     semiBold: "THICCCBOISemiBold",
     numberFont: "LatoRegular",

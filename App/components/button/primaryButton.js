@@ -1,19 +1,21 @@
 import React from "react"
-import { View, Text, StyleSheet } from "react-native"
+import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native"
 import * as color from "../../constant/color.js"
+import font from "../../constant/font.js"
 
 const componentName = (props) => (
-    <View style={styles.container}>
-        <Text style={styles.name}>{props.name}</Text>
-    </View>
+    <Pressable style={{ alignSelf: "center" }} onPress={() => props.onPress()}>
+        <View style={[styles.container, { width: props.width }]}>
+            <Text style={styles.name}>{props.name}</Text>
+        </View></Pressable>
+
 )
 export default componentName
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        selfAlign: "center",
         alignItems: "center",
-        justifyContent: "center",
         backgroundColor: color.purple400,
         elevation: 1,
         paddingTop: 10,
@@ -22,6 +24,8 @@ const styles = StyleSheet.create({
 
     },
     name: {
-        color: color.white
+        color: color.white,
+        fontFamily: font.semiBold,
+        fontSize: 20,
     }
 })

@@ -50,6 +50,7 @@ export default class categoriesModel {
                 `INSERT INTO ${this.table} (name, created_at, modified_at) VALUES (?, ?, ?)`,
                 [name, categoriesModel.TSinSecs(), categoriesModel.TSinSecs()],
                 (_, { rows }) => {
+                    console.log("🚀 ~ file: categories.model.js ~ line 53 ~ categoriesModel ~ getAllCategories= ~ error", error)
                     resolve(rows._array)
                 }, (_, error) => reject(error)
             )

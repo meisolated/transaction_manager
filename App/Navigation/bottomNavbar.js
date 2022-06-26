@@ -4,7 +4,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { Home, Transactions, Add, Shop, Settings } from "../assets/svg"
 import color from "../constant/color.js"
 import font from "../constant/font.js"
-
+import { default as D } from "../handler/Dimensions.handler.js"
+let d = new D()
 function BottomNavBar({ navigation }) {
     return (
         <View style={styles.bottomNav}>
@@ -51,11 +52,12 @@ export default BottomNavBar
 
 const styles = StyleSheet.create({
     bottomNav: {
-        elevation: 2,
-        borderTopColor: color.lightGrey,
+        elevation: 1,
+        borderTopWidth: 1,
+        borderTopColor: color.littleDarkGrey,
         backgroundColor: "#fff",
         height: 60,
-        width: "100%",
+        width: d.width,
         position: "absolute",
         bottom: 0,
         flexDirection: "row",

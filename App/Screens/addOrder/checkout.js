@@ -1,5 +1,5 @@
 import React from "react"
-import { ScrollView, View, Text, Animated, StyleSheet, Easing, Pressable, Button, Image } from "react-native"
+import { ScrollView, View, Text, Animated, StyleSheet, Dimensions, Easing, Pressable, Button, Image } from "react-native"
 import commonStyle from "../../common/style.js"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { _tempOrder, _tempProducts, _getProductName, _getProductAttribute } from "../../temp/testingData.js"
@@ -9,6 +9,9 @@ import { connect } from "react-redux"
 import { numberSeparator } from "../../util/functions.js"
 import { PrimaryButton } from "../../components/button/index.js"
 import SelectButton from "../../components/button/selectButton.js"
+
+const window = Dimensions.get("window")
+
 
 function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
     const [total, setTotal] = React.useState(0)
@@ -85,7 +88,7 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
                     <Text style={[commonStyle.basic_text, checkoutStyle.total_text]}>Total:</Text>
                     <Text style={[commonStyle.number_text, checkoutStyle.total_price]}>{numberSeparator(total)}</Text>
                     {/* <Button title="Checkout" onPress={() => handlePress()} /> */}
-                    <PrimaryButton name="Checkout" onPress={() => handlePress()} />
+                    <PrimaryButton width={window.width * .5} name="Checkout" onPress={() => handlePress()} />
                 </View>
             </View>
         </View>
