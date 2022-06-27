@@ -69,7 +69,7 @@ export default class ordersModel {
     getOrderItems = (id) =>
         new Promise((resolve, reject) => {
             this.db.transaction((tx) => {
-                tx.executeSql(`SELECT * FROM ${this.table_ordered_items} WHERE id = ${id}`, [], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
+                tx.executeSql(`SELECT * FROM ${this.table_ordered_items} WHERE id = ${id}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
             })
         })
 
@@ -92,8 +92,8 @@ export default class ordersModel {
                     modified_at = ${ordersModel.TSinSecs()},
                     WHERE id = ${id}`,
                     [data],
-                    (_, result) => resolve(result.rows),
-                    (_, (error) => reject(error))
+                    (_, result) => resolve(result.rows._array),
+                    ((_, error) => reject(error))
                 )
             })
         })
@@ -112,8 +112,8 @@ export default class ordersModel {
                 tx.executeSql(
                     `UPDATE ${this.table_orders} SET shop_id = ?, items = ?, total_amount = ?, payment_status = ?, modified_at = ${ordersModel.TSinSecs()} WHERE id = ${id}`,
                     [data],
-                    (_, result) => resolve(result.rows),
-                    (_, (error) => reject(error))
+                    (_, result) => resolve(result.rows._array),
+                    ((_, error) => reject(error))
                 )
             })
         })

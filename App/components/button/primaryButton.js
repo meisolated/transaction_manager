@@ -7,13 +7,14 @@ const componentName = (props) => (
     <Pressable style={{ alignSelf: "center" }} onPress={() => props.onPress()}>
         <View style={[styles.container, { width: props.width }]}>
             <Text style={styles.name}>{props.name}</Text>
-        </View></Pressable>
-
+        </View>
+    </Pressable>
 )
 export default componentName
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         selfAlign: "center",
         alignItems: "center",
         backgroundColor: color.purple400,
@@ -21,11 +22,10 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10,
         borderRadius: 5,
-
     },
     name: {
         color: color.white,
         fontFamily: font.semiBold,
         fontSize: 20,
-    }
+    },
 })

@@ -67,7 +67,7 @@ export default class productsModel {
     getAllProducts = () =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`SELECT * FROM ${this.table_products}`, [], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
+                tx.executeSql(`SELECT * FROM ${this.table_products}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
             })
         })
 
@@ -81,7 +81,7 @@ export default class productsModel {
     getProductById = (id) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`SELECT * FROM ${this.table_products} WHERE id = ${id}`, [], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
+                tx.executeSql(`SELECT * FROM ${this.table_products} WHERE id = ${id}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
             })
         })
 
@@ -96,7 +96,7 @@ export default class productsModel {
     updateProduct = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table_products} SET name = ?, price = ?, description = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`, [data], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
+                tx.executeSql(`UPDATE ${this.table_products} SET name = ?, price = ?, description = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`, [data], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
             })
         })
 
@@ -111,7 +111,7 @@ export default class productsModel {
     updateProductPicture = (id, picture) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table_products} SET picture = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`, [picture], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
+                tx.executeSql(`UPDATE ${this.table_products} SET picture = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`, [picture], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
             })
         })
 
@@ -126,7 +126,7 @@ export default class productsModel {
     updateProductAttribute = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table_products_attributes} SET metric =?, price = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`, [data], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
+                tx.executeSql(`UPDATE ${this.table_products_attributes} SET metric =?, price = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`, [data], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
             })
         })
 }

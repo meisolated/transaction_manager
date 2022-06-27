@@ -20,7 +20,7 @@ function BottomNavBar({ navigation }) {
                 <View style={styles.bottomNavItem}>
                     {/* <MaterialCommunityIcons name="cash-multiple" color={"#808080"} size={26} /> */}
                     <Transactions />
-                    <Text style={styles.bottomNavText}>Transactions</Text>
+                    <Text style={styles.bottomNavText}>Orders</Text>
                 </View>
             </Pressable>
             <Pressable onPress={() => navigation.navigate("Home")}>
@@ -30,14 +30,14 @@ function BottomNavBar({ navigation }) {
                     <Text style={styles.bottomNavText}>Add New</Text>
                 </View>
             </Pressable>
-            <Pressable onPress={() => navigation.navigate("Home")}>
+            <Pressable onPress={() => navigation.navigate("Shops")}>
                 <View style={styles.bottomNavItem}>
                     {/* <MaterialCommunityIcons name="store" color={"#808080"} size={26} /> */}
                     <Shop />
                     <Text style={styles.bottomNavText}>Shops</Text>
                 </View>
             </Pressable>
-            <Pressable onPress={() => navigation.navigate("Home")}>
+            <Pressable onPress={() => navigation.navigate("Settings")}>
                 <View style={styles.bottomNavItem}>
                     {/* <MaterialCommunityIcons name="cog" color={"#808080"} size={26} /> */}
                     <Settings />

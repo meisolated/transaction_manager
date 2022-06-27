@@ -1,7 +1,6 @@
 import { localStorage } from "./localStorage.js"
 import db from "./db"
 
-
 export async function deleteAllTables(cb) {
     let queries = [
         `DROP TABLE IF EXISTS orders`,
@@ -17,7 +16,6 @@ export async function deleteAllTables(cb) {
         `DROP TABLE IF EXISTS categories`,
 
         `DROP TABLE IF EXISTS suppliers`,
-
     ]
 
     let donebefore = await localStorage.retrieveData("tablesExists")
@@ -25,9 +23,14 @@ export async function deleteAllTables(cb) {
 
     db.transaction((tx) => {
         for (let i = 0; i < queries.length; i++) {
-            tx.executeSql(queries[i], [], (tx, results) => {
-                cb({ done: i + 1, total: queries.length })
-            }, (_, error) => console.log(error))
+            tx.executeSql(
+                queries[i],
+                [],
+                (tx, results) => {
+                    cb({ done: i + 1, total: queries.length })
+                },
+                (_, error) => console.log(error)
+            )
         }
     })
 }
@@ -37,7 +40,6 @@ export async function createTables(cb) {
     // check if tables exists for not
     let donebefore = await localStorage.retrieveData("tablesExists")
     if (donebefore == "true") return cb({ done: 0, total: 0 })
-
 
     let queries = [
         `DROP TABLE IF EXISTS orders`,
@@ -109,10 +111,15 @@ export async function createTables(cb) {
     ]
     db.transaction((tx) => {
         for (let i = 0; i < queries.length; i++) {
-            tx.executeSql(queries[i], [], (tx, results) => {
-                if (i === queries.length - 1) localStorage.storeData("tablesExists", "true")
-                cb({ done: i + 1, total: queries.length })
-            }, (_, error) => console.log(error))
+            tx.executeSql(
+                queries[i],
+                [],
+                (tx, results) => {
+                    if (i === queries.length - 1) localStorage.storeData("tablesExists", "true")
+                    cb({ done: i + 1, total: queries.length })
+                },
+                (_, error) => console.log(error)
+            )
         }
     })
 }
@@ -123,14 +130,14 @@ export function insertDummyData() {
         tx.executeSql(`DELETE FROM transactions`, [], () => console.log("deleted all transactions"))
     })
 
-    // insert 100 records
+    // insert 100 records in order
     for (let i = 0; i < 100; i++) {
         // generate random number
         let randomNumber = Math.floor(Math.random() * 100)
         db.transaction((tx) => {
             tx.executeSql(
                 "insert into orders (created_at, modified_at, total_amount, items, payment_status, shop_id) values (?, ?, ?, ?, ?, ?)",
-                [Math.floor(Date.now()), Math.floor(Date.now()), randomNumber, '["151x1","151x1", "151x1"]', ["paid", "unpaid"][Math.floor(Math.random() * 2)], "1"],
+                [Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), randomNumber, '["151x1","151x1", "151x1"]', ["paid", "unpaid"][Math.floor(Math.random() * 2)], "1"],
                 (_, result) => {
                     // add attributes to order
                     for (let j = 0; j < 3; j++) {
@@ -141,7 +148,30 @@ export function insertDummyData() {
                             (_, error) => console.log(error)
                         )
                     }
+                },
+                (_, error) => console.log(error)
+            )
+        })
+    }
 
+    // insert 100 records in shops
+    for (let i = 0; i < 100; i++) {
+        // generate random number
+        let randomNumber = Math.floor(Math.random() * 100)
+        db.transaction((tx) => {
+            tx.executeSql(
+                "insert into shops (created_at, modified_at, name, address, phone, picture, qr_code) values (?, ?, ?, ?, ?, ?, ?)",
+                [Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), "shop " + i, "address " + i, "phone " + i, "picture " + i, "qr_code " + i],
+                (_, result) => {
+                    // add attributes to order
+                    for (let j = 0; j < 3; j++) {
+                        tx.executeSql(
+                            "insert into products (created_at, modified_at, name, picture, description) values (?, ?, ?, ?, ?)",
+                            [Math.floor(Date.now()), Math.floor(Date.now()), "product " + j, "picture " + j, "description " + j],
+                            (_, result) => console.log("inserted products"),
+                            (_, error) => console.log(error)
+                        )
+                    }
                 },
                 (_, error) => console.log(error)
             )

@@ -14,11 +14,16 @@ import { numberSeparator } from "../util/functions.js"
 import Checkout from "./addOrder/Checkout.js"
 
 // ------------------------------------------------------AddOrder----------------------------------------------------------------
-export default function AddOrder(props) {
+export default function AddOrderScreen(props) {
     const [state, setState] = React.useState({ title: "Checkout", string: "checkout", component: () => <Checkout /> })
+
+    function onPress() {
+        return setState({ title: "Checkout", string: "checkout", component: () => <ChooseCompany /> })
+    }
 
     return (
         <SafeAreaView style={styles.container}>
+            <Button title="Checkout" onPress={onPress} />
             <TopNavbar title={state.title} />
             {state.component()}
             <NavBar navigation={props.navigation} />
@@ -67,31 +72,30 @@ const chooseItemStyle = StyleSheet.create({
     },
 })
 
-function chooseItem() {
-    return (
-        <View style={commonStyle.container}>
-            {_tempCategories.map((item, index) => {
-                let category = Object.keys(item)[0]
-                return (
-                    <View style={commonStyle.center} key={"category" + index}>
-                        <TouchableOpacity style={chooseItemStyle.item} onPress={() => { }}>
-                            <Image style={{ width: 70, height: 70 }} source={require("../assets/img/milk.png")} />
-                            <View style={chooseItemStyle.itemDetailsWrapper}>
-                                <Text style={chooseItemStyle.title_text}>{category}</Text>
-                                <Text style={chooseItemStyle.subtitle_text}>{item[category]}</Text>
-                            </View>
-                            <MaterialCommunityIcons name="chevron-right" color={color.primary} size={30} />
-                        </TouchableOpacity>
-                        {_tempCategories.length - 1 !== index ? <View style={commonStyle.divider} /> : null}
-                    </View>
-                )
-            })}
-        </View>
-    )
-}
+const ChooseItem = () => (
+    <View style={commonStyle.container}>
+        {_tempCategories.map((item, index) => {
+            let category = Object.keys(item)[0]
+            return (
+                <View style={commonStyle.center} key={"category" + index}>
+                    <TouchableOpacity style={chooseItemStyle.item} onPress={() => { }}>
+                        <Image style={{ width: 70, height: 70 }} source={require("../assets/img/milk.png")} />
+                        <View style={chooseItemStyle.itemDetailsWrapper}>
+                            <Text style={chooseItemStyle.title_text}>{category}</Text>
+                            <Text style={chooseItemStyle.subtitle_text}>{item[category]}</Text>
+                        </View>
+                        <MaterialCommunityIcons name="chevron-right" color={color.primary} size={30} />
+                    </TouchableOpacity>
+                    {_tempCategories.length - 1 !== index ? <View style={commonStyle.divider} /> : null}
+                </View>
+            )
+        })}
+    </View>
+)
+
 // ------------------------------------------------------END----------------------------------------------------------------
 // --------------------------------------------------chooseCompany--------------------------------------------------------------------
-function chooseCompany() {
+function ChooseCompany() {
     return (
         <View style={commonStyle.container}>
             {_tempCompany.map((item, index) => {

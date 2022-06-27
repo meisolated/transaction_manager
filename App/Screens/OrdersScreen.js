@@ -5,7 +5,7 @@ import { getAllTransactions } from "../database/get.js"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { Feather as Icon } from "@expo/vector-icons"
 import color, * as colors from "../constant/color.js"
-import { default as D } from "../handler/Dimensions.handler.js"
+import D from "../handler/Dimensions.handler.js"
 import commonStyles from "../common/style.js"
 import TopNav from "../Navigation/topNavbar.js"
 import BottomNav from "../Navigation/bottomNavbar.js"
@@ -22,9 +22,12 @@ function OrderScreen(props) {
                 setTransactions([{ total_amount: "No transactions found" }])
             }
         })
+        return () => {
+            setTransactions([])
+        }
     }, [])
 
-    const renderItem = ({ index, item }) => {
+    const renderOrders = ({ index, item }) => {
         // console.log(item, index)
         return (
             <View key={index} style={style.listItem}>
@@ -50,8 +53,8 @@ function OrderScreen(props) {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <TopNav title="Orders List" />
-            <View style={{ marginBottom: d.width * .3 }}>
-                <FlatList data={transactions} renderItem={renderItem} keyExtractor={(item) => item.id} />
+            <View style={{ marginBottom: d.height * .15 }}>
+                <FlatList data={transactions} renderItem={renderOrders} keyExtractor={(item) => item.id} />
             </View>
             <BottomNav navigation={props.navigation} />
         </SafeAreaView>
@@ -61,9 +64,6 @@ function OrderScreen(props) {
 export default OrderScreen
 
 const style = StyleSheet.create({
-    scrollView: {
-        margin: 10,
-    },
     listItem: {
         width: d.width * 0.95,
         flexDirection: "row",

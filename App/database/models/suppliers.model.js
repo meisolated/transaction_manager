@@ -15,7 +15,7 @@ export default class suppliersModel {
      */
     getAllSuppliers = () => new Promise((resolve, reject) => {
         db.transaction((tx) => {
-            tx.executeSql(`SELECT * FROM ${this.table}`, [], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
+            tx.executeSql(`SELECT * FROM ${this.table}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
         })
     })
 
@@ -90,7 +90,7 @@ export default class suppliersModel {
     updateSuppliersPicture = (id, picture) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table} picture = ${picture} WHERE id = ${id}`, [], (_, result) => resolve(result.rows), (_, (error) => reject(error)))
+                tx.executeSql(`UPDATE ${this.table} picture = ${picture} WHERE id = ${id}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
             })
         })
 
