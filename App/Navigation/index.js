@@ -9,7 +9,7 @@ import AddTransaction from "../Screens/NewOrderScreen.js"
 import AdminScreen from "../Screens/AdminScreen.js"
 import color from "../constant/color.js"
 import ProductDataScreen from "../Screens/DataScreens/ProductDataScreen.js"
-import TestScreen from "../Screens/TestScreen.js"
+import QRCodeScanner from "../Screens/QRCodeScannerScreen.js"
 import CameraScreen from "../Screens/CameraScreen.js"
 import Checkout from "../Screens/addOrder/Checkout.js"
 import AddOrder from "../Screens/NewOrderScreen.js"
@@ -30,7 +30,7 @@ export function Navigation() {
                 <Stack.Screen name="Transactions" component={TransactionsScreen} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="AddTransactions" component={AddTransaction} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false, animation: "none" }} />
-                <Stack.Screen name="TestScreen" component={TestScreen} options={{ headerShown: false, animation: "none" }} />
+                <Stack.Screen name="QRCodeScanner" component={QRCodeScanner} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="AddOrder" component={AddOrder} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Shops" component={Shops} options={{ headerShown: false, animation: "none" }} />

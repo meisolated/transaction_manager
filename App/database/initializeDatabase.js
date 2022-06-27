@@ -83,6 +83,7 @@ export async function createTables(cb) {
             name text NOT NULL,
             picture text,
             description text,
+            qr_code text,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
 

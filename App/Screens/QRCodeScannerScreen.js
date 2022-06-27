@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react"
-import { Text, View, StyleSheet, Button, Dimensions } from "react-native"
+import { Text, View, StyleSheet, Button, Dimensions, DeviceEventEmitter } from "react-native"
 import { BarCodeScanner } from "expo-barcode-scanner"
 const window = Dimensions.get("window")
-import { Subtract } from "../assets/svg/"
+import { Subtract } from "../assets/svg"
 
-export default function TestScreen() {
+export default function QRCodeScanner(props) {
     const [hasPermission, setHasPermission] = useState(null)
     const [scanned, setScanned] = useState(false)
 
@@ -16,8 +16,9 @@ export default function TestScreen() {
     }, [])
 
     const handleBarCodeScanned = ({ type, data }) => {
-        setScanned(true)
-        alert(`Bar code with type ${type} and data ${data} has been scanned!`)
+        DeviceEventEmitter.emit('onQRCodeScanned', data)
+        props.navigation.goBack()
+
     }
 
     if (hasPermission === null) {

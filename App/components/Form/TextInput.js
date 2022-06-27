@@ -31,7 +31,7 @@ export default function TextInput(props) {
         <View style={focus || text?.length > 0 || props.value?.length > 0 ? [style.input_text_container, style.input_text_on_focus] : [style.input_text_container]}>
             <Icons name={icon} style={style.icon} size={20} />
             <RNTextInput maxLength={10} onEndEditing={() => setFocus(false)} onFocus={() => setFocus(true)} style={style.input} onChangeText={onInputChange} value={props.value ? props.value : text} placeholder={placeholder} keyboardType={props.type == "number" ? "numeric" : "default"} />
-            {text?.length > 0 || props.value?.length > 0 && <Icons name="check-circle" style={{ color: otherColors.green500, alignContent: "flex-end" }} size={20} />}
+            {text?.length > 0 || props.value?.length > 0 ? <Icons name="check-circle" style={{ color: otherColors.green500, alignContent: "flex-end" }} size={20} /> : null}
         </View>
     )
 }

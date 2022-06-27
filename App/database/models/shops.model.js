@@ -44,7 +44,7 @@ export default class shopsModel {
     updateShopById = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table} SET name = ?, address = ?, phone = ?, qr_code = ? WHERE id = ${id}`, [data], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
+                tx.executeSql(`UPDATE ${this.table} SET name = ?, address = ?, phone = ?, qr_code = ? WHERE id = ${id}`, data, (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
             })
         })
 

@@ -13,21 +13,19 @@ export default class productsModel {
      * @description add new product to database
      * @author meisolated
      * @date 24/06/2022
-     * @param {*} data [name, picture, description]
+     * @param {*} data [name, picture, description, qr_code]
      * @memberof productsModel
      * @returns {Promise<any>}
      */
     addNew = (data) =>
         new Promise((resolve, reject) => {
-            console.log("addNew", "check point 1")
             this.db.transaction((tx) => {
                 tx.executeSql(
-                    `INSERT INTO ${this.table_products} (name, picture, description, created_at, modified_at) VALUES (?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
+                    `INSERT INTO ${this.table_products} (name, picture, description, qr_code, created_at, modified_at) VALUES (?, ?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
                     data,
                     (_, { rows, insertId }) => {
                         // resolve(rows._array)
                         //!return inserted id
-                        console.log('insertId :>> ', insertId)
                         resolve({ insertId: insertId, status: "done" })
                     },
                     (_, error) => reject(error)
@@ -46,7 +44,6 @@ export default class productsModel {
      */
     addNewAttribute = (data) =>
         new Promise((resolve, reject) => {
-            console.log("addNew", "check point 2")
             this.db.transaction((tx) => {
                 tx.executeSql(
                     `INSERT INTO ${this.table_products_attributes} (product_id, number, metric, price, created_at, modified_at) VALUES (?, ?, ?,?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
@@ -134,16 +131,16 @@ export default class productsModel {
      * @author meisolated
      * @date 22/06/2022
      * @param {*} id number
-     * @param {*} data [name, price, description]
+     * @param {*} data [name, description, picture, qr_code]
      * @memberof productsModel
      */
     update = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `UPDATE ${this.table_products} SET name = ?, price = ?, description = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`,
-                    [data],
-                    (_, result) => resolve(result.rows._array),
+                    `UPDATE ${this.table_products} SET name = ?, description = ?, picture = ?, qr_code = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`,
+                    data,
+                    (_, result) => resolve({ status: "done" }),
                     (_, error) => reject(error)
                 )
             })
@@ -170,22 +167,44 @@ export default class productsModel {
         })
 
     /**
+     * @deprecated 
      * @description to update products attribute
      * @author meisolated
      * @date 23/06/2022
      * @param {*} id NUMBER
-     * @param {*} data [metric, price]
+     * @param {*} data [number, metric, price]
      * @memberof productsModel
      */
     updateAttribute = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `UPDATE ${this.table_products_attributes} SET metric =?, price = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`,
-                    [data],
-                    (_, result) => resolve(result.rows._array),
+                    `UPDATE ${this.table_products_attributes} SET number = ?, metric = ?, price = ?, modified_at = ${productsModel.TSinSecs()} WHERE product_id = ${id}`,
+                    data,
+                    (_, result) => resolve({ status: "done" }),
                     (_, error) => reject(error)
                 )
             })
         })
+
+    /**
+     * @description to delete a product attribute by id
+     * @author meisolated
+     * @date 27/06/2022
+     * @param {*} product_id
+     * @memberof productsModel
+     */
+    deleteAttribute = (product_id) =>
+        new Promise((resolve, reject) => {
+            db.transaction((tx) => {
+                tx.executeSql(
+                    `DELETE FROM ${this.table_products_attributes} WHERE product_id = ${product_id}`,
+                    [],
+                    (_, result) => resolve({ status: "done" }),
+                    (_, error) => reject(error)
+                )
+            })
+        }
+        )
 }
+

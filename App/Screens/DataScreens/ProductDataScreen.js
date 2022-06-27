@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, StyleSheet, Button, Image, Pressable, Dimensions, ScrollView, TextInput as InputText, KeyboardAvoidingView, Keyboard } from "react-native"
+import { View, Text, StyleSheet, Button, Image, Pressable, Dimensions, ScrollView, TextInput as InputText, KeyboardAvoidingView, Keyboard, DeviceEventEmitter } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import TextInput from "../../components/Form/TextInput.js"
 import BottomNavBar from "../../Navigation/bottomNavbar.js"
@@ -21,7 +21,7 @@ export default function ProductEditScreen(props) {
     let db_product = new productsModel()
     let productID = props.route.params?.productID ? props.route.params.productID : null
     let ScreenState = productID || "add" // Edit or Add
-    let emptyAttribute = [{ id: 1, number: "1", metric: "liter(l)", price: numberSeparator("50") }]
+    let emptyAttribute = [{ id: 1, number: "1", metric: "liter(l)", price: 50 }]
     let suggestedNumbers = [
         { number: "1/2", metrics: "liter(l)" },
         { number: 180, metrics: "milliliter(ml)" },
@@ -36,8 +36,18 @@ export default function ProductEditScreen(props) {
     ]
     let metrics = ["milliliter(ml)", "gram(g)", "liter(l)", "kilogram(kg)"]
 
-    let [product, setProduct] = React.useState({ name: null, desc: null, picture: null, attribute: emptyAttribute })
+    let [product, setProduct] = React.useState({ name: null, desc: null, picture: null, qr_code: null, attribute: emptyAttribute })
     let [picking, setPicking] = React.useState({ show: false, data: null })
+
+    //get qrcode scanned callback
+    React.useEffect(() => {
+        DeviceEventEmitter.addListener("onQRCodeScanned", (qr_code) => {
+            setProduct({ ...product, qr_code })
+        })
+        return () => {
+            DeviceEventEmitter.removeAllListeners("onQRCodeScanned")
+        }
+    }, [])
 
     // get product data if update
     React.useEffect(() => {
@@ -46,13 +56,13 @@ export default function ProductEditScreen(props) {
             db_product
                 .getById(productID)
                 .then((result) => {
-                    let _result = result[0]
-                    console.log("🚀 ~ file: ProductDataScreen.js ~ line 49 ~ db_product.getById ~ _result", _result)
-                    setProduct({ ...product, name: _result.name, desc: _result.description, picture: _result.picture })
+                    let productDetails = result[0]
+                    db_product.getAttributes(productID).then((result) => {
+                        setProduct({ ...product, name: productDetails.name, desc: productDetails.description, picture: productDetails.picture, qr_code: productDetails.qr_code, attribute: result })
+                    })
                 })
-                .catch((error) => alert("error" + error.split("\n")[0]))
+                .catch((error) => alert("error" + error))
         }
-
     }, [])
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -99,32 +109,67 @@ export default function ProductEditScreen(props) {
         setProduct({ ...product, attribute: finalArray })
     }
 
+    const onQRCodeButtonPress = () => {
+        props.navigation.navigate("QRCodeScanner", {
+            onQRCodeScanned: (data) => {
+                setProduct({ ...product, qr_code: data })
+            },
+        })
+    }
+
     //onSavePress
     async function onSavePress() {
         if (product.name && product.desc && product.attribute.length > 0) {
             if (ScreenState == "add") {
                 db_product
-                    .addNew([product.name, product.picture, product.desc])
+                    .addNew([product.name, product.picture, product.desc, product.qr_code])
                     .then(({ insertId, status }) => {
                         if (status) {
                             product.attribute.map((item) => {
                                 db_product
                                     .addNewAttribute([insertId, item.number, item.metric, item.price])
-                                    .then(({ insertId, status }) => {
-                                        console.log("🚀 ~ file: ProductDataScreen.js ~ line 121 ~ db_product.addNewAttribute ~ insertId", insertId)
-                                    })
+                                    .then(({ insertId, status }) => { })
                                     .catch((error) => alert("error" + error))
                             })
-                            console.log(product.picture)
                             alert("Product Added")
-                            // props.navigation.navigate("Products")
+                            props.navigation.navigate("Products")
+                        } else {
+                            alert("Error")
+                            1
+                        }
+                    })
+                    .catch((e) => alert("Error" + e))
+            } else {
+                db_product
+                    .update(productID, [product.name, product.desc, product.picture, product.qr_code])
+                    .then(({ status }) => {
+                        if (status) {
+                            // delete all attribute
+                            db_product
+                                .deleteAttribute(productID)
+                                .then((result) => {
+                                    if (result.status) {
+                                        // add new attribute
+                                        product.attribute.map((item) => {
+                                            db_product
+                                                .addNewAttribute([productID, item.number, item.metric, item.price])
+                                                .then(({ insertId, status }) => {
+                                                    if (!status) {
+                                                        alert("Error")
+                                                    }
+                                                })
+                                                .catch((error) => alert("error" + error))
+                                        })
+                                        alert("Product Updated")
+                                        props.navigation.navigate("Products")
+                                    }
+                                })
+                                .catch((error) => alert("error" + error))
                         } else {
                             alert("Error")
                         }
                     })
                     .catch((e) => alert("Error" + e))
-            } else {
-                alert("Please fill all the fields")
             }
         } else {
             alert("Please fill all the fields")
@@ -170,17 +215,17 @@ export default function ProductEditScreen(props) {
             <ScrollView style={style.scrollView}>
                 <KeyboardAvoidingView>
                     <View style={style.main}>
-                        {product.picture !== null ? (
-                            <View style={style.image}>
-                                <Image source={{ uri: product.picture }} style={style.thumbnail} />
-                            </View>
-                        ) : (
-                            <Pressable style={style.image} onPress={openImagePickerAsync}>
+                        <Pressable style={style.image} onPress={openImagePickerAsync}>
+                            {product.picture !== null ? (
+                                <View style={style.image}>
+                                    <Image source={{ uri: product.picture }} style={style.thumbnail} />
+                                </View>
+                            ) : (
                                 <View style={style.empty_image_container}>
                                     <Text style={[commonStyle.basic_text, { fontSize: 18 }]}> Pick an Image</Text>
                                 </View>
-                            </Pressable>
-                        )}
+                            )}
+                        </Pressable>
                         <TextInput type="text" placeholder="Name" icon="user" value={product.name} onChange={(data) => setProduct({ ...product, name: data })} />
                         <TextInput type="text" placeholder="Description (optional)" icon="align-center" value={product.desc} onChange={(data) => setProduct({ ...product, desc: data })} />
                         <Text style={commonStyle.basic_text}>Attributes</Text>
@@ -222,12 +267,20 @@ export default function ProductEditScreen(props) {
                                 </View>
                             ))}
                         </ScrollView>
-                        <Pressable style={{ alignSelf: "center" }} onPress={addNewAttribute}>
-                            <OuterLineBtn text="Add New Attribute" onPress={addNewAttribute} />
-                        </Pressable>
+                        <Text style={commonStyle.basic_text}>QR Code</Text>
+                        <View style={style.qrcode_wrapper}>
+                            <View style={style.qrcode_left}>
+                                <Text style={[commonStyle.basic_text_semiBold_20]}>{product.qr_code ? "Scanned" : "Not Selected"}</Text>
+                            </View>
+                            <View style={style.qrcode_left}>
+                                <Button title="Select QR Code" onPress={onQRCodeButtonPress} />
+                            </View>
+                        </View>
+                        <OuterLineBtn text="Add New Attribute" onPress={addNewAttribute} />
                         <View style={{ height: 50 }}>
                             <PrimaryButton onPress={() => onSavePress()} width={d.width * 0.9} name="Save" />
                         </View>
+                        <Text style={[commonStyle.basic_text_semiBold_20]}>{product.qr_code}</Text>
                     </View>
                     {picking.show && <Popup return={(x) => pickingOption(x)} options={metrics} />}
                 </KeyboardAvoidingView>
@@ -323,5 +376,18 @@ const style = StyleSheet.create({
         backgroundColor: colors.white,
         padding: 10,
         borderRadius: 10,
+    },
+    qrcode_wrapper: {
+        width: d.width - 40,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 10,
+        marginBottom: 10,
+        flexDirection: "row",
+    },
+    qrcode_left: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
     },
 })
