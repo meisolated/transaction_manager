@@ -89,6 +89,7 @@ export async function createTables(cb) {
         `CREATE TABLE products_attributes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             product_id bigint NOT NULL,
+            number bigint NOT NULL,
             metric text NOT NULL,
             price bigint NOT NULL,
             created_at bigint NOT NULL,
@@ -155,7 +156,7 @@ export function insertDummyData() {
     }
 
     // insert 100 records in shops
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 10; i++) {
         // generate random number
         let randomNumber = Math.floor(Math.random() * 100)
         db.transaction((tx) => {

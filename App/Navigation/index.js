@@ -30,12 +30,12 @@ export function Navigation() {
                 <Stack.Screen name="Transactions" component={TransactionsScreen} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="AddTransactions" component={AddTransaction} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false, animation: "none" }} />
-                <Stack.Screen name="EditProduct" component={ProductDataScreen} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="TestScreen" component={TestScreen} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="AddOrder" component={AddOrder} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Shops" component={Shops} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="ShopData" component={ShopData} options={{ headerShown: false, animation: "none" }} />
+                <Stack.Screen name="ProductData" component={ProductDataScreen} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Products" component={ProductsScreen} options={{ headerShown: false, animation: "none" }} />
                 {/* <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ headerShown: false, animation: "none" }} /> */}
             </Stack.Navigator>

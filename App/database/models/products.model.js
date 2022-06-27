@@ -13,45 +13,47 @@ export default class productsModel {
      * @description add new product to database
      * @author meisolated
      * @date 24/06/2022
-     * @param {*} data [name, picture, description, picture]
+     * @param {*} data [name, picture, description]
      * @memberof productsModel
      * @returns {Promise<any>}
      */
-    addNewProduct = (data) =>
+    addNew = (data) =>
         new Promise((resolve, reject) => {
+            console.log("addNew", "check point 1")
             this.db.transaction((tx) => {
                 tx.executeSql(
-                    `INSERT INTO ${this.table_products} (name, picture, description, picture, created_at, modified_at) VALUES (?, ?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
-                    [data],
-                    (_, { rows }) => {
+                    `INSERT INTO ${this.table_products} (name, picture, description, created_at, modified_at) VALUES (?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
+                    data,
+                    (_, { rows, insertId }) => {
                         // resolve(rows._array)
                         //!return inserted id
-                        resolve(rows.insertId)
+                        console.log('insertId :>> ', insertId)
+                        resolve({ insertId: insertId, status: "done" })
                     },
                     (_, error) => reject(error)
                 )
             })
         })
 
-
     /**
      * @description add new product attribute to database
      * @author meisolated
      * @date 24/06/2022
-     * @param {*} data [product_id, metric, price]
+     * @param {*} data [product_id,number, metric, price]
      * @memberof productsModel
      * @returns {Promise<any>}
      * @memberof productsModel
      */
-    addNewProductAttribute = (data) =>
+    addNewAttribute = (data) =>
         new Promise((resolve, reject) => {
+            console.log("addNew", "check point 2")
             this.db.transaction((tx) => {
                 tx.executeSql(
-                    `INSERT INTO ${this.table_products_attributes} (product_id, metric, price, create_at, modified_at) VALUES (?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
-                    [data],
+                    `INSERT INTO ${this.table_products_attributes} (product_id, number, metric, price, created_at, modified_at) VALUES (?, ?, ?,?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
+                    data,
                     (_, { rows }) => {
                         // resolve(rows._array)
-                        resolve(rows.insertId)
+                        resolve({ insertId: rows.insertId, status: "done" })
                     },
                     (_, error) => reject(error)
                 )
@@ -64,10 +66,15 @@ export default class productsModel {
      * @date 22/06/2022
      * @memberof productsModel
      */
-    getAllProducts = () =>
+    getAll = () =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`SELECT * FROM ${this.table_products}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
+                tx.executeSql(
+                    `SELECT * FROM ${this.table_products}`,
+                    [],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
             })
         })
 
@@ -78,10 +85,47 @@ export default class productsModel {
      * @param {*} id number
      * @memberof productsModel
      */
-    getProductById = (id) =>
+    getById = (id) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`SELECT * FROM ${this.table_products} WHERE id = ${id}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
+                tx.executeSql(
+                    `SELECT * FROM ${this.table_products} WHERE id = ${id}`,
+                    [],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
+            })
+        })
+
+    /**
+     * @description get all products attributes by product id
+     * @author meisolated
+     * @date 27/06/2022
+     * @param {*} id
+     * @memberof productsModel
+     */
+    getAttributes = (id) =>
+        new Promise((resolve, reject) => {
+            db.transaction((tx) => {
+                tx.executeSql(
+                    `SELECT * FROM ${this.table_products_attributes} WHERE product_id = ${id}`,
+                    [],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
+            })
+        })
+
+    //!Delete it
+    getAllAttributes = () =>
+        new Promise((resolve, reject) => {
+            db.transaction((tx) => {
+                tx.executeSql(
+                    `SELECT * FROM ${this.table_products_attributes}`,
+                    [],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
             })
         })
 
@@ -93,10 +137,15 @@ export default class productsModel {
      * @param {*} data [name, price, description]
      * @memberof productsModel
      */
-    updateProduct = (id, data) =>
+    update = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table_products} SET name = ?, price = ?, description = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`, [data], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
+                tx.executeSql(
+                    `UPDATE ${this.table_products} SET name = ?, price = ?, description = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`,
+                    [data],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
             })
         })
 
@@ -108,10 +157,15 @@ export default class productsModel {
      * @param {*} picture not sure :)
      * @memberof productsModel
      */
-    updateProductPicture = (id, picture) =>
+    updatePicture = (id, picture) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table_products} SET picture = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`, [picture], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
+                tx.executeSql(
+                    `UPDATE ${this.table_products} SET picture = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`,
+                    [picture],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
             })
         })
 
@@ -123,10 +177,15 @@ export default class productsModel {
      * @param {*} data [metric, price]
      * @memberof productsModel
      */
-    updateProductAttribute = (id, data) =>
+    updateAttribute = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table_products_attributes} SET metric =?, price = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`, [data], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
+                tx.executeSql(
+                    `UPDATE ${this.table_products_attributes} SET metric =?, price = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`,
+                    [data],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
             })
         })
 }

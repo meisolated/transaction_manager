@@ -14,11 +14,13 @@ import { Feather as Icons } from "@expo/vector-icons"
 import OuterLineBtn from "../../components/button/outerlineButton.js"
 import { PrimaryButton } from "../../components/button"
 import { default as D } from "../../handler/Dimensions.handler.js"
+import productsModel from "../../database/models/products.model.js"
 let d = new D()
 
 export default function ProductEditScreen(props) {
-
-    let ScreenState = props.screenState || "add" // Edit or Add
+    let db_product = new productsModel()
+    let productID = props.route.params?.productID ? props.route.params.productID : null
+    let ScreenState = productID || "add" // Edit or Add
     let emptyAttribute = [{ id: 1, number: "1", metric: "liter(l)", price: numberSeparator("50") }]
     let suggestedNumbers = [
         { number: "1/2", metrics: "liter(l)" },
@@ -34,10 +36,24 @@ export default function ProductEditScreen(props) {
     ]
     let metrics = ["milliliter(ml)", "gram(g)", "liter(l)", "kilogram(kg)"]
 
-    let [product, setProduct] = React.useState({ attribute: emptyAttribute })
-
-    let [productData, setProductData] = React.useState({ one: "", two: "" })
+    let [product, setProduct] = React.useState({ name: null, desc: null, picture: null, attribute: emptyAttribute })
     let [picking, setPicking] = React.useState({ show: false, data: null })
+
+    // get product data if update
+    React.useEffect(() => {
+        if (ScreenState !== "add") {
+            // get product data
+            db_product
+                .getById(productID)
+                .then((result) => {
+                    let _result = result[0]
+                    console.log("🚀 ~ file: ProductDataScreen.js ~ line 49 ~ db_product.getById ~ _result", _result)
+                    setProduct({ ...product, name: _result.name, desc: _result.description, picture: _result.picture })
+                })
+                .catch((error) => alert("error" + error.split("\n")[0]))
+        }
+
+    }, [])
 
     // ---------------------------------------------------------------------------------------------------------------------
 
@@ -67,7 +83,6 @@ export default function ProductEditScreen(props) {
             }
             return item
         })
-        console.log("🚀 ~ file: ProductDataScreen.js ~ line 73 ~ finalArray.map ~ finalArray", finalArray)
 
         setProduct({ ...product, attribute: finalArray })
     }
@@ -80,13 +95,43 @@ export default function ProductEditScreen(props) {
             }
             return item
         })
-        console.log("🚀 ~ file: ProductDataScreen.js ~ line 88 ~ finalArray.map ~ finalArray", finalArray)
 
         setProduct({ ...product, attribute: finalArray })
     }
 
+    //onSavePress
+    async function onSavePress() {
+        if (product.name && product.desc && product.attribute.length > 0) {
+            if (ScreenState == "add") {
+                db_product
+                    .addNew([product.name, product.picture, product.desc])
+                    .then(({ insertId, status }) => {
+                        if (status) {
+                            product.attribute.map((item) => {
+                                db_product
+                                    .addNewAttribute([insertId, item.number, item.metric, item.price])
+                                    .then(({ insertId, status }) => {
+                                        console.log("🚀 ~ file: ProductDataScreen.js ~ line 121 ~ db_product.addNewAttribute ~ insertId", insertId)
+                                    })
+                                    .catch((error) => alert("error" + error))
+                            })
+                            console.log(product.picture)
+                            alert("Product Added")
+                            // props.navigation.navigate("Products")
+                        } else {
+                            alert("Error")
+                        }
+                    })
+                    .catch((e) => alert("Error" + e))
+            } else {
+                alert("Please fill all the fields")
+            }
+        } else {
+            alert("Please fill all the fields")
+        }
+    }
+
     // ---------------------------------------------------------------------------------------------------------------------
-    const [selectedImage, setSelectedImage] = React.useState(null)
     let openImagePickerAsync = async () => {
         let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
 
@@ -101,9 +146,8 @@ export default function ProductEditScreen(props) {
             return
         }
 
-        setSelectedImage({ localUri: pickerResult.uri })
+        setProduct({ ...product, picture: pickerResult.uri })
     }
-
     // KEYBOARD HANDLER
     const [keyboardStatus, setKeyboardStatus] = React.useState(false)
 
@@ -122,13 +166,13 @@ export default function ProductEditScreen(props) {
     }, [])
     return (
         <SafeAreaView style={style.container}>
-            <TopNavbar title="Edit Product" />
+            <TopNavbar title={ScreenState == "add" ? "New Product" : "Update Product"} />
             <ScrollView style={style.scrollView}>
                 <KeyboardAvoidingView>
                     <View style={style.main}>
-                        {selectedImage !== null ? (
+                        {product.picture !== null ? (
                             <View style={style.image}>
-                                <Image source={{ uri: selectedImage.localUri }} style={style.thumbnail} />
+                                <Image source={{ uri: product.picture }} style={style.thumbnail} />
                             </View>
                         ) : (
                             <Pressable style={style.image} onPress={openImagePickerAsync}>
@@ -137,8 +181,8 @@ export default function ProductEditScreen(props) {
                                 </View>
                             </Pressable>
                         )}
-                        <TextInput placeholder="Name" icon="user" onChange={(data) => setProductData({ ...productData, one: data })} />
-                        <TextInput placeholder="Description (optional)" icon="align-center" onChange={(data) => setProductData({ ...productData, two: data })} />
+                        <TextInput type="text" placeholder="Name" icon="user" value={product.name} onChange={(data) => setProduct({ ...product, name: data })} />
+                        <TextInput type="text" placeholder="Description (optional)" icon="align-center" value={product.desc} onChange={(data) => setProduct({ ...product, desc: data })} />
                         <Text style={commonStyle.basic_text}>Attributes</Text>
                         {/* –––––––––––––––––– Attributes –––––––––––––––––– */}
                         {product.attribute.map((item, index) => {
@@ -179,9 +223,11 @@ export default function ProductEditScreen(props) {
                             ))}
                         </ScrollView>
                         <Pressable style={{ alignSelf: "center" }} onPress={addNewAttribute}>
-                            <OuterLineBtn text="Add New Attribute" />
+                            <OuterLineBtn text="Add New Attribute" onPress={addNewAttribute} />
                         </Pressable>
-                        <PrimaryButton width={d.width * .9} name="Save" onPress={() => console.log('pressed')} />
+                        <View style={{ height: 50 }}>
+                            <PrimaryButton onPress={() => onSavePress()} width={d.width * 0.9} name="Save" />
+                        </View>
                     </View>
                     {picking.show && <Popup return={(x) => pickingOption(x)} options={metrics} />}
                 </KeyboardAvoidingView>

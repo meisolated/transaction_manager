@@ -3,7 +3,8 @@ import {
     View,
     Text,
     StyleSheet,
-    Dimensions
+    Dimensions,
+    Pressable
 } from "react-native"
 
 import commonStyle from "../../common/style.js"
@@ -11,9 +12,11 @@ import * as colors from "../../constant/color.js"
 const window = Dimensions.get("window")
 
 const OuterLineBtn = (props) => (
-    <View style={styles.container}>
-        <Text style={commonStyle.basic_text}>{props.text}</Text>
-    </View>
+    <Pressable style={{ alignSelf: "center" }} onPress={() => props.onPress()}>
+        <View style={styles.container}>
+            <Text style={commonStyle.basic_text}>{props.text}</Text>
+        </View>
+    </Pressable>
 )
 export default OuterLineBtn
 

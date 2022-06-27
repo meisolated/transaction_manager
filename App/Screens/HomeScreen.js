@@ -23,7 +23,7 @@ function HomeScreen(props) {
                     <Button title="Go to Transactions" onPress={() => props.navigation.navigate("Transactions")} />
                     <Button title="Add Transactions" onPress={() => props.navigation.navigate("AddTransactions")} />
                     <Button title="Admin" onPress={() => props.navigation.navigate("Admin")} />
-                    <Button title="EditProduct" onPress={() => props.navigation.navigate("EditProduct")} />
+                    <Button title="EditProduct" onPress={() => props.navigation.navigate("ProductData")} />
                     <Button title="TestScreen" onPress={() => props.navigation.navigate("TestScreen")} />
                     <Button title="AddOrder" onPress={() => props.navigation.navigate("AddOrder")} />
                     {/* <Button title="CameraScreen" onPress={() => props.navigation.navigate("CameraScreen")} /> */}
