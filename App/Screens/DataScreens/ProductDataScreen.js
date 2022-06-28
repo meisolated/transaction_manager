@@ -1,5 +1,5 @@
-import React from "react"
-import { View, Text, StyleSheet, Button, Image, Pressable, Dimensions, ScrollView, TextInput as InputText, KeyboardAvoidingView, Keyboard, DeviceEventEmitter } from "react-native"
+import React, { useCallback, useMemo } from "react"
+import { View, Text, StyleSheet, Button, Image, Pressable, ScrollView, TextInput as InputText, KeyboardAvoidingView, Keyboard, DeviceEventEmitter } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import TextInput from "../../components/Form/TextInput.js"
 import BottomNavBar from "../../Navigation/bottomNavbar.js"
@@ -7,7 +7,6 @@ import TopNavbar from "../../Navigation/topNavbar.js"
 import * as ImagePicker from "expo-image-picker"
 import * as colors from "../../constant/color.js"
 import commonStyle from "../../common/style.js"
-import { numberSeparator } from "../../util/functions.js"
 import Popup from "../../components/popup/index.js"
 import font from "../../constant/font.js"
 import { Feather as Icons } from "@expo/vector-icons"
@@ -18,9 +17,23 @@ import productsModel from "../../database/models/products.model.js"
 let d = new D()
 
 export default function ProductEditScreen(props) {
+
+    // handle params
+    let params = useMemo(() => { return props.route.params || {} }, [props.route.params])
+
+    React.useEffect(() => {
+        if (params.someData !== undefined) {
+            setState({ productID: params.productID, ScreenState: params.productID || "add" })
+            setProduct({ ...params.someData })
+        }
+        return () => {
+            setState({ productID: "", ScreenState: "add" })
+            setProduct({})
+        }
+    }, [params])
+
     let db_product = new productsModel()
-    let productID = props.route.params?.productID ? props.route.params.productID : null
-    let ScreenState = productID || "add" // Edit or Add
+
     let emptyAttribute = [{ id: 1, number: "1", metric: "liter(l)", price: 50 }]
     let suggestedNumbers = [
         { number: "1/2", metrics: "liter(l)" },
@@ -35,35 +48,24 @@ export default function ProductEditScreen(props) {
         { number: 350, metrics: "gram(g)" },
     ]
     let metrics = ["milliliter(ml)", "gram(g)", "liter(l)", "kilogram(kg)"]
-
+    let [state, setState] = React.useState({ productID: params.productID, ScreenState: params.productID || "add" })
     let [product, setProduct] = React.useState({ name: null, desc: null, picture: null, qr_code: null, attribute: emptyAttribute })
     let [picking, setPicking] = React.useState({ show: false, data: null })
 
-    //get qrcode scanned callback
-    React.useEffect(() => {
-        DeviceEventEmitter.addListener("onQRCodeScanned", (qr_code) => {
-            setProduct({ ...product, qr_code })
-        })
-        return () => {
-            DeviceEventEmitter.removeAllListeners("onQRCodeScanned")
-        }
-    }, [])
-
     // get product data if update
     React.useEffect(() => {
-        if (ScreenState !== "add") {
-            // get product data
+        if (state.ScreenState !== "add") {
             db_product
-                .getById(productID)
+                .getById(state.productID)
                 .then((result) => {
                     let productDetails = result[0]
-                    db_product.getAttributes(productID).then((result) => {
+                    db_product.getAttributes(state.productID).then((result) => {
                         setProduct({ ...product, name: productDetails.name, desc: productDetails.description, picture: productDetails.picture, qr_code: productDetails.qr_code, attribute: result })
                     })
                 })
                 .catch((error) => alert("error" + error))
         }
-    }, [])
+    }, [state.ScreenState])
 
     // ---------------------------------------------------------------------------------------------------------------------
 
@@ -77,13 +79,11 @@ export default function ProductEditScreen(props) {
         setProduct({ ...product, attribute: finalArray })
         setPicking({ ...picking, show: false })
     }
-
     function addNewAttribute() {
         let finalArray = product.attribute
         finalArray.push({ id: finalArray.length + 1, number: "1", metric: "milliliter(ml)", price: 50 })
         setProduct({ ...product, attribute: finalArray })
     }
-
     function deleteAttribute(id) {
         let finalArray = product.attribute
         finalArray.map((item, i) => {
@@ -110,17 +110,13 @@ export default function ProductEditScreen(props) {
     }
 
     const onQRCodeButtonPress = () => {
-        props.navigation.navigate("QRCodeScanner", {
-            onQRCodeScanned: (data) => {
-                setProduct({ ...product, qr_code: data })
-            },
-        })
+        props.navigation.navigate("QRCodeScanner", { product, newProduct: state.productID })
     }
 
     //onSavePress
     async function onSavePress() {
         if (product.name && product.desc && product.attribute.length > 0) {
-            if (ScreenState == "add") {
+            if (state.ScreenState == "add") {
                 db_product
                     .addNew([product.name, product.picture, product.desc, product.qr_code])
                     .then(({ insertId, status }) => {
@@ -141,18 +137,18 @@ export default function ProductEditScreen(props) {
                     .catch((e) => alert("Error" + e))
             } else {
                 db_product
-                    .update(productID, [product.name, product.desc, product.picture, product.qr_code])
+                    .update(state.productID, [product.name, product.desc, product.picture, product.qr_code])
                     .then(({ status }) => {
                         if (status) {
                             // delete all attribute
                             db_product
-                                .deleteAttribute(productID)
+                                .deleteAttribute(state.productID)
                                 .then((result) => {
                                     if (result.status) {
                                         // add new attribute
                                         product.attribute.map((item) => {
                                             db_product
-                                                .addNewAttribute([productID, item.number, item.metric, item.price])
+                                                .addNewAttribute([state.productID, item.number, item.metric, item.price])
                                                 .then(({ insertId, status }) => {
                                                     if (!status) {
                                                         alert("Error")
@@ -211,7 +207,7 @@ export default function ProductEditScreen(props) {
     }, [])
     return (
         <SafeAreaView style={style.container}>
-            <TopNavbar title={ScreenState == "add" ? "New Product" : "Update Product"} />
+            <TopNavbar title={state.ScreenState == "add" ? "New Product" : "Update Product"} />
             <ScrollView style={style.scrollView}>
                 <KeyboardAvoidingView>
                     <View style={style.main}>

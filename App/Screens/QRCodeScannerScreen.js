@@ -5,20 +5,21 @@ const window = Dimensions.get("window")
 import { Subtract } from "../assets/svg"
 
 export default function QRCodeScanner(props) {
+    let params = props.route.params
+
     const [hasPermission, setHasPermission] = useState(null)
     const [scanned, setScanned] = useState(false)
 
     useEffect(() => {
-        ; (async () => {
+        (async () => {
             const { status } = await BarCodeScanner.requestPermissionsAsync()
             setHasPermission(status === "granted")
         })()
+
     }, [])
 
     const handleBarCodeScanned = ({ type, data }) => {
-        DeviceEventEmitter.emit('onQRCodeScanned', data)
-        props.navigation.goBack()
-
+        return props.navigation.navigate("ProductData", { someData: { ...params?.product, qr_code: data }, productID: params?.newProduct })
     }
 
     if (hasPermission === null) {
@@ -36,7 +37,11 @@ export default function QRCodeScanner(props) {
             <View style={styles.scanner_wrapper}>
                 <Subtract width={window.width + 11} height={window.height} />
             </View>
-            {scanned && <View style={{ zIndex: 2, bottom: 20, width: window.width * 0.8, alignSelf: "center" }}><Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} /></View>}
+            {scanned && (
+                <View style={{ zIndex: 2, bottom: 20, width: window.width * 0.8, alignSelf: "center" }}>
+                    <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
+                </View>
+            )}
         </View>
     )
 }
@@ -60,6 +65,5 @@ const styles = StyleSheet.create({
         top: 0,
         width: window.width,
         height: window.height,
-
     },
 })
