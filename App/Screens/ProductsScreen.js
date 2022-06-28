@@ -51,7 +51,7 @@ const ProductsScreen = (props) => {
                 <FlatList initialNumToRender={10} data={products} renderItem={renderProducts} keyExtractor={(item) => item.id} />
             </View>
             <View style={{ flex: 1, position: "absolute", bottom: 70, width: "100%" }}>
-                <PrimaryButton name="Add Product" width={d.width * 0.95} onPress={() => { }} />
+                <PrimaryButton name="Add Product" width={d.width * 0.95} onPress={() => props.navigation.navigate("ProductData")} />
             </View>
             <BottomNavBar navigation={props.navigation} />
         </SafeAreaView>

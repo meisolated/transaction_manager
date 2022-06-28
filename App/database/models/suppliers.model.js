@@ -13,7 +13,7 @@ export default class suppliersModel {
      * @date 24/06/2022
      * @memberof suppliersModel
      */
-    getAllSuppliers = () => new Promise((resolve, reject) => {
+    getAll = () => new Promise((resolve, reject) => {
         db.transaction((tx) => {
             tx.executeSql(`SELECT * FROM ${this.table}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
         })
@@ -28,7 +28,7 @@ export default class suppliersModel {
      * @param {*} name STRING
      * @memberof suppliersModel
      */
-    addSuppliers = (name) => new Promise((resolve, reject) => {
+    add = (name) => new Promise((resolve, reject) => {
         this.db.transaction(tx => {
             tx.executeSql(
                 `INSERT INTO ${this.table} (name) VALUES (?)`,
@@ -47,7 +47,7 @@ export default class suppliersModel {
      * @param {*} id NUMBER
      * @memberof suppliersModel
      */
-    deleteSuppliers = (id) => new Promise((resolve, reject) => {
+    delete = (id) => new Promise((resolve, reject) => {
         this.db.transaction(tx => {
             tx.executeSql(
                 `DELETE FROM ${this.table} WHERE id = ?`,
@@ -67,7 +67,7 @@ export default class suppliersModel {
      * @param {*} name STRING 
      * @memberof suppliersModel
      */
-    updateSuppliers = (id, name) => new Promise((resolve, reject) => {
+    update = (id, name) => new Promise((resolve, reject) => {
         this.db.transaction(tx => {
             tx.executeSql(
                 `UPDATE ${this.table} SET name = ? WHERE id = ?`,
@@ -87,7 +87,7 @@ export default class suppliersModel {
  * @param {*} picture TODO:not sure
  * @memberof productsModel
  */
-    updateSuppliersPicture = (id, picture) =>
+    updatePicture = (id, picture) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(`UPDATE ${this.table} picture = ${picture} WHERE id = ${id}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))

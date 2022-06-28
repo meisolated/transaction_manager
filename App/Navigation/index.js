@@ -17,6 +17,9 @@ import Settings from "../Screens/SettingsScreen.js"
 import Shops from "../Screens/ShopsScreen.js"
 import ShopData from "../Screens/DataScreens/ShopDataScreen.js"
 import ProductsScreen from "../Screens/ProductsScreen.js"
+import SuppliersScreen from "../Screens/SuppliersScreen.js"
+import SuppliersData from "../Screens/DataScreens/SuppliersDataScreen.js"
+
 const Tab = createMaterialBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 export function Navigation() {
@@ -37,6 +40,8 @@ export function Navigation() {
                 <Stack.Screen name="ShopData" component={ShopData} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="ProductData" component={ProductDataScreen} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Products" component={ProductsScreen} options={{ headerShown: false, animation: "none" }} />
+                <Stack.Screen name="Suppliers" component={SuppliersScreen} options={{ headerShown: false, animation: "none" }} />
+                <Stack.Screen name="SuppliersData" component={SuppliersData} options={{ headerShown: false, animation: "none" }} />
                 {/* <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ headerShown: false, animation: "none" }} /> */}
             </Stack.Navigator>
         </NavigationContainer>

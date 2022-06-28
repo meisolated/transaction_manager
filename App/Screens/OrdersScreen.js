@@ -38,7 +38,7 @@ function OrderScreen(props) {
                     <Text style={[commonStyles.basic_text_semiBold_20]}>₹{item.total_amount}</Text>
                     <Text>{JSON.parse(item.items)[0]}</Text>
                 </View>
-                <Text style={commonStyles.text_lite(15)}>{convertTimestamp(item.modified_at)}</Text>
+                <Text style={commonStyles.text_lite(15)}>{convertTimestamp(item.modified_at * 1000)}</Text>
                 <View style={style.list_right}>
                     <MaterialCommunityIcons name="chevron-right" color={"black"} size={26} />
                 </View>
