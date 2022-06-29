@@ -19,6 +19,8 @@ import ShopData from "../Screens/DataScreens/ShopDataScreen.js"
 import ProductsScreen from "../Screens/ProductsScreen.js"
 import SuppliersScreen from "../Screens/SuppliersScreen.js"
 import SuppliersData from "../Screens/DataScreens/SuppliersDataScreen.js"
+import CategoryScreen from "../Screens/CategoryScreen.js"
+import CategoryData from "../Screens/DataScreens/CategoryDataScreen.js"
 
 const Tab = createMaterialBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -41,7 +43,9 @@ export function Navigation() {
                 <Stack.Screen name="ProductData" component={ProductDataScreen} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Products" component={ProductsScreen} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="Suppliers" component={SuppliersScreen} options={{ headerShown: false, animation: "none" }} />
-                <Stack.Screen name="SuppliersData" component={SuppliersData} options={{ headerShown: false, animation: "none" }} />
+                <Stack.Screen name="SupplierData" component={SuppliersData} options={{ headerShown: false, animation: "none" }} />
+                <Stack.Screen name="Categories" component={CategoryScreen} options={{ headerShown: false, animation: "none" }} />
+                <Stack.Screen name="CategoryData" component={CategoryData} options={{ headerShown: false, animation: "none" }} />
                 {/* <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ headerShown: false, animation: "none" }} /> */}
             </Stack.Navigator>
         </NavigationContainer>

@@ -24,7 +24,7 @@ function SettingScreen(props) {
                     <MaterialCommunityIcons style={{ alignSelf: "flex-end" }} name="chevron-right" color={color.primary} size={30} />
                 </View>
             </Pressable>
-            <Pressable onPress={() => props.navigation.navigate("Products")}>
+            <Pressable onPress={() => props.navigation.navigate("Categories")}>
                 <View style={styles.settingsItem}>
                     <Icons name="codesandbox" size={30} color={color.primary} />
                     <Text style={[commonStyle.basic_text_semiBold_20, { marginLeft: 5, flex: 1, }]}>Category</Text>

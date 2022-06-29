@@ -92,6 +92,7 @@ export async function createTables(cb) {
             product_id bigint NOT NULL,
             number bigint NOT NULL,
             metric text NOT NULL,
+            cost_price text NOT NULL,
             price bigint NOT NULL,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
@@ -99,14 +100,13 @@ export async function createTables(cb) {
         `CREATE TABLE categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name text NOT NULL,
-            image text,
+            picture text,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
 
         `CREATE TABLE suppliers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name text NOT NULL,
-            image text,
             picture text,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,

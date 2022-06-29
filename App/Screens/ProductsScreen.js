@@ -15,7 +15,7 @@ const ProductsScreen = (props) => {
     let db_product = new productsModel()
     let [products, setProducts] = React.useState([])
 
-    const onPress = (id) => {
+    const onPressItem = (id) => {
         props.navigation.navigate("ProductData", { productID: id })
     }
 
@@ -32,7 +32,7 @@ const ProductsScreen = (props) => {
 
     const renderProducts = ({ item }) => {
         return (
-            <Pressable onPress={() => onPress(item.id)}>
+            <Pressable onPress={() => onPressItem(item.id)}>
                 <View style={styles.productItem}>
                     <View style={styles.image_wrapper}>
                         {item.picture.includes("file") ? <Image source={{ uri: item.picture }} style={styles.productImage} /> : <Icons name="package" size={40} color={color.black} />}

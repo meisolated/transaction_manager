@@ -37,7 +37,7 @@ export default class productsModel {
      * @description add new product attribute to database
      * @author meisolated
      * @date 24/06/2022
-     * @param {*} data [product_id,number, metric, price]
+     * @param {*} data [product_id,number, metric, price, cost_price]
      * @memberof productsModel
      * @returns {Promise<any>}
      * @memberof productsModel
@@ -46,7 +46,7 @@ export default class productsModel {
         new Promise((resolve, reject) => {
             this.db.transaction((tx) => {
                 tx.executeSql(
-                    `INSERT INTO ${this.table_products_attributes} (product_id, number, metric, price, created_at, modified_at) VALUES (?, ?, ?,?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
+                    `INSERT INTO ${this.table_products_attributes} (product_id, number, metric, price, cost_price, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
                     data,
                     (_, { rows }) => {
                         // resolve(rows._array)
@@ -179,7 +179,7 @@ export default class productsModel {
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `UPDATE ${this.table_products_attributes} SET number = ?, metric = ?, price = ?, modified_at = ${productsModel.TSinSecs()} WHERE product_id = ${id}`,
+                    `UPDATE ${this.table_products_attributes} SET number = ?, metric = ?, price = ?, cost_price = ?, modified_at = ${productsModel.TSinSecs()} WHERE product_id = ${id}`,
                     data,
                     (_, result) => resolve({ status: "done" }),
                     (_, error) => reject(error)

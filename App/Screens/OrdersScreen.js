@@ -50,9 +50,13 @@ function OrderScreen(props) {
         <SafeAreaView style={{ flex: 1 }}>
             <TopNav title="Orders List" />
             <View style={{ marginBottom: d.height * 0.15 }}>
-                {orders.length > 0 ? <FlatList data={orders} renderItem={renderOrders} keyExtractor={(item) => item.id} /> : <View>
-                    <Text> No Order</Text>
-                </View>}
+                {orders.length > 0 ? (
+                    <FlatList data={orders} renderItem={renderOrders} keyExtractor={(item) => item.id} />
+                ) : (
+                    <View>
+                        <Text> No Order</Text>
+                    </View>
+                )}
             </View>
             <BottomNav navigation={props.navigation} />
         </SafeAreaView>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Text, View, StyleSheet, Button, Dimensions, DeviceEventEmitter } from "react-native"
+import { Text, View, StyleSheet, Button, Dimensions } from "react-native"
 import { BarCodeScanner } from "expo-barcode-scanner"
 const window = Dimensions.get("window")
 import { Subtract } from "../assets/svg"
@@ -19,6 +19,8 @@ export default function QRCodeScanner(props) {
     }, [])
 
     const handleBarCodeScanned = ({ type, data }) => {
+        const routes = props.navigation.getState()?.routes
+        const prevRoute = routes[routes.length - 2]
         return props.navigation.navigate("ProductData", { someData: { ...params?.product, qr_code: data }, productID: params?.newProduct })
     }
 

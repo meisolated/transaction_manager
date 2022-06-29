@@ -1,7 +1,7 @@
 import React, { useMemo } from "react"
 import { View, Text, StyleSheet, FlatList, Image, Pressable } from "react-native"
 import { PrimaryButton } from "../components/button/"
-import suppliersModel from "../database/models/suppliers.model.js"
+import categoriesModel from "../database/models/categories.model.js"
 import BottomNavBar from "../Navigation/bottomNavbar.js"
 import TopNavbar from "../Navigation/topNavbar.js"
 import D from "../handler/Dimensions.handler.js"
@@ -12,32 +12,32 @@ import commonStyles from "../common/style.js"
 
 let d = new D()
 
-const SuppliersScreen = (props) => {
-    let db_suppliers = new suppliersModel()
-    let [suppliers, setSuppliers] = React.useState([])
+const CategoryScreen = (props) => {
+    let db_categories = new categoriesModel()
+    let [categories, setCategories] = React.useState([])
 
     React.useEffect(() => {
-        db_suppliers
+        db_categories
             .getAll()
             .then((result) => {
                 if (result.length > 0) {
-                    setSuppliers(result)
+                    setCategories(result)
                 } else {
-                    setSuppliers([])
+                    setCategories([])
                 }
             })
             .catch((error) => console.log(error))
 
         return () => {
-            setSuppliers([])
+            setCategories([])
         }
     }, [])
 
     const onPressItem = (item) => {
-        props.navigation.navigate("SupplierData", { id: item.id })
+        props.navigation.navigate("CategoryData", { id: item.id })
     }
 
-    const renderSuppliers = ({ item, index }) => {
+    const renderCategories = ({ item, index }) => {
         return (
             <Pressable onPress={() => onPressItem(item)}>
                 <View key={index} style={styles.item}>
@@ -52,22 +52,22 @@ const SuppliersScreen = (props) => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <TopNavbar title="Suppliers" />
+            <TopNavbar title="Categories" />
             <View style={styles.container}>
-                {suppliers.length > 0 ? (
-                    <FlatList initialNumToRender={10} data={suppliers} renderItem={renderSuppliers} keyExtractor={(item) => item.id} />
+                {categories.length > 0 ? (
+                    <FlatList initialNumToRender={10} data={categories} renderItem={renderCategories} keyExtractor={(item) => item.id} />
                 ) : (
-                    <Text style={{ fontFamily: font.semiBold, fontSize: 20 }}>No Suppliers</Text>
+                    <Text style={{ fontFamily: font.semiBold, fontSize: 20 }}>No categories</Text>
                 )}
                 <View style={{ flex: 1, position: "absolute", bottom: 70, width: "100%" }}>
-                    <PrimaryButton name="Add Supplier" width={d.width * 0.95} onPress={() => props.navigation.navigate("SupplierData")} />
+                    <PrimaryButton name="Add Category" width={d.width * 0.95} onPress={() => props.navigation.navigate("CategoryData")} />
                 </View>
             </View>
             <BottomNavBar navigation={props.navigation} />
         </SafeAreaView>
     )
 }
-export default SuppliersScreen
+export default CategoryScreen
 
 const styles = StyleSheet.create({
     container: {

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react"
+import React, { useMemo } from "react"
 import { View, Text, StyleSheet, Button, Image, Pressable, ScrollView, TextInput as InputText, KeyboardAvoidingView, Keyboard, DeviceEventEmitter } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import TextInput from "../../components/Form/TextInput.js"
@@ -26,15 +26,15 @@ export default function ProductEditScreen(props) {
             setState({ productID: params.productID, ScreenState: params.productID || "add" })
             setProduct({ ...params.someData })
         }
-        return () => {
-            setState({ productID: "", ScreenState: "add" })
-            setProduct({})
-        }
+        // return () => {
+        //     setState({ productID: "", ScreenState: "add" })
+        //     setProduct({})
+        // }
     }, [params])
 
     let db_product = new productsModel()
-
-    let emptyAttribute = [{ id: 1, number: "1", metric: "liter(l)", price: 50 }]
+    let [screen, setScreen] = React.useState({ title: "New Product", button: "Save" })
+    let emptyAttribute = [{ id: 1, number: "", metric: "liter(l)", price: "", cost_price: "" }]
     let suggestedNumbers = [
         { number: "1/2", metrics: "liter(l)" },
         { number: 180, metrics: "milliliter(ml)" },
@@ -48,13 +48,15 @@ export default function ProductEditScreen(props) {
         { number: 350, metrics: "gram(g)" },
     ]
     let metrics = ["milliliter(ml)", "gram(g)", "liter(l)", "kilogram(kg)"]
-    let [state, setState] = React.useState({ productID: params.productID, ScreenState: params.productID || "add" })
+    let [state, setState] = React.useState({ productID: null, ScreenState: null })
     let [product, setProduct] = React.useState({ name: null, desc: null, picture: null, qr_code: null, attribute: emptyAttribute })
     let [picking, setPicking] = React.useState({ show: false, data: null })
 
     // get product data if update
     React.useEffect(() => {
+        setState({ productID: params.productID, ScreenState: params.productID || "add" })
         if (state.ScreenState !== "add") {
+            setScreen({ title: "Edit Product", button: "Update" })
             db_product
                 .getById(state.productID)
                 .then((result) => {
@@ -65,7 +67,7 @@ export default function ProductEditScreen(props) {
                 })
                 .catch((error) => alert("error" + error))
         }
-    }, [state.ScreenState])
+    }, [state.ScreenState, state.productID, params.productID])
 
     // ---------------------------------------------------------------------------------------------------------------------
 
@@ -81,7 +83,7 @@ export default function ProductEditScreen(props) {
     }
     function addNewAttribute() {
         let finalArray = product.attribute
-        finalArray.push({ id: finalArray.length + 1, number: "1", metric: "milliliter(ml)", price: 50 })
+        finalArray.push({ id: finalArray.length + 1, number: "", metric: "milliliter(ml)", price: "", cost_price: "" })
         setProduct({ ...product, attribute: finalArray })
     }
     function deleteAttribute(id) {
@@ -96,11 +98,11 @@ export default function ProductEditScreen(props) {
 
         setProduct({ ...product, attribute: finalArray })
     }
-    function updateAttribute(id, number, price) {
+    function updateAttribute(id, number, price, cost_price) {
         let finalArray = product.attribute
         finalArray.map((item, i) => {
             if (item.id === id) {
-                finalArray[i] = { ...item, number: number ? number : finalArray[i].number, price: price ? price : finalArray[i].price }
+                finalArray[i] = { ...item, number: number ? number : finalArray[i].number, price: price ? price : finalArray[i].price, cost_price: cost_price ? cost_price : finalArray[i].cost_price }
                 return
             }
             return item
@@ -123,7 +125,7 @@ export default function ProductEditScreen(props) {
                         if (status) {
                             product.attribute.map((item) => {
                                 db_product
-                                    .addNewAttribute([insertId, item.number, item.metric, item.price])
+                                    .addNewAttribute([insertId, item.number, item.metric, item.price, item.cost_price])
                                     .then(({ insertId, status }) => { })
                                     .catch((error) => alert("error" + error))
                             })
@@ -148,7 +150,7 @@ export default function ProductEditScreen(props) {
                                         // add new attribute
                                         product.attribute.map((item) => {
                                             db_product
-                                                .addNewAttribute([state.productID, item.number, item.metric, item.price])
+                                                .addNewAttribute([state.productID, item.number, item.metric, item.price, item.cost_price])
                                                 .then(({ insertId, status }) => {
                                                     if (!status) {
                                                         alert("Error")
@@ -207,7 +209,7 @@ export default function ProductEditScreen(props) {
     }, [])
     return (
         <SafeAreaView style={style.container}>
-            <TopNavbar title={state.ScreenState == "add" ? "New Product" : "Update Product"} />
+            <TopNavbar title={screen.title} />
             <ScrollView style={style.scrollView}>
                 <KeyboardAvoidingView>
                     <View style={style.main}>
@@ -247,6 +249,13 @@ export default function ProductEditScreen(props) {
                                         placeholder="₹ Price"
                                         defaultValue={item.price.toString()}
                                         onChangeText={(data) => updateAttribute(item.id, null, data)}
+                                    />
+                                    <InputText
+                                        keyboardType="numeric"
+                                        style={[style.attribute_text_input, { width: d.width * 0.2 }]}
+                                        placeholder="₹ Cost Price"
+                                        defaultValue={item.cost_price.toString()}
+                                        onChangeText={(data) => updateAttribute(item.id, null, null, data)}
                                     />
                                     <Pressable onPress={() => deleteAttribute(item.id)}>
                                         <Icons name={"x-circle"} style={{ color: colors.red400 }} size={30} />

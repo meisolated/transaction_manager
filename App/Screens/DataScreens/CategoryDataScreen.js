@@ -9,41 +9,42 @@ import * as ImagePicker from "expo-image-picker"
 import commonStyle from "../../common/style.js"
 import { PrimaryButton } from "../../components/button"
 import D from "../../handler/Dimensions.handler.js"
-import suppliersModel from "../../database/models/suppliers.model.js"
+import categoriesModel from "../../database/models/categories.model.js"
 let d = new D()
 
-const SuppliersData = (props) => {
-    let db_suppliers = new suppliersModel()
-    let [screen, setScreen] = React.useState({ title: "New Supplier", button: "Save" })
+const CategoryData = (props) => {
+    let db_categories = new categoriesModel()
+    let [screen, setScreen] = React.useState({ title: "New Categories", button: "Save" })
     let params = useMemo(() => props.route.params || {}, [props.route.params])
-    let [supplier, setSupplier] = React.useState({ picture: null, name: null })
+    let [categories, setCategories] = React.useState({ picture: null, name: null })
 
     React.useEffect(() => {
         if (params.id) {
-            setScreen({ title: "Edit Supplier", button: "Update" })
-            db_suppliers
+            setScreen({ title: "Edit categories", button: "Update" })
+            db_categories
                 .get(params.id)
-                .then((result) => setSupplier(result))
+                .then((result) => setCategories(result))
                 .catch((error) => alert(error))
         }
     }, [params.id])
 
     const onPressSave = () => {
-        if (supplier.name) {
+        if (categories.name) {
             if (!params.id) {
-                db_suppliers
-                    .add([supplier.name, supplier.picture])
+                console.log(categories)
+                db_categories
+                    .add([categories.name, categories.picture])
                     .then(() => {
-                        alert("Supplier added")
-                        props.navigation.navigate("Suppliers")
+                        alert("Categories added")
+                        props.navigation.navigate("Categories")
                     })
                     .catch((error) => alert(error))
             }
             else {
-                db_suppliers.update(params.id, [supplier.name, supplier.picture])
+                db_categories.update(params.id, [categories.name, categories.picture])
                     .then(() => {
-                        alert("Supplier updated")
-                        props.navigation.navigate("Suppliers")
+                        alert("categories updated")
+                        props.navigation.navigate("Categories")
                     })
                     .catch((error) => alert(error))
             }
@@ -62,16 +63,16 @@ const SuppliersData = (props) => {
         if (pickerResult.cancelled === true) {
             return
         }
-        setSupplier({ ...supplier, picture: pickerResult.uri })
+        setCategories({ ...categories, picture: pickerResult.uri })
     }
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <TopNavbar title={screen.title} />
             <View style={styles.container}>
                 <Pressable style={styles.image} onPress={openImagePickerAsync}>
-                    {supplier.picture !== null ? (
+                    {categories.picture !== null ? (
                         <View style={styles.image}>
-                            <Image source={{ uri: supplier.picture }} style={styles.thumbnail} />
+                            <Image source={{ uri: categories.picture }} style={styles.thumbnail} />
                         </View>
                     ) : (
                         <View style={styles.empty_image_container}>
@@ -79,7 +80,7 @@ const SuppliersData = (props) => {
                         </View>
                     )}
                 </Pressable>
-                <TextInput label="Name" value={supplier.name} onChange={(text) => setSupplier({ ...supplier, name: text })} />
+                <TextInput label="Name" value={categories.name} onChange={(text) => setCategories({ ...categories, name: text })} />
                 <View style={{ height: 50 }}>
                     <PrimaryButton name={screen.button} width={d.width * 0.9} onPress={() => onPressSave()} />
                 </View>
@@ -88,7 +89,7 @@ const SuppliersData = (props) => {
         </SafeAreaView>
     )
 }
-export default SuppliersData
+export default CategoryData
 
 const styles = StyleSheet.create({
     container: {
