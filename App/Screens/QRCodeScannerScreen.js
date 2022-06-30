@@ -21,7 +21,14 @@ export default function QRCodeScanner(props) {
     const handleBarCodeScanned = ({ type, data }) => {
         const routes = props.navigation.getState()?.routes
         const prevRoute = routes[routes.length - 2]
-        return props.navigation.navigate("ProductData", { someData: { ...params?.product, qr_code: data }, productID: params?.newProduct })
+        console.log("🚀 ~ file: QRCodeScannerScreen.js ~ line 24 ~ handleBarCodeScanned ~ prevRoute", prevRoute)
+        if (prevRoute.name === "ProductData") {
+            return props.navigation.navigate("ProductData", { someData: { ...params?.product, qr_code: data }, productID: params?.newProduct })
+        }
+        else if (prevRoute.name === "ShopData") {
+            return props.navigation.navigate("ShopData", { someData: { ...params?.shop, qr_code: data }, shopID: params?.newShop })
+        }
+        // return props.navigation.navigate("ProductData", { someData: { ...params?.product, qr_code: data }, productID: params?.newProduct })
     }
 
     if (hasPermission === null) {

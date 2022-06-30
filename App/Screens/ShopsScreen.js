@@ -19,20 +19,10 @@ const Shops = (props) => {
     const handleClick = (id) => {
         props.navigation.push("ShopData", { shopId: id })
     }
-    const renderShops = ({ item }) => {
-        return (
-            <Pressable onPress={() => handleClick(item.id)}>
-                <View style={styles.shopItem}>
-                    <Icons name="shopping-bag" size={30} color={color.primary} />
-                    <Text style={[commonStyle.basic_text_semiBold_20, { marginLeft: 5, flex: 1 }]}>{item.name}</Text>
-                    <MaterialCommunityIcons style={{ alignSelf: "flex-end" }} name="chevron-right" color={color.primary} size={30} />
-                </View>
-            </Pressable>
-        )
-    }
+
     React.useEffect(() => {
         db_shop
-            .getAllShops()
+            .getAll()
             .then((result) => {
                 setShops(result)
             })
@@ -45,6 +35,18 @@ const Shops = (props) => {
         }
     }, [])
 
+    const renderShops = ({ item }) => {
+        return (
+            <Pressable onPress={() => handleClick(item.id)}>
+                <View style={styles.shopItem}>
+                    <Icons name="shopping-bag" size={30} color={color.primary} />
+                    <Text style={[commonStyle.basic_text_semiBold_20, { marginLeft: 5, flex: 1 }]}>{item.name}</Text>
+                    <MaterialCommunityIcons style={{ alignSelf: "flex-end" }} name="chevron-right" color={color.primary} size={30} />
+                </View>
+            </Pressable>
+        )
+    }
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <TopNavbar title="Shops" />
@@ -52,7 +54,7 @@ const Shops = (props) => {
                 <FlatList initialNumToRender={10} data={shops} renderItem={renderShops} keyExtractor={(item) => item.id} />
             </View>
             <View style={{ position: "absolute", bottom: 80, alignSelf: "center" }}>
-                <PrimaryButton name="Add Shop" width={d.width * 0.95} onPress={() => { }} />
+                <PrimaryButton name="Add Shop" width={d.width * 0.95} onPress={() => { props.navigation.navigate("ShopData") }} />
             </View>
             <BottomNavBar navigation={props.navigation} />
         </SafeAreaView>

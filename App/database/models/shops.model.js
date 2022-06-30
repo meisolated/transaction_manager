@@ -6,16 +6,65 @@ export default class shopsModel {
         this.table = "shops"
     }
 
+    static TSinSecs = () => Math.floor(Date.now() / 1000)
+
+    /**
+     * @description add new shop to database
+     * @author meisolated
+     * @date 30/06/2022 
+     * @param {*} data [name, address, phone, picture, qr_code]
+     * @memberof shopsModel 
+     */
+    add = (data) =>
+        new Promise((resolve, reject) => {
+            this.db.transaction((tx) => {
+                tx.executeSql(
+                    `INSERT INTO ${this.table} (name, address, phone, picture, qr_code, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ${shopsModel.TSinSecs()}, ${shopsModel.TSinSecs()})`,
+                    data,
+                    (_, { rows, insertId }) => {
+                        resolve({ insertId: insertId, status: "done" })
+                    }
+                    , (_, error) => reject(error)
+                )
+            })
+        })
+
+    /**
+     * @description get a shop by id
+     * @author meisolated
+     * @date 30/06/2022
+     * @param {*} id NUMBER
+     * @memberof shopsModel
+     */
+    get = (id) =>
+        new Promise((resolve, reject) => {
+            this.db.transaction((tx) => {
+                tx.executeSql(
+                    `SELECT * FROM ${this.table} WHERE id = ?`,
+                    id,
+                    (_, { rows }) => {
+                        resolve(rows._array[0])
+                    },
+                    (_, error) => reject(error)
+                )
+            })
+        })
+
     /**
      * @description get all shops from database
      * @author meisolated
      * @date 23/06/2022
      * @memberof shopsModel
      */
-    getAllShops = () =>
+    getAll = () =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`SELECT * FROM ${this.table}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
+                tx.executeSql(
+                    `SELECT * FROM ${this.table}`,
+                    [],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
             })
         })
 
@@ -26,10 +75,15 @@ export default class shopsModel {
      * @param {*} id number
      * @memberof shopsModel
      */
-    getShopByID = (id) =>
+    getByID = (id) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`SELECT * FROM ${this.table} WHERE id = ${id}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
+                tx.executeSql(
+                    `SELECT * FROM ${this.table} WHERE id = ${id}`,
+                    [],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
             })
         })
 
@@ -38,28 +92,39 @@ export default class shopsModel {
      * @author meisolated
      * @date 23/06/2022
      * @param {*} id NUMBER
-     * @param {*} data [name, address, phone, qr_code]
+     * @param {*} data [name, address, phone, picture, qr_code]
      * @memberof shopsModel
      */
-    updateShopById = (id, data) =>
+    updateById = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table} SET name = ?, address = ?, phone = ?, qr_code = ? WHERE id = ${id}`, data, (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
+                tx.executeSql(
+                    `UPDATE ${this.table} SET name = ?, address = ?, phone = ?, picture = ?, qr_code = ? WHERE id = ${id}`,
+                    data,
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
             })
         })
 
     /**
      * @description update shop picture
+     * @deprecated
      * @author meisolated
      * @date 23/06/2022
      * @param {*} id number
      * @param {*} picture TODO:not sure
      * @memberof shopsModel
      */
-    updateShopPicture = (id, picture) =>
+    updatePicture = (id, picture) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql(`UPDATE ${this.table} SET picture = ${picture} WHERE id = ${id}`, [], (_, result) => resolve(result.rows._array), ((_, error) => reject(error)))
+                tx.executeSql(
+                    `UPDATE ${this.table} SET picture = ${picture} WHERE id = ${id}`,
+                    [],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
             })
         })
 }

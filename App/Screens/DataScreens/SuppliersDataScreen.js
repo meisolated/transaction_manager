@@ -5,11 +5,11 @@ import TextInput from "../../components/Form/TextInput.js"
 import * as colors from "../../constant/color.js"
 import BottomNavBar from "../../Navigation/bottomNavbar.js"
 import TopNavbar from "../../Navigation/topNavbar.js"
-import * as ImagePicker from "expo-image-picker"
 import commonStyle from "../../common/style.js"
 import { PrimaryButton } from "../../components/button"
 import D from "../../handler/Dimensions.handler.js"
 import suppliersModel from "../../database/models/suppliers.model.js"
+import ImagePickerHandler from "../../handler/ImagePicker.handler.js"
 let d = new D()
 
 const SuppliersData = (props) => {
@@ -53,16 +53,8 @@ const SuppliersData = (props) => {
         }
     }
     let openImagePickerAsync = async () => {
-        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
-        if (permissionResult.granted === false) {
-            alert("Permission to access camera roll is required!")
-            return
-        }
-        let pickerResult = await ImagePicker.launchImageLibraryAsync()
-        if (pickerResult.cancelled === true) {
-            return
-        }
-        setSupplier({ ...supplier, picture: pickerResult.uri })
+        let image = await ImagePickerHandler()
+        setSupplier({ ...supplier, picture: image })
     }
     return (
         <SafeAreaView style={{ flex: 1 }}>

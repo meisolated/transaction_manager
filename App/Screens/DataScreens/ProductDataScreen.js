@@ -4,7 +4,6 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import TextInput from "../../components/Form/TextInput.js"
 import BottomNavBar from "../../Navigation/bottomNavbar.js"
 import TopNavbar from "../../Navigation/topNavbar.js"
-import * as ImagePicker from "expo-image-picker"
 import * as colors from "../../constant/color.js"
 import commonStyle from "../../common/style.js"
 import Popup from "../../components/popup/index.js"
@@ -14,6 +13,7 @@ import OuterLineBtn from "../../components/button/outerlineButton.js"
 import { PrimaryButton } from "../../components/button"
 import { default as D } from "../../handler/Dimensions.handler.js"
 import productsModel from "../../database/models/products.model.js"
+import ImagePickerHandler from "../../handler/ImagePicker.handler.js"
 let d = new D()
 
 export default function ProductEditScreen(props) {
@@ -126,11 +126,14 @@ export default function ProductEditScreen(props) {
                             product.attribute.map((item) => {
                                 db_product
                                     .addNewAttribute([insertId, item.number, item.metric, item.price, item.cost_price])
-                                    .then(({ insertId, status }) => { })
+                                    .then(({ insertId, status }) => {
+                                        if (status) {
+                                            alert("Product Added")
+                                            props.navigation.navigate("Products")
+                                        }
+                                    })
                                     .catch((error) => alert("error" + error))
                             })
-                            alert("Product Added")
-                            props.navigation.navigate("Products")
                         } else {
                             alert("Error")
                             1
@@ -175,21 +178,10 @@ export default function ProductEditScreen(props) {
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
+
     let openImagePickerAsync = async () => {
-        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
-
-        if (permissionResult.granted === false) {
-            alert("Permission to access camera roll is required!")
-            return
-        }
-
-        let pickerResult = await ImagePicker.launchImageLibraryAsync()
-
-        if (pickerResult.cancelled === true) {
-            return
-        }
-
-        setProduct({ ...product, picture: pickerResult.uri })
+        let image = await ImagePickerHandler()
+        setProduct({ ...product, picture: image })
     }
     // KEYBOARD HANDLER
     const [keyboardStatus, setKeyboardStatus] = React.useState(false)
