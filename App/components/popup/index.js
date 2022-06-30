@@ -4,10 +4,18 @@ import font from "../../constant/font.js"
 
 const Popup = (props) => {
     let options = props.options || ["option1", "option2", "option3"]
+    let final_array = options.map((option, index) => {
+        if (typeof option === "string") {
+            return option
+        } else {
+            return option.name
+        }
+    })
+
     return (
         <View style={styles.container}>
             <Text style={{ color: "#ffff", fontFamily: font.bold, fontSize: 25 }}> Pick One Option</Text>
-            {options.map((item, index) => (
+            {final_array.map((item, index) => (
                 <Pressable key={index} onPress={() => props.return(item)}>
                     <View style={styles.options}>
                         <Text style={styles.option_text}>{item}</Text>

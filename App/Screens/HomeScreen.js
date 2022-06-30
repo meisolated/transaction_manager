@@ -1,14 +1,9 @@
-import { StatusBar } from "expo-status-bar"
 import React from "react"
 import { View, Text, Button, StyleSheet, ScrollView } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import color from "../constant/color.js"
-import font from "../constant/font.js"
 import { createTables, deleteAllTables, insertDummyData, localStorage } from "../database/initializeDatabase.js"
 import BottomNavBar from "../Navigation/bottomNavbar.js"
 import TopNavbar from "../Navigation/topNavbar.js"
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
-import { numberSeparator } from "../util/functions.js"
 import HomeScreenPrimary from "../components/widgets/HomeScreenPrimary.widget.js"
 
 function HomeScreen(props) {

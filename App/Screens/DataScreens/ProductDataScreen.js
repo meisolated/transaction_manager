@@ -14,12 +14,15 @@ import { PrimaryButton } from "../../components/button"
 import { default as D } from "../../handler/Dimensions.handler.js"
 import productsModel from "../../database/models/products.model.js"
 import ImagePickerHandler from "../../handler/ImagePicker.handler.js"
+import categoriesModel from "../../database/models/categories.model.js"
+import suppliersModel from "../../database/models/suppliers.model.js"
 let d = new D()
 
 export default function ProductEditScreen(props) {
-
     // handle params
-    let params = useMemo(() => { return props.route.params || {} }, [props.route.params])
+    const params = useMemo(() => {
+        return props.route.params || {}
+    }, [props.route.params])
 
     React.useEffect(() => {
         if (params.someData !== undefined) {
@@ -32,10 +35,13 @@ export default function ProductEditScreen(props) {
         // }
     }, [params])
 
-    let db_product = new productsModel()
-    let [screen, setScreen] = React.useState({ title: "New Product", button: "Save" })
-    let emptyAttribute = [{ id: 1, number: "", metric: "liter(l)", price: "", cost_price: "" }]
-    let suggestedNumbers = [
+    const db_product = new productsModel()
+    const db_category = new categoriesModel()
+    const db_suppliers = new suppliersModel()
+
+    const [screen, setScreen] = React.useState({ title: "New Product", button: "Save" })
+    const emptyAttribute = [{ id: 1, number: "", metric: "liter(l)", price: "", cost_price: "" }]
+    const suggestedNumbers = [
         { number: "1/2", metrics: "liter(l)" },
         { number: 180, metrics: "milliliter(ml)" },
         { number: 400, metrics: "milliliter(ml)" },
@@ -47,13 +53,32 @@ export default function ProductEditScreen(props) {
         { number: 300, metrics: "gram(g)" },
         { number: 350, metrics: "gram(g)" },
     ]
-    let metrics = ["milliliter(ml)", "gram(g)", "liter(l)", "kilogram(kg)"]
-    let [state, setState] = React.useState({ productID: null, ScreenState: null })
-    let [product, setProduct] = React.useState({ name: null, desc: null, picture: null, qr_code: null, attribute: emptyAttribute })
-    let [picking, setPicking] = React.useState({ show: false, data: null })
+    const metrics = ["milliliter(ml)", "gram(g)", "liter(l)", "kilogram(kg)"]
+    const [popup, setPopup] = React.useState({ state: "inactive", name: null, options: [] })
+    const [state, setState] = React.useState({ productID: null, ScreenState: null })
+    const [product, setProduct] = React.useState({ name: null, desc: null, picture: null, qr_code: null, category: null, suppliers: null, attribute: emptyAttribute })
+    const [category, setCategory] = React.useState([])
+    const [suppliers, setSuppliers] = React.useState([])
+    const [picking, setPicking] = React.useState({ show: false, data: null })
+    const [keyboardStatus, setKeyboardStatus] = React.useState(false)
+
 
     // get product data if update
     React.useEffect(() => {
+        //get category and suppliers
+        db_category
+            .getAll()
+            .then((res) => {
+                setCategory(res)
+            })
+            .catch((err) => alert(err))
+        db_suppliers
+            .getAll()
+            .then((res) => {
+                setSuppliers(res)
+            })
+            .catch((err) => alert(err))
+
         setState({ productID: params.productID, ScreenState: params.productID || "add" })
         if (state.ScreenState !== "add") {
             setScreen({ title: "Edit Product", button: "Update" })
@@ -71,7 +96,22 @@ export default function ProductEditScreen(props) {
 
     // ---------------------------------------------------------------------------------------------------------------------
 
-    function pickingOption(option) {
+    function pickingCategory(option) {
+        if (!option) return setPopup({ state: "active", name: "category", options: category })
+        setProduct({ ...product, category: option })
+
+    }
+
+    function selectedOption(option) {
+        if (popup.name === "supplier") {
+            setProduct({ ...product, suppliers: option })
+        } else if (popup.name === "metric") {
+            pickingMetric(option)
+        }
+        return setPopup({ state: "inactive", name: null, options: [] })
+    }
+
+    function pickingMetric(option) {
         let finalArray = product.attribute.map((item, index) => {
             if (picking.data === index) {
                 return { ...item, metric: option }
@@ -79,7 +119,7 @@ export default function ProductEditScreen(props) {
             return item
         })
         setProduct({ ...product, attribute: finalArray })
-        setPicking({ ...picking, show: false })
+        setPopup({ state: "active", options: metrics, name: "metric" })
     }
     function addNewAttribute() {
         let finalArray = product.attribute
@@ -110,12 +150,9 @@ export default function ProductEditScreen(props) {
 
         setProduct({ ...product, attribute: finalArray })
     }
-
-    const onQRCodeButtonPress = () => {
+    function onQRCodeButtonPress() {
         props.navigation.navigate("QRCodeScanner", { product, newProduct: state.productID })
     }
-
-    //onSavePress
     async function onSavePress() {
         if (product.name && product.desc && product.attribute.length > 0) {
             if (state.ScreenState == "add") {
@@ -176,15 +213,10 @@ export default function ProductEditScreen(props) {
             alert("Please fill all the fields")
         }
     }
-
-    // ---------------------------------------------------------------------------------------------------------------------
-
-    let openImagePickerAsync = async () => {
+    async function openImagePickerAsync() {
         let image = await ImagePickerHandler()
         setProduct({ ...product, picture: image })
     }
-    // KEYBOARD HANDLER
-    const [keyboardStatus, setKeyboardStatus] = React.useState(false)
 
     React.useEffect(() => {
         const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -218,6 +250,19 @@ export default function ProductEditScreen(props) {
                         </Pressable>
                         <TextInput type="text" placeholder="Name" icon="user" value={product.name} onChange={(data) => setProduct({ ...product, name: data })} />
                         <TextInput type="text" placeholder="Description (optional)" icon="align-center" value={product.desc} onChange={(data) => setProduct({ ...product, desc: data })} />
+                        <View style={style.suppliers_and_category_wrapper}>
+
+                            <Pressable onPress={() => pickingCategory()}>
+                                <View style={style.suppliers_and_category_wrapper_item}>
+                                    <Text> Select Category</Text>
+                                </View>
+                            </Pressable>
+                            <Pressable>
+                                <View style={style.suppliers_and_category_wrapper_item}>
+                                    <Text>Select Supplier</Text>
+                                </View>
+                            </Pressable>
+                        </View>
                         <Text style={commonStyle.basic_text}>Attributes</Text>
                         {/* –––––––––––––––––– Attributes –––––––––––––––––– */}
                         {product.attribute.map((item, index) => {
@@ -230,7 +275,7 @@ export default function ProductEditScreen(props) {
                                         placeholder="Metric"
                                         onChangeText={(data) => updateAttribute(item.id, data, null)}
                                     />
-                                    <Pressable onPress={() => setPicking({ data: index, show: true })}>
+                                    <Pressable onPress={() => setPopup({ name: "metric", options: metrics, state: "active" })}>
                                         <View style={style.select_attribute}>
                                             <Text style={{ fontFamily: font.bold, fontSize: 18 }}>{item.metric.split("(")[1].split(")")[0]}</Text>
                                         </View>
@@ -279,7 +324,7 @@ export default function ProductEditScreen(props) {
                         </View>
                         <Text style={[commonStyle.basic_text_semiBold_20]}>{product.qr_code}</Text>
                     </View>
-                    {picking.show && <Popup return={(x) => pickingOption(x)} options={metrics} />}
+                    {popup.state === "active" && <Popup return={(x) => selectedOption(x)} options={popup.options} />}
                 </KeyboardAvoidingView>
             </ScrollView>
             {!keyboardStatus && <BottomNavBar navigation={props.navigation} />}
@@ -387,4 +432,29 @@ const style = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
+
+    suppliers_and_category_wrapper: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        alignSelf: "center",
+        marginBottom: 10,
+        borderRadius: 10,
+    },
+    suppliers_and_category_wrapper_item: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 10,
+        backgroundColor: colors.white,
+        borderRadius: 10,
+        width: d.width * 0.4,
+        height: 50,
+        marginRight: 10,
+        borderWidth: 1,
+        borderColor: colors.deepPurpleA100,
+    }
+
 })
