@@ -84,6 +84,8 @@ export async function createTables(cb) {
             picture text,
             description text,
             qr_code text,
+            category text,
+            supplier text,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
 

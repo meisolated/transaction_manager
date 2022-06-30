@@ -54,7 +54,7 @@ export default function ProductEditScreen(props) {
         { number: 350, metrics: "gram(g)" },
     ]
     const metrics = ["milliliter(ml)", "gram(g)", "liter(l)", "kilogram(kg)"]
-    const [popup, setPopup] = React.useState({ state: "inactive", name: null, options: [] })
+    const [popup, setPopup] = React.useState({ state: "inactive", name: null, options: [], id: null })
     const [state, setState] = React.useState({ productID: null, ScreenState: null })
     const [product, setProduct] = React.useState({ name: null, desc: null, picture: null, qr_code: null, category: null, suppliers: null, attribute: emptyAttribute })
     const [category, setCategory] = React.useState([])
@@ -78,14 +78,14 @@ export default function ProductEditScreen(props) {
             .catch((err) => alert(err))
 
         setState({ productID: params.productID, ScreenState: params.productID || "add" })
-        if (state.ScreenState !== "add") {
+        if (params.productID) {
             setScreen({ title: "Edit Product", button: "Update" })
             db_product
                 .getById(state.productID)
                 .then((result) => {
                     let productDetails = result[0]
                     db_product.getAttributes(state.productID).then((result) => {
-                        setProduct({ ...product, name: productDetails.name, desc: productDetails.description, picture: productDetails.picture, qr_code: productDetails.qr_code, attribute: result })
+                        setProduct({ ...product, name: productDetails.name, desc: productDetails.description, picture: productDetails.picture, qr_code: productDetails.qr_code, category: productDetails.category, suppliers: productDetails.supplier, attribute: result })
                     })
                 })
                 .catch((error) => alert("error" + error))
@@ -106,15 +106,15 @@ export default function ProductEditScreen(props) {
         if (popup.name === "supplier") {
             setProduct({ ...product, suppliers: option })
         } else if (popup.name === "metric") {
-            pickingMetric(option)
+            pickingMetric(option, popup.id)
         } else if (popup.name === "category") {
             setProduct({ ...product, category: option })
         }
         return setPopup({ state: "inactive", name: null, options: [] })
     }
-    function pickingMetric(option) {
+    function pickingMetric(option, id) {
         let finalArray = product.attribute.map((item, index) => {
-            if (option === index) {
+            if (id === item.id) {
                 return { ...item, metric: option }
             }
             return item
@@ -158,7 +158,7 @@ export default function ProductEditScreen(props) {
         if (product.name && product.desc && product.attribute.length > 0) {
             if (state.ScreenState == "add") {
                 db_product
-                    .addNew([product.name, product.picture, product.desc, product.qr_code])
+                    .addNew([product.name, product.picture, product.desc, product.qr_code, product.category, product.suppliers])
                     .then(({ insertId, status }) => {
                         if (status) {
                             product.attribute.map((item) => {
@@ -180,7 +180,7 @@ export default function ProductEditScreen(props) {
                     .catch((e) => alert("Error" + e))
             } else {
                 db_product
-                    .update(state.productID, [product.name, product.desc, product.picture, product.qr_code])
+                    .update(state.productID, [product.name, product.desc, product.picture, product.qr_code, product.category, product.suppliers])
                     .then(({ status }) => {
                         if (status) {
                             // delete all attribute
@@ -253,12 +253,12 @@ export default function ProductEditScreen(props) {
                         <View style={style.suppliers_and_category_wrapper}>
                             <Pressable onPress={() => pickingCategory()}>
                                 <View style={style.suppliers_and_category_wrapper_item}>
-                                    <Text style={commonStyle.basic_text_semiBold_20}>{product.category ? product.category : "Select Category"}</Text>
+                                    <Text style={[commonStyle.basic_text_semiBold_20, { fontSize: 15 }]}>{product.category ? product.category : "Select Category"}</Text>
                                 </View>
                             </Pressable>
                             <Pressable onPress={() => pickingSupplier()}>
                                 <View style={style.suppliers_and_category_wrapper_item}>
-                                    <Text style={commonStyle.basic_text_semiBold_20}>{product.suppliers ? product.suppliers : "Select Suppliers"}</Text>
+                                    <Text style={[commonStyle.basic_text_semiBold_20, { fontSize: 15 }]}>{product.suppliers ? product.suppliers : "Select Suppliers"}</Text>
                                 </View>
                             </Pressable>
                         </View>
@@ -274,7 +274,7 @@ export default function ProductEditScreen(props) {
                                         placeholder="Metric"
                                         onChangeText={(data) => updateAttribute(item.id, data, null)}
                                     />
-                                    <Pressable onPress={() => setPopup({ name: "metric", options: metrics, state: "active" })}>
+                                    <Pressable onPress={() => setPopup({ name: "metric", options: metrics, state: "active", id: item.id })}>
                                         <View style={style.select_attribute}>
                                             <Text style={{ fontFamily: font.bold, fontSize: 18 }}>{item.metric.split("(")[1].split(")")[0]}</Text>
                                         </View>

@@ -38,16 +38,15 @@ const SuppliersData = (props) => {
                         props.navigation.navigate("Suppliers")
                     })
                     .catch((error) => alert(error))
-            }
-            else {
-                db_suppliers.update(params.id, [supplier.name, supplier.picture])
+            } else {
+                db_suppliers
+                    .update(params.id, [supplier.name, supplier.picture])
                     .then(() => {
                         alert("Supplier updated")
                         props.navigation.navigate("Suppliers")
                     })
                     .catch((error) => alert(error))
             }
-
         } else {
             alert("Please enter a name")
         }

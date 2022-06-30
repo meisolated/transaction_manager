@@ -14,7 +14,9 @@ const window = Dimensions.get("window")
 
 
 function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
+    console.log("🚀 ~ file: Checkout.js ~ line 17 ~ Checkout ~ cart", cart)
     const [total, setTotal] = React.useState(0)
+
 
     function handlePress() {
         let cartItem = _tempOrder[0]

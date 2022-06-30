@@ -22,9 +22,6 @@ export default class suppliersModel {
         })
     }
 
-
-
-
     /**
      * @description get all suppliers
      * @author meisolated
@@ -37,15 +34,13 @@ export default class suppliersModel {
         })
     })
 
-
-
     /**
-     * @description add new suppliers
-     * @author meisolated
-     * @date 24/06/2022
-     * @param {*} data [name, picture]
-     * @memberof suppliersModel
-     */
+         * @description add new suppliers
+         * @author meisolated
+         * @date 24/06/2022
+         * @param {*} data [name, picture]
+         * @memberof suppliersModel
+         */
     add = (data) => new Promise((resolve, reject) => {
         this.db.transaction(tx => {
             tx.executeSql(

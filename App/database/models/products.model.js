@@ -13,7 +13,7 @@ export default class productsModel {
      * @description add new product to database
      * @author meisolated
      * @date 24/06/2022
-     * @param {*} data [name, picture, description, qr_code]
+     * @param {*} data [name, picture, description, qr_code, category, supplier]
      * @memberof productsModel
      * @returns {Promise<any>}
      */
@@ -21,7 +21,7 @@ export default class productsModel {
         new Promise((resolve, reject) => {
             this.db.transaction((tx) => {
                 tx.executeSql(
-                    `INSERT INTO ${this.table_products} (name, picture, description, qr_code, created_at, modified_at) VALUES (?, ?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
+                    `INSERT INTO ${this.table_products} (name, picture, description, qr_code, category, supplier, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
                     data,
                     (_, { rows, insertId }) => {
                         // resolve(rows._array)
@@ -131,14 +131,14 @@ export default class productsModel {
      * @author meisolated
      * @date 22/06/2022
      * @param {*} id number
-     * @param {*} data [name, description, picture, qr_code]
+     * @param {*} data [name, description, picture, qr_code, category, supplier]
      * @memberof productsModel
      */
     update = (id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `UPDATE ${this.table_products} SET name = ?, description = ?, picture = ?, qr_code = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`,
+                    `UPDATE ${this.table_products} SET name = ?, description = ?, picture = ?, qr_code = ?, category = ?, supplier = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`,
                     data,
                     (_, result) => resolve({ status: "done" }),
                     (_, error) => reject(error)

@@ -18,7 +18,7 @@ export default function AddOrderScreen(props) {
     const [state, setState] = React.useState({ title: "Checkout", string: "checkout", component: () => <Checkout /> })
 
     function onPress() {
-        return setState({ title: "Checkout", string: "checkout", component: () => <ChooseCompany /> })
+        return setState({ title: "Checkout", string: "checkout", component: () => <ChooseItem /> })
     }
 
     return (
