@@ -1,21 +1,21 @@
-import React, { useMemo } from "react"
 import { View, Text, StyleSheet, Button, Image, Pressable, ScrollView, TextInput as InputText, KeyboardAvoidingView, Keyboard, DeviceEventEmitter } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
-import TextInput from "../../components/Form/TextInput.js"
-import BottomNavBar from "../../Navigation/bottomNavbar.js"
-import TopNavbar from "../../Navigation/topNavbar.js"
-import * as colors from "../../constant/color.js"
-import commonStyle from "../../common/style.js"
-import Popup from "../../components/popup/index.js"
-import font from "../../constant/font.js"
-import { Feather as Icons } from "@expo/vector-icons"
-import OuterLineBtn from "../../components/button/outerlineButton.js"
-import { PrimaryButton } from "../../components/button"
-import { default as D } from "../../handler/Dimensions.handler.js"
-import productsModel from "../../database/models/products.model.js"
-import ImagePickerHandler from "../../handler/ImagePicker.handler.js"
 import categoriesModel from "../../database/models/categories.model.js"
 import suppliersModel from "../../database/models/suppliers.model.js"
+import OuterLineBtn from "../../components/button/outerlineButton.js"
+import ImagePickerHandler from "../../handler/ImagePicker.handler.js"
+import productsModel from "../../database/models/products.model.js"
+import { default as D } from "../../handler/Dimensions.handler.js"
+import { SafeAreaView } from "react-native-safe-area-context"
+import BottomNavBar from "../../Navigation/bottomNavbar.js"
+import TextInput from "../../components/Form/TextInput.js"
+import { PrimaryButton } from "../../components/button"
+import TopNavbar from "../../Navigation/topNavbar.js"
+import { Feather as Icons } from "@expo/vector-icons"
+import Popup from "../../components/popup/index.js"
+import * as colors from "../../constant/color.js"
+import commonStyle from "../../common/style.js"
+import font from "../../constant/font.js"
+import React, { useMemo } from "react"
 let d = new D()
 
 export default function ProductEditScreen(props) {
@@ -59,9 +59,7 @@ export default function ProductEditScreen(props) {
     const [product, setProduct] = React.useState({ name: null, desc: null, picture: null, qr_code: null, category: null, suppliers: null, attribute: emptyAttribute })
     const [category, setCategory] = React.useState([])
     const [suppliers, setSuppliers] = React.useState([])
-    const [picking, setPicking] = React.useState({ show: false, data: null })
     const [keyboardStatus, setKeyboardStatus] = React.useState(false)
-
 
     // get product data if update
     React.useEffect(() => {
@@ -96,24 +94,27 @@ export default function ProductEditScreen(props) {
 
     // ---------------------------------------------------------------------------------------------------------------------
 
+    function pickingSupplier(option) {
+        if (!option) return setPopup({ state: "active", name: "supplier", options: suppliers })
+        setProduct({ ...product, suppliers: option })
+    }
     function pickingCategory(option) {
         if (!option) return setPopup({ state: "active", name: "category", options: category })
         setProduct({ ...product, category: option })
-
     }
-
     function selectedOption(option) {
         if (popup.name === "supplier") {
             setProduct({ ...product, suppliers: option })
         } else if (popup.name === "metric") {
             pickingMetric(option)
+        } else if (popup.name === "category") {
+            setProduct({ ...product, category: option })
         }
         return setPopup({ state: "inactive", name: null, options: [] })
     }
-
     function pickingMetric(option) {
         let finalArray = product.attribute.map((item, index) => {
-            if (picking.data === index) {
+            if (option === index) {
                 return { ...item, metric: option }
             }
             return item
@@ -217,7 +218,6 @@ export default function ProductEditScreen(props) {
         let image = await ImagePickerHandler()
         setProduct({ ...product, picture: image })
     }
-
     React.useEffect(() => {
         const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
             setKeyboardStatus(true)
@@ -251,15 +251,14 @@ export default function ProductEditScreen(props) {
                         <TextInput type="text" placeholder="Name" icon="user" value={product.name} onChange={(data) => setProduct({ ...product, name: data })} />
                         <TextInput type="text" placeholder="Description (optional)" icon="align-center" value={product.desc} onChange={(data) => setProduct({ ...product, desc: data })} />
                         <View style={style.suppliers_and_category_wrapper}>
-
                             <Pressable onPress={() => pickingCategory()}>
                                 <View style={style.suppliers_and_category_wrapper_item}>
-                                    <Text> Select Category</Text>
+                                    <Text style={commonStyle.basic_text_semiBold_20}>{product.category ? product.category : "Select Category"}</Text>
                                 </View>
                             </Pressable>
-                            <Pressable>
+                            <Pressable onPress={() => pickingSupplier()}>
                                 <View style={style.suppliers_and_category_wrapper_item}>
-                                    <Text>Select Supplier</Text>
+                                    <Text style={commonStyle.basic_text_semiBold_20}>{product.suppliers ? product.suppliers : "Select Suppliers"}</Text>
                                 </View>
                             </Pressable>
                         </View>
@@ -357,7 +356,6 @@ const style = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-
     empty_image_container: {
         width: 150,
         height: 150,
@@ -386,7 +384,6 @@ const style = StyleSheet.create({
         fontWeight: "bold",
         color: colors.deepPurpleA100,
     },
-
     suggested_numbers_text: {
         fontSize: 10,
     },
@@ -395,8 +392,6 @@ const style = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 10,
-        // borderRadius: 10,
-        // backgroundColor: colors.white,
     },
     select_attribute: {
         flexDirection: "row",
@@ -432,7 +427,6 @@ const style = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-
     suppliers_and_category_wrapper: {
         flex: 1,
         flexDirection: "row",
@@ -455,6 +449,5 @@ const style = StyleSheet.create({
         marginRight: 10,
         borderWidth: 1,
         borderColor: colors.deepPurpleA100,
-    }
-
+    },
 })

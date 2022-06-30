@@ -1,15 +1,16 @@
-import React, { useMemo, useState } from "react"
 import { View, Text, StyleSheet, Pressable, Image } from "react-native"
 import ImagePickerHandler from "../../handler/ImagePicker.handler.js"
-import commonStyle from "../../common/style.js"
-import color, * as colors from "../../constant/color.js"
-import D from "../../handler/Dimensions.handler.js"
-import TextInput from "../../components/Form/TextInput.js"
-import { PrimaryButton } from "../../components/button/"
-import TopNavbar from "../../Navigation/topNavbar.js"
 import { SafeAreaView } from "react-native-safe-area-context"
 import shopModel from "../../database/models/shops.model.js"
+import TextInput from "../../components/Form/TextInput.js"
+import color, * as colors from "../../constant/color.js"
+import { PrimaryButton } from "../../components/button/"
+import TopNavbar from "../../Navigation/topNavbar.js"
 import { Feather as Icon } from "@expo/vector-icons"
+import D from "../../handler/Dimensions.handler.js"
+import React, { useMemo, useState } from "react"
+import commonStyle from "../../common/style.js"
+
 let d = new D()
 const ShopData = (props) => {
     let db_shop = new shopModel()

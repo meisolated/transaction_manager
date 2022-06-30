@@ -1,21 +1,21 @@
-import React, { useMemo } from "react"
-import { View, Text, StyleSheet, Pressable, Image } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
-import TextInput from "../../components/Form/TextInput.js"
-import * as colors from "../../constant/color.js"
-import BottomNavBar from "../../Navigation/bottomNavbar.js"
-import TopNavbar from "../../Navigation/topNavbar.js"
-import commonStyle from "../../common/style.js"
-import { PrimaryButton } from "../../components/button"
-import D from "../../handler/Dimensions.handler.js"
 import categoriesModel from "../../database/models/categories.model.js"
+import { View, Text, StyleSheet, Pressable, Image } from "react-native"
 import ImagePickerHandler from "../../handler/ImagePicker.handler.js"
+import { SafeAreaView } from "react-native-safe-area-context"
+import BottomNavBar from "../../Navigation/bottomNavbar.js"
+import TextInput from "../../components/Form/TextInput.js"
+import { PrimaryButton } from "../../components/button"
+import TopNavbar from "../../Navigation/topNavbar.js"
+import D from "../../handler/Dimensions.handler.js"
+import * as colors from "../../constant/color.js"
+import commonStyle from "../../common/style.js"
+import React, { useMemo } from "react"
 let d = new D()
 
 const CategoryData = (props) => {
     let db_categories = new categoriesModel()
-    let [screen, setScreen] = React.useState({ title: "New Categories", button: "Save" })
     let params = useMemo(() => props.route.params || {}, [props.route.params])
+    let [screen, setScreen] = React.useState({ title: "New Categories", button: "Save" })
     let [categories, setCategories] = React.useState({ picture: null, name: null })
 
     React.useEffect(() => {
@@ -39,16 +39,15 @@ const CategoryData = (props) => {
                         props.navigation.navigate("Categories")
                     })
                     .catch((error) => alert(error))
-            }
-            else {
-                db_categories.update(params.id, [categories.name, categories.picture])
+            } else {
+                db_categories
+                    .update(params.id, [categories.name, categories.picture])
                     .then(() => {
                         alert("categories updated")
                         props.navigation.navigate("Categories")
                     })
                     .catch((error) => alert(error))
             }
-
         } else {
             alert("Please enter a name")
         }
