@@ -2,7 +2,6 @@ import db from "../db.js"
 
 export default class categoriesModel {
     constructor() {
-        this.db = db
         this.table = "categories"
     }
 
@@ -19,7 +18,7 @@ export default class categoriesModel {
 
 
     get = (id) => new Promise((resolve, reject) => {
-        this.db.transaction((tx) => {
+        db.transaction((tx) => {
             tx.executeSql(`SELECT * FROM ${this.table} WHERE id = ?`, [id], (tx, results) => {
                 if (results.rows.length > 0) {
                     resolve(results.rows._array[0])
@@ -37,7 +36,7 @@ export default class categoriesModel {
      * @memberof categoriesModel
      */
     getAll = () => new Promise((resolve, reject) => {
-        this.db.transaction(tx => {
+        db.transaction(tx => {
             tx.executeSql(
                 `SELECT * FROM ${this.table}`,
                 [],
@@ -57,7 +56,7 @@ export default class categoriesModel {
      * @memberof categoriesModel
      */
     add = (data) => new Promise((resolve, reject) => {
-        this.db.transaction(tx => {
+        db.transaction(tx => {
             tx.executeSql(
                 `INSERT INTO ${this.table} (name, picture, created_at, modified_at) VALUES (?, ?, ${categoriesModel.TSinSecs()}, ${categoriesModel.TSinSecs()})`,
                 data,
@@ -76,10 +75,10 @@ export default class categoriesModel {
      * @memberof categoriesModel
      */
     delete = (id) => new Promise((resolve, reject) => {
-        this.db.transaction(tx => {
+        db.transaction(tx => {
             tx.executeSql(
                 `DELETE FROM ${this.table} WHERE id = ?`,
-                [id],
+                id,
                 (_, { rows }) => {
                     resolve(rows._array)
                 }, (_, error) => reject(error)
@@ -96,7 +95,7 @@ export default class categoriesModel {
      * @memberof categoriesModel
      */
     update = (id, data) => new Promise((resolve, reject) => {
-        this.db.transaction(tx => {
+        db.transaction(tx => {
             tx.executeSql(
                 `UPDATE ${this.table} SET name = ?, picture = ?, created_at = ${categoriesModel.TSinSecs()}, modified_at = ${categoriesModel.TSinSecs()} WHERE id = ${id}`,
                 data,

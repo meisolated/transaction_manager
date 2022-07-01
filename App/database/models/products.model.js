@@ -2,7 +2,6 @@ import db from "../db.js"
 
 export default class productsModel {
     constructor() {
-        this.db = db
         this.table_products = "products"
         this.table_products_attributes = "products_attributes"
     }
@@ -19,7 +18,7 @@ export default class productsModel {
      */
     addNew = (data) =>
         new Promise((resolve, reject) => {
-            this.db.transaction((tx) => {
+            db.transaction((tx) => {
                 tx.executeSql(
                     `INSERT INTO ${this.table_products} (name, picture, description, qr_code, category, supplier, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
                     data,
@@ -44,7 +43,7 @@ export default class productsModel {
      */
     addNewAttribute = (data) =>
         new Promise((resolve, reject) => {
-            this.db.transaction((tx) => {
+            db.transaction((tx) => {
                 tx.executeSql(
                     `INSERT INTO ${this.table_products_attributes} (product_id, number, metric, price, cost_price, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
                     data,
@@ -74,6 +73,31 @@ export default class productsModel {
                 )
             })
         })
+
+
+
+    /**
+     * @description get product by category and supplier
+     * @author meisolated
+     * @date 01/07/2022
+     * @param {*} category
+     * @param {*} supplier
+     * @memberof productsModel
+     */
+    getByCategoryAndSupplier = (category, supplier) =>
+        new Promise((resolve, reject) => {
+            db.transaction((tx) => {
+                tx.executeSql(
+                    `SELECT * FROM ${this.table_products} WHERE category = ? AND supplier = ?`,
+                    [category, supplier],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
+            })
+        }
+        )
+
+
 
     /**
      * @description get a single product by id
@@ -112,6 +136,26 @@ export default class productsModel {
                 )
             })
         })
+
+    /**
+* @description get all products attributes by id
+* @author meisolated
+* @date 27/06/2022
+* @param {*} id
+* @memberof productsModel
+*/
+    getAttributesById = (id) =>
+        new Promise((resolve, reject) => {
+            db.transaction((tx) => {
+                tx.executeSql(
+                    `SELECT * FROM ${this.table_products_attributes} WHERE id = ${id}`,
+                    [],
+                    (_, result) => resolve(result.rows._array),
+                    (_, error) => reject(error)
+                )
+            })
+        })
+
 
     //!Delete it
     getAllAttributes = () =>

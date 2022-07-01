@@ -21,6 +21,7 @@ function HomeScreen(props) {
                     <Button title="EditProduct" onPress={() => props.navigation.navigate("ProductData")} />
                     <Button title="TestScreen" onPress={() => props.navigation.navigate("TestScreen")} />
                     <Button title="AddOrder" onPress={() => props.navigation.navigate("AddOrder")} />
+                    <Button title="OrderAdded" onPress={() => props.navigation.navigate("OrderAdded")} />
                     {/* <Button title="CameraScreen" onPress={() => props.navigation.navigate("CameraScreen")} /> */}
                     <Text>Change Things into Database</Text>
                     <Button title="Insert dummy data" onPress={() => insertDummyData()} />

@@ -16,6 +16,7 @@ import SuppliersScreen from "../Screens/SuppliersScreen.js"
 import SuppliersData from "../Screens/DataScreens/SuppliersDataScreen.js"
 import CategoryScreen from "../Screens/CategoryScreen.js"
 import CategoryData from "../Screens/DataScreens/CategoryDataScreen.js"
+import OrderAdded from "../Screens/addOrder/OrderAddedScreen.js"
 
 const Stack = createNativeStackNavigator()
 export function Navigation() {
@@ -30,7 +31,7 @@ export function Navigation() {
                 <Stack.Screen name="AddTransactions" component={AddTransaction} options={{ headerShown: false, }} />
                 <Stack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false, }} />
                 <Stack.Screen name="QRCodeScanner" component={QRCodeScanner} options={{ headerShown: false, }} />
-                <Stack.Screen name="AddOrder" component={AddOrder} options={{ headerShown: false, }} />
+                {/* <Stack.Screen name="AddOrder" component={AddOrder} options={{ headerShown: false, }} /> */}
                 <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false, }} />
                 <Stack.Screen name="Shops" component={Shops} options={{ headerShown: false, }} />
                 <Stack.Screen name="ShopData" component={ShopData} options={{ headerShown: false, }} />
@@ -40,6 +41,7 @@ export function Navigation() {
                 <Stack.Screen name="SupplierData" component={SuppliersData} options={{ headerShown: false, }} />
                 <Stack.Screen name="Categories" component={CategoryScreen} options={{ headerShown: false, }} />
                 <Stack.Screen name="CategoryData" component={CategoryData} options={{ headerShown: false, }} />
+                <Stack.Screen name="OrderAdded" component={OrderAdded} options={{ headerShown: false, }} />
                 {/* <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ headerShown: false,  }} /> */}
             </Stack.Navigator>
         </NavigationContainer>

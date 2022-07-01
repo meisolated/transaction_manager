@@ -3,28 +3,86 @@ import { ScrollView, View, Text, Animated, StyleSheet, Dimensions, Easing, Press
 import commonStyle from "../../common/style.js"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { _tempOrder, _tempProducts, _getProductName, _getProductAttribute } from "../../temp/testingData.js"
-import color from "../../constant/color.js"
+import color, * as colors from "../../constant/color.js"
 import font from "../../constant/font.js"
 import { connect } from "react-redux"
 import { numberSeparator } from "../../util/functions.js"
 import { PrimaryButton } from "../../components/button/index.js"
 import SelectButton from "../../components/button/selectButton.js"
+import productsModel from "../../database/models/products.model.js"
+import LoadingCircle from "../../components/widgets/loading/index.js"
+import { Feather as Icon } from "@expo/vector-icons"
+import shopsModel from "../../database/models/shops.model.js"
 
 const window = Dimensions.get("window")
 
 
-function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
-    console.log("🚀 ~ file: Checkout.js ~ line 17 ~ Checkout ~ cart", cart)
+function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemToCard, getBack, navigation, qrCodeCallback }) {
+    const db_shop = new shopsModel()
     const [total, setTotal] = React.useState(0)
+    const [loading, setLoading] = React.useState(true)
+    const [cartData, setCartData] = React.useState({ paidStatus: "paid", qrCode: null, shopId: null })
+    const db_product = new productsModel()
 
+    React.useEffect(() => {
+        if (qrCodeCallback) {
+            console.log("qrCodeCallback", qrCodeCallback)
+            setCartData({ ...cartData, qrCode: qrCodeCallback })
+            db_shop.getShopByQrCode(qrCodeCallback).then(shop => {
+                console.log(shop)
+                if (shop) {
+                    setCartData({ ...cartData, shopId: shop.id })
+                }
+                else {
+                    db_shop.add(["Automatic", "nill", "00000", "nill", qrCodeCallback]).then(shop => {
+                        setCartData({ ...cartData, shopId: shop.insertId })
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                }
+            }).catch(err => {
+                console.log("err", err)
+            })
+        }
+        if (addItemToCard) {
+            setLoading(true)
+            handlePress(addItemToCard)
+        }
+    }, [qrCodeCallback])
 
-    function handlePress() {
-        let cartItem = _tempOrder[0]
-        cartItem.name = _getProductName(cartItem.id)
-        const productAttribute = _getProductAttribute(cartItem.product_id)[0]
-        cartItem.metric = productAttribute.weight + productAttribute.unit
-        orderStateUpdate(cartItem)
+    function handlePress(addItemToCard) {
+        db_product.getById(addItemToCard.productId).then(product => {
+            let _p = product[0]
+            db_product.getAttributesById(addItemToCard.productAttributeId).then(attributes => {
+                let _a = attributes[0]
+                let _product = {
+                    id: _p.id,
+                    name: _p.name,
+                    product_id: _p.id,
+                    quantity: 1,
+                    price: _a.price,
+                    metric: _a.number + " " + _a.metric,
+                }
+                orderStateUpdate(_product)
+                setLoading(false)
+            })
+        })
+        // let cartItem = _tempOrder[0]
+        // cartItem.name = _getProductName(cartItem.id)
+        // const productAttribute = _getProductAttribute(cartItem.product_id)[0]
+        // cartItem.metric = productAttribute.weight + productAttribute.unit
+        // orderStateUpdate(cartItem)
     }
+
+    function handleQRCodeScan() {
+        navigation.navigate("QRCodeScanner", { order: addItemToCard })
+    }
+
+    function handlerCheckout() {
+        console.log("🚀 ~ file: Checkout.js ~ line 79 ~ handlerCheckout ~ cart", cart)
+        console.log("🚀 ~ file: Checkout.js ~ line 80 ~ handlerCheckout ~ cartData", cartData)
+    }
+
     function _updateCart(cartItem, quantity) {
         if (cartItem.quantity + quantity < 1) return removeFromCart(cartItem)
         updateCart(cartItem.id, quantity)
@@ -40,11 +98,17 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
         _cartTotal()
     }, [cart])
 
+    if (loading)
+        return (
+            <View style={{ alignSelf: "center", alignItems: "center", justifyContent: "center" }}>
+                <LoadingCircle color="black" />
+            </View>
+        )
     return (
         <View style={checkoutStyle.main_container}>
             <View style={[checkoutStyle.container]}>
                 <ScrollView style={{}}>
-                    <Button title="Add Dummy Product" onPress={() => handlePress()} />
+                    <Button title="Add Item" onPress={() => getBack()} />
                     <Text style={commonStyle.basic_text}>Review Items</Text>
                     {cart.map((item, index) => {
                         return (
@@ -80,20 +144,22 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart }) {
                 <View style={checkoutStyle.order_settings_wrapper}>
                     <Text style={checkoutStyle.order_settings_title}>Order Settings</Text>
                     <View style={[checkoutStyle.order_settings]}>
-                        <SelectButton></SelectButton>
-                        <View style={checkoutStyle.shop_selected}>
-                            <Text>Not Selected</Text>
-                        </View>
+                        <SelectButton option1="paid" option2="unpaid" selected={cartData.paidStatus == "paid" ? 1 : 0} onPress={(x) => setCartData({ ...cartData, paidStatus: x })}></SelectButton>
+                        <Pressable onPress={() => handleQRCodeScan()} style={{ flex: 1 }}>
+                            <View style={[checkoutStyle.shop_selected, cartData.qr_code ? { backgroundColor: colors.green600 } : null]}>
+                                <Text>{cartData.qr_code ? <Icon name={"check"} size={30} color={colors.white} /> : "Not Selected"}</Text>
+                            </View>
+                        </Pressable>
                     </View>
                 </View>
                 <View style={checkoutStyle.total_price_wrapper}>
                     <Text style={[commonStyle.basic_text, checkoutStyle.total_text]}>Total:</Text>
                     <Text style={[commonStyle.number_text, checkoutStyle.total_price]}>{numberSeparator(total)}</Text>
                     {/* <Button title="Checkout" onPress={() => handlePress()} /> */}
-                    <PrimaryButton width={window.width * .5} name="Checkout" onPress={() => handlePress()} />
+                    <PrimaryButton width={window.width * .5} name="Checkout" onPress={() => handlerCheckout()} />
                 </View>
             </View>
-        </View>
+        </View >
     )
 }
 
@@ -145,7 +211,6 @@ const checkoutStyle = StyleSheet.create({
     item_subtitle: {
         color: color.darkGrey,
     },
-
     quantity_number: {
         justifyContent: "center",
         textAlign: "center",
@@ -158,7 +223,6 @@ const checkoutStyle = StyleSheet.create({
         borderColor: color.littleDarkGrey,
         padding: 5,
         borderRadius: 5,
-
     },
     total_cart_item_price: {
         width: "20%",
@@ -235,3 +299,4 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(Checkout)
 // -------------------------------------------------END---------------------------------------------------------------------
+

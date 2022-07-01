@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, Button, Dimensions } from "react-native"
 import { BarCodeScanner } from "expo-barcode-scanner"
 const window = Dimensions.get("window")
 import { Subtract } from "../assets/svg"
-
+import md5 from "md5"
 export default function QRCodeScanner(props) {
     let params = props.route.params
 
@@ -21,12 +21,15 @@ export default function QRCodeScanner(props) {
     const handleBarCodeScanned = ({ type, data }) => {
         const routes = props.navigation.getState()?.routes
         const prevRoute = routes[routes.length - 2]
-        console.log("🚀 ~ file: QRCodeScannerScreen.js ~ line 24 ~ handleBarCodeScanned ~ prevRoute", prevRoute)
+        const md5Data = md5(data)
         if (prevRoute.name === "ProductData") {
-            return props.navigation.navigate("ProductData", { someData: { ...params?.product, qr_code: data }, productID: params?.newProduct })
+            return props.navigation.navigate("ProductData", { someData: { ...params?.product, qr_code: md5Data }, productID: params?.newProduct })
         }
         else if (prevRoute.name === "ShopData") {
-            return props.navigation.navigate("ShopData", { someData: { ...params?.shop, qr_code: data }, shopID: params?.newShop })
+            return props.navigation.navigate("ShopData", { someData: { ...params?.shop, qr_code: md5Data }, shopID: params?.newShop })
+        }
+        else if (prevRoute.name === "AddTransactions") {
+            return props.navigation.navigate("AddTransactions", { someData: { ...params?.order }, qr_code: md5Data })
         }
         // return props.navigation.navigate("ProductData", { someData: { ...params?.product, qr_code: data }, productID: params?.newProduct })
     }

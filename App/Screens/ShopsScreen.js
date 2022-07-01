@@ -10,12 +10,14 @@ import { Feather as Icons } from "@expo/vector-icons"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import commonStyle from "../common/style.js"
 import D from "../handler/Dimensions.handler.js"
+import Loading from "../components/widgets/loading"
+
 
 let d = new D()
 const Shops = (props) => {
     let db_shop = new shopsModel()
     let [shops, setShops] = React.useState([])
-
+    let [loading, setLoading] = React.useState(true)
     const handleClick = (id) => {
         props.navigation.push("ShopData", { shopId: id })
     }
@@ -25,6 +27,7 @@ const Shops = (props) => {
             .getAll()
             .then((result) => {
                 setShops(result)
+                setLoading(false)
             })
             .catch((error) => {
                 console.log(error)
@@ -53,6 +56,11 @@ const Shops = (props) => {
             <View style={{ marginBottom: d.height * 0.23 }}>
                 <FlatList initialNumToRender={10} data={shops} renderItem={renderShops} keyExtractor={(item) => item.id} />
             </View>
+            {loading &&
+                <View style={{ alignSelf: "center", alignItems: "center", justifyContent: "center" }}>
+                    <Loading color="black" />
+                </View>
+            }
             <View style={{ position: "absolute", bottom: 80, alignSelf: "center" }}>
                 <PrimaryButton name="Add Shop" width={d.width * 0.95} onPress={() => { props.navigation.navigate("ShopData") }} />
             </View>

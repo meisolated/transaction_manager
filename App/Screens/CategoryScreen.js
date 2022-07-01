@@ -9,12 +9,14 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import font from "../constant/font.js"
 import color, * as colors from "../constant/color.js"
 import commonStyles from "../common/style.js"
+import Loading from "../components/widgets/loading"
 
 let d = new D()
 
 const CategoryScreen = (props) => {
     let db_categories = new categoriesModel()
     let [categories, setCategories] = React.useState([])
+    let [loading, setLoading] = React.useState(true)
 
     React.useEffect(() => {
         db_categories
@@ -25,6 +27,7 @@ const CategoryScreen = (props) => {
                 } else {
                     setCategories([])
                 }
+                setLoading(false)
             })
             .catch((error) => console.log(error))
 
@@ -59,6 +62,11 @@ const CategoryScreen = (props) => {
                 ) : (
                     <Text style={{ fontFamily: font.semiBold, fontSize: 20 }}>No categories</Text>
                 )}
+                {loading &&
+                    <View style={{ alignSelf: "center", alignItems: "center", justifyContent: "center" }}>
+                        <Loading color="black" />
+                    </View>
+                }
                 <View style={{ flex: 1, position: "absolute", bottom: 70, width: "100%" }}>
                     <PrimaryButton name="Add Category" width={d.width * 0.95} onPress={() => props.navigation.navigate("CategoryData")} />
                 </View>

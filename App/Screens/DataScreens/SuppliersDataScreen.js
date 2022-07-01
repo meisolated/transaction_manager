@@ -51,6 +51,20 @@ const SuppliersData = (props) => {
             alert("Please enter a name")
         }
     }
+
+    const onPressDelete = () => {
+        if (params.id) {
+            db_suppliers
+                .delete([params.id])
+                .then(() => {
+                    alert("Supplier deleted")
+                    props.navigation.navigate("Suppliers")
+                }).catch((error) => alert(error))
+        }
+        else {
+            alert("Please select a supplier")
+        }
+    }
     let openImagePickerAsync = async () => {
         let image = await ImagePickerHandler()
         setSupplier({ ...supplier, picture: image })
@@ -74,6 +88,10 @@ const SuppliersData = (props) => {
                 <View style={{ height: 50 }}>
                     <PrimaryButton name={screen.button} width={d.width * 0.9} onPress={() => onPressSave()} />
                 </View>
+                {params.id && <View style={{ height: 50, marginTop: 30 }}>
+                    <PrimaryButton name={"Delete"} width={d.width * 0.9} onPress={() => onPressDelete()} />
+                </View>}
+
                 <BottomNavBar navigation={props.navigation} />
             </View>
         </SafeAreaView>

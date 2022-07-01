@@ -9,12 +9,14 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import font from "../constant/font.js"
 import color, * as colors from "../constant/color.js"
 import commonStyles from "../common/style.js"
+import Loading from "../components/widgets/loading"
 
 let d = new D()
 
 const SuppliersScreen = (props) => {
     let db_suppliers = new suppliersModel()
     let [suppliers, setSuppliers] = React.useState([])
+    let [loading, setLoading] = React.useState(true)
 
     React.useEffect(() => {
         db_suppliers
@@ -25,6 +27,7 @@ const SuppliersScreen = (props) => {
                 } else {
                     setSuppliers([])
                 }
+                setLoading(false)
             })
             .catch((error) => console.log(error))
 
@@ -59,6 +62,11 @@ const SuppliersScreen = (props) => {
                 ) : (
                     <Text style={{ fontFamily: font.semiBold, fontSize: 20 }}>No Suppliers</Text>
                 )}
+                {loading &&
+                    <View style={{ alignSelf: "center", alignItems: "center", justifyContent: "center" }}>
+                        <Loading color="black" />
+                    </View>
+                }
                 <View style={{ flex: 1, position: "absolute", bottom: 70, width: "100%" }}>
                     <PrimaryButton name="Add Supplier" width={d.width * 0.95} onPress={() => props.navigation.navigate("SupplierData")} />
                 </View>

@@ -10,9 +10,12 @@ import BottomNav from "../Navigation/bottomNavbar.js"
 import { convertTimestamp } from "../util/functions.js"
 import ordersModel from "../database/models/orders.model.js"
 import D from "../handler/Dimensions.handler.js"
+import Loading from "../components/widgets/loading"
+
 let d = new D()
 function OrderScreen(props) {
     const [orders, setOrders] = React.useState([])
+    const [loading, setLoading] = React.useState(true)
     let db_orders = new ordersModel()
     React.useEffect(() => {
         db_orders.getAll().then((results) => {
@@ -21,6 +24,7 @@ function OrderScreen(props) {
             } else {
                 setOrders([])
             }
+            setLoading(false)
         })
         return () => {
             setOrders([])
@@ -57,6 +61,11 @@ function OrderScreen(props) {
                         <Text> No Order</Text>
                     </View>
                 )}
+                {loading &&
+                    <View style={{ alignSelf: "center", alignItems: "center", justifyContent: "center" }}>
+                        <Loading color="black" />
+                    </View>
+                }
             </View>
             <BottomNav navigation={props.navigation} />
         </SafeAreaView>

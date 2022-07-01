@@ -5,19 +5,30 @@ import font from "../../constant/font.js"
 
 const SelectButton = (props) => {
     let [selected, setSelected] = React.useState(1)
+
+    React.useEffect(() => {
+        setSelected(props.selected)
+    }, [props.setSelected])
+
     function handlePress() {
         let x = selected == 1 ? 0 : 1
         setSelected(x)
+        if (x == 1) {
+            props.onPress(props.option1)
+        }
+        else {
+            props.onPress(props.option2)
+        }
     }
     return <View style={styles.container}>
         <Pressable onPress={() => handlePress()}>
             <View style={selected == 0 ? [styles.first_selected, styles.not_selected] : [styles.first_selected]}>
-                <Text style={styles.text_style}>Paid</Text>
+                <Text style={styles.text_style}>{props.option1}</Text>
             </View>
         </Pressable>
         <Pressable onPress={() => handlePress()}>
             <View style={selected == 1 ? [styles.first_selected, styles.not_selected] : [styles.first_selected]}>
-                <Text style={styles.text_style}>Unpaid</Text>
+                <Text style={styles.text_style}>{props.option2}</Text>
             </View>
         </Pressable>
     </View>

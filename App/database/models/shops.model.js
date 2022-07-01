@@ -2,7 +2,6 @@ import db from "../db.js"
 
 export default class shopsModel {
     constructor() {
-        this.db = db
         this.table = "shops"
     }
 
@@ -17,7 +16,7 @@ export default class shopsModel {
      */
     add = (data) =>
         new Promise((resolve, reject) => {
-            this.db.transaction((tx) => {
+            db.transaction((tx) => {
                 tx.executeSql(
                     `INSERT INTO ${this.table} (name, address, phone, picture, qr_code, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ${shopsModel.TSinSecs()}, ${shopsModel.TSinSecs()})`,
                     data,
@@ -38,7 +37,7 @@ export default class shopsModel {
      */
     get = (id) =>
         new Promise((resolve, reject) => {
-            this.db.transaction((tx) => {
+            db.transaction((tx) => {
                 tx.executeSql(
                     `SELECT * FROM ${this.table} WHERE id = ?`,
                     id,
@@ -49,6 +48,31 @@ export default class shopsModel {
                 )
             })
         })
+
+
+    /**
+     * @description get shop by qr_code
+     * @author meisolated
+     * @date 01/07/2022
+     * @param {*} qr_code STRING
+     * @memberof shopsModel
+     */
+    getShopByQrCode = (qr_code) =>
+        new Promise((resolve, reject) => {
+            db.transaction((tx) => {
+                tx.executeSql(
+                    `SELECT * FROM ${this.table} WHERE qr_code = ?`,
+                    qr_code,
+                    (_, { rows }) => {
+                        console.log(rows)
+                        resolve(rows._array[0])
+                    },
+                    (_, error) => reject(error)
+                )
+            })
+        }
+        )
+
 
     /**
      * @description get all shops from database

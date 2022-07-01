@@ -10,10 +10,13 @@ import { Feather as Icons } from "@expo/vector-icons"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { PrimaryButton } from "../components/button"
 import color from "../constant/color.js"
+import Loading from "../components/widgets/loading"
+
 let d = new D()
 const ProductsScreen = (props) => {
     let db_product = new productsModel()
     let [products, setProducts] = React.useState([])
+    let [loading, setLoading] = React.useState(true)
 
     const onPressItem = (id) => {
         props.navigation.navigate("ProductData", { productID: id })
@@ -22,7 +25,10 @@ const ProductsScreen = (props) => {
     React.useEffect(() => {
         db_product
             .getAll()
-            .then((result) => setProducts(result))
+            .then((result) => {
+                setProducts(result)
+                setLoading(false)
+            })
             .catch((error) => console.log(error))
 
         return () => {
@@ -50,6 +56,11 @@ const ProductsScreen = (props) => {
             <View style={{ marginBottom: d.height * .22 }}>
                 <FlatList initialNumToRender={10} data={products} renderItem={renderProducts} keyExtractor={(item) => item.id} />
             </View>
+            {loading &&
+                <View style={{ alignSelf: "center", alignItems: "center", justifyContent: "center" }}>
+                    <Loading color="black" />
+                </View>
+            }
             <View style={{ flex: 1, position: "absolute", bottom: 70, width: "100%" }}>
                 <PrimaryButton name="Add Product" width={d.width * 0.95} onPress={() => props.navigation.navigate("ProductData")} />
             </View>
