@@ -16,6 +16,8 @@ import * as colors from "../../constant/color.js"
 import commonStyle from "../../common/style.js"
 import font from "../../constant/font.js"
 import React, { useMemo } from "react"
+import LoadingCircle from "../../components/widgets/loading/index.js"
+
 let d = new D()
 
 export default function ProductEditScreen(props) {
@@ -26,6 +28,7 @@ export default function ProductEditScreen(props) {
 
     React.useEffect(() => {
         if (params.someData !== undefined) {
+            setLoading(false)
             setState({ productID: params.productID, ScreenState: params.productID || "add" })
             setProduct({ ...params.someData })
         }
@@ -59,6 +62,7 @@ export default function ProductEditScreen(props) {
     const [product, setProduct] = React.useState({ name: null, desc: null, picture: null, qr_code: null, category: null, suppliers: null, attribute: emptyAttribute })
     const [category, setCategory] = React.useState([])
     const [suppliers, setSuppliers] = React.useState([])
+    const [loading, setLoading] = React.useState(true)
     const [keyboardStatus, setKeyboardStatus] = React.useState(false)
 
     // get product data if update
@@ -68,16 +72,17 @@ export default function ProductEditScreen(props) {
             .getAll()
             .then((res) => {
                 setCategory(res)
-            })
-            .catch((err) => alert(err))
-        db_suppliers
-            .getAll()
-            .then((res) => {
-                setSuppliers(res)
-            })
-            .catch((err) => alert(err))
+                db_suppliers
+                    .getAll()
+                    .then((res) => {
+                        setSuppliers(res)
+                        setState({ productID: params.productID, ScreenState: params.productID || "add" })
 
-        setState({ productID: params.productID, ScreenState: params.productID || "add" })
+                    })
+                    .catch((err) => alert(err))
+
+            })
+            .catch((err) => alert(err))
         if (params.productID) {
             setScreen({ title: "Edit Product", button: "Update" })
             db_product
@@ -85,11 +90,25 @@ export default function ProductEditScreen(props) {
                 .then((result) => {
                     let productDetails = result[0]
                     db_product.getAttributes(state.productID).then((result) => {
-                        setProduct({ ...product, name: productDetails.name, desc: productDetails.description, picture: productDetails.picture, qr_code: productDetails.qr_code, category: productDetails.category, suppliers: productDetails.supplier, attribute: result })
+                        setLoading(false)
+                        setProduct({
+                            ...product,
+                            name: productDetails.name,
+                            desc: productDetails.description,
+                            picture: productDetails.picture,
+                            qr_code: productDetails.qr_code,
+                            category: productDetails.category,
+                            suppliers: productDetails.supplier,
+                            attribute: result,
+                        })
                     })
                 })
                 .catch((error) => alert("error" + error))
         }
+        else {
+            setLoading(false)
+        }
+
     }, [state.ScreenState, state.productID, params.productID])
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -154,65 +173,82 @@ export default function ProductEditScreen(props) {
     function onQRCodeButtonPress() {
         props.navigation.navigate("QRCodeScanner", { product, newProduct: state.productID })
     }
+
+    const validate = async () =>
+        new Promise((resolve, reject) => {
+            product.attribute.map((item, index) => {
+                if (item.price < item.cost_price) return reject("Price can't be greater than cost price")
+                if (product.attribute.length - 1 === index) return resolve()
+            })
+        })
+
     async function onSavePress() {
-        if (product.name && product.desc && product.attribute.length > 0) {
-            if (state.ScreenState == "add") {
-                db_product
-                    .addNew([product.name, product.picture, product.desc, product.qr_code, product.category, product.suppliers])
-                    .then(({ insertId, status }) => {
-                        if (status) {
-                            product.attribute.map((item) => {
-                                db_product
-                                    .addNewAttribute([insertId, item.number, item.metric, item.price, item.cost_price])
-                                    .then(({ insertId, status }) => {
-                                        if (status) {
-                                            alert("Product Added")
-                                            props.navigation.navigate("Products")
-                                        }
+        setLoading(true)
+        validate()
+            .then(() => {
+                if (product.name && product.attribute.length > 0) {
+                    if (state.ScreenState == "add") {
+                        db_product
+                            .addNew([product.name, product.picture, product.desc, product.qr_code, product.category, product.suppliers])
+                            .then(({ insertId, status }) => {
+                                if (status) {
+                                    product.attribute.map((item) => {
+                                        setLoading(false)
+                                        db_product
+                                            .addNewAttribute([insertId, item.number, item.metric, item.price, item.cost_price])
+                                            .then(({ insertId, status }) => {
+                                                if (status) {
+                                                    alert("Product Added")
+                                                    props.navigation.navigate("Products")
+                                                }
+                                            })
+                                            .catch((error) => alert("error" + error))
                                     })
-                                    .catch((error) => alert("error" + error))
+                                } else {
+                                    setLoading(false)
+                                    alert("Error")
+                                }
                             })
-                        } else {
-                            alert("Error")
-                            1
-                        }
-                    })
-                    .catch((e) => alert("Error" + e))
-            } else {
-                db_product
-                    .update(state.productID, [product.name, product.desc, product.picture, product.qr_code, product.category, product.suppliers])
-                    .then(({ status }) => {
-                        if (status) {
-                            // delete all attribute
-                            db_product
-                                .deleteAttribute(state.productID)
-                                .then((result) => {
-                                    if (result.status) {
-                                        // add new attribute
-                                        product.attribute.map((item) => {
-                                            db_product
-                                                .addNewAttribute([state.productID, item.number, item.metric, item.price, item.cost_price])
-                                                .then(({ insertId, status }) => {
-                                                    if (!status) {
-                                                        alert("Error")
-                                                    }
+                            .catch((e) => alert("Error" + e))
+                    } else {
+                        db_product
+                            .update(state.productID, [product.name, product.desc, product.picture, product.qr_code, product.category, product.suppliers])
+                            .then(({ status }) => {
+
+                                if (status) {
+                                    // delete all attribute
+                                    db_product
+                                        .deleteAttribute(state.productID)
+                                        .then((result) => {
+                                            if (result.status) {
+                                                // add new attribute
+                                                product.attribute.map((item) => {
+                                                    db_product
+                                                        .addNewAttribute([state.productID, item.number, item.metric, item.price, item.cost_price])
+                                                        .then(({ insertId, status }) => {
+                                                            setLoading(false)
+                                                            if (!status) {
+                                                                alert("Error")
+                                                            }
+                                                        })
+                                                        .catch((error) => alert("error" + error))
                                                 })
-                                                .catch((error) => alert("error" + error))
+                                                alert("Product Updated")
+                                                props.navigation.navigate("Products")
+                                            }
                                         })
-                                        alert("Product Updated")
-                                        props.navigation.navigate("Products")
-                                    }
-                                })
-                                .catch((error) => alert("error" + error))
-                        } else {
-                            alert("Error")
-                        }
-                    })
-                    .catch((e) => alert("Error" + e))
-            }
-        } else {
-            alert("Please fill all the fields")
-        }
+                                        .catch((error) => alert("error" + error))
+                                } else {
+                                    alert("Error")
+                                }
+                            })
+                            .catch((e) => alert("Error" + e))
+                    }
+                } else {
+                    alert("Please fill all the fields")
+                }
+            })
+            .catch((err) => alert(err))
     }
     async function openImagePickerAsync() {
         let image = await ImagePickerHandler()
@@ -234,7 +270,7 @@ export default function ProductEditScreen(props) {
     return (
         <SafeAreaView style={style.container}>
             <TopNavbar title={screen.title} />
-            <ScrollView style={style.scrollView}>
+            {!loading ? <ScrollView style={style.scrollView}>
                 <KeyboardAvoidingView>
                     <View style={style.main}>
                         <Pressable style={style.image} onPress={openImagePickerAsync}>
@@ -248,8 +284,8 @@ export default function ProductEditScreen(props) {
                                 </View>
                             )}
                         </Pressable>
-                        <TextInput type="text" placeholder="Name" icon="user" value={product.name} onChange={(data) => setProduct({ ...product, name: data })} />
-                        <TextInput type="text" placeholder="Description (optional)" icon="align-center" value={product.desc} onChange={(data) => setProduct({ ...product, desc: data })} />
+                        <TextInput type="default" placeholder="Name" icon="user" value={product.name} onChange={(data) => setProduct({ ...product, name: data })} />
+                        <TextInput type="default" placeholder="Description (optional)" icon="align-center" value={product.desc} onChange={(data) => setProduct({ ...product, desc: data })} />
                         <View style={style.suppliers_and_category_wrapper}>
                             <Pressable onPress={() => pickingCategory()}>
                                 <View style={style.suppliers_and_category_wrapper_item}>
@@ -325,7 +361,7 @@ export default function ProductEditScreen(props) {
                     </View>
                     {popup.state === "active" && <Popup return={(x) => selectedOption(x)} options={popup.options} />}
                 </KeyboardAvoidingView>
-            </ScrollView>
+            </ScrollView> : <LoadingCircle color="black" />}
             {!keyboardStatus && <BottomNavBar navigation={props.navigation} />}
         </SafeAreaView>
     )

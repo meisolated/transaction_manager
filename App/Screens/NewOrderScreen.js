@@ -25,24 +25,28 @@ export default function AddOrderScreen(props) {
         ChooseSupplier: <ChooseSupplier onSelect={(data) => onGetBack(data)} />,
         ChooseProduct: (product) => <ChooseProduct product={product} onSelect={(data) => onGetBack(data)} />,
         ChooseProductAttribute: (productId) => <ChooseProductAttribute productId={productId} onSelect={(data) => onGetBack(data)} />,
-        Checkout: (addItemToCard, qrCode) => <Checkout navigation={props.navigation} qrCodeCallback={qrCode ? qrCode : null} addItemToCard={addItemToCard} onSelect={(data) => onGetBack(data)} getBack={() => setProduct({ supplier: null, category: null, productId: null, productAttributeId: null })} />,
+        Checkout: (addItemToCard, qrCode) => (
+            <Checkout
+                navigation={props.navigation}
+                qrCodeCallback={qrCode ? qrCode : null}
+                addItemToCard={addItemToCard}
+                onSelect={(data) => onGetBack(data)}
+                getBack={() => setProduct({ supplier: null, category: null, productId: null, productAttributeId: null })}
+            />
+        ),
     }
 
     function onGetBack(data) {
         setProduct({ ...product, [data.key]: data.value })
     }
 
-
-
     const [product, setProduct] = React.useState({ supplier: null, category: null, productId: null, productAttributeId: null })
     const [state, setState] = React.useState({ title: null, string: null, component: () => null })
 
     React.useEffect(() => {
-        console.log(params.someData)
         if (params.someData !== undefined) {
             setState({ title: "Checkout", string: "checkout", component: () => components.Checkout(product, params.qr_code) })
-        }
-        else {
+        } else {
             if (product.supplier == null) {
                 setState({ title: "Choose Supplier", string: "supplier", component: () => components.ChooseSupplier })
             } else if (product.category == null) {
@@ -55,7 +59,6 @@ export default function AddOrderScreen(props) {
                 setState({ title: "Checkout", string: "checkout", component: () => components.Checkout(product) })
             }
         }
-
     }, [product, params])
 
     return (
@@ -92,7 +95,6 @@ const ChooseCategoryStyle = StyleSheet.create({
         fontSize: 20,
         fontFamily: font.primary,
     },
-
     item: {
         marginTop: 20,
         margin: 20,
@@ -112,17 +114,24 @@ const ChooseCategory = (props) => {
     let db_category = new categoriesModel()
     const [categories, setCategories] = React.useState([])
     const [loading, setLoading] = React.useState(true)
-    db_category
-        .getAll()
-        .then((data) => {
-            setCategories(data)
-            setLoading(false)
-        })
-        .catch((err) => {
-            alert(err)
-        })
 
     React.useEffect(() => {
+        db_category
+            .getAll()
+            .then((data) => {
+                if (data.length > 0) {
+                    setCategories(data)
+                    setLoading(false)
+                } else {
+                    setLoading(false)
+                    Alert.alert("No Category Found", "Please add category first")
+                }
+
+            })
+            .catch((err) => {
+                alert(err)
+            })
+
         return () => {
             setCategories([])
         }
@@ -164,17 +173,22 @@ function ChooseSupplier(props) {
     const [loading, setLoading] = React.useState(true)
     const db_suppliers = new suppliersModel()
 
-    db_suppliers
-        .getAll()
-        .then((suppliers) => {
-            setSuppliers(suppliers)
-            setLoading(false)
-        })
-        .catch((err) => {
-            alert(err)
-        })
-
     React.useEffect(() => {
+        db_suppliers
+            .getAll()
+            .then((suppliers) => {
+                if (suppliers.length > 0) {
+                    setSuppliers(suppliers)
+                    setLoading(false)
+                } else {
+                    setLoading(false)
+                    Alert.alert("No Supplier Found", "Please add supplier first")
+                }
+            })
+            .catch((err) => {
+                alert(err)
+            })
+
         return () => {
             setSuppliers([])
         }
@@ -224,15 +238,20 @@ function ChooseProduct(props) {
     const [products, setProducts] = React.useState([])
     const [loading, setLoading] = React.useState(true)
     const db_products = new productsModel()
-    db_products
-        .getByCategoryAndSupplier(props.product.category, props.product.supplier)
-        .then((data) => {
-            setLoading(false)
-            setProducts(data)
-        })
 
-        .catch((error) => alert(error))
     React.useEffect(() => {
+        db_products
+            .getByCategoryAndSupplier(props.product.category, props.product.supplier)
+            .then((data) => {
+                if (data.length > 0) {
+                    setLoading(false)
+                    setProducts(data)
+                } else {
+                    setLoading(false)
+                    Alert.alert("No Product Found", "Please add product first")
+                }
+            })
+            .catch((error) => alert(error))
         return () => {
             setProducts([])
         }
@@ -271,15 +290,19 @@ function ChooseProductAttribute(props) {
     const [products, setProducts] = React.useState([])
     const [loading, setLoading] = React.useState(true)
     const db_products = new productsModel()
-    db_products
-        .getAttributes(props.productId)
-        .then((data) => {
-            setLoading(false)
-            setProducts(data)
-        })
 
-        .catch((error) => alert(error))
     React.useEffect(() => {
+        db_products
+            .getAttributes(props.productId)
+            .then((data) => {
+                if (data.length > 0) {
+                    setLoading(false)
+                    setProducts(data)
+                } else {
+                    setLoading(false)
+                    Alert.alert("No Product Found", "Please add product first")
+                }
+            }).catch((error) => alert(error))
         return () => {
             setProducts([])
         }
@@ -299,8 +322,8 @@ function ChooseProductAttribute(props) {
                         <TouchableOpacity style={ChooseCategoryStyle.item} onPress={() => props.onSelect({ key: "productAttributeId", value: item.id })}>
                             <Image style={{ width: 70, height: 70 }} source={require("../assets/img/milk.png")} />
                             <View style={ChooseCategoryStyle.itemDetailsWrapper}>
-                                <Text style={ChooseCategoryStyle.title_text}>{item.metric}</Text>
-                                <Text style={ChooseCategoryStyle.subtitle_text}>{item.price}</Text>
+                                <Text style={ChooseCategoryStyle.title_text}>{item.number + " " + item.metric}</Text>
+                                <Text style={ChooseCategoryStyle.subtitle_text}>₹{item.price}</Text>
                             </View>
                             <MaterialCommunityIcons name="chevron-right" color={color.primary} size={30} />
                         </TouchableOpacity>

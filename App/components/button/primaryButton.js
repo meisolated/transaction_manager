@@ -4,7 +4,7 @@ import * as color from "../../constant/color.js"
 import font from "../../constant/font.js"
 
 const componentName = (props) => (
-    <Pressable style={{ alignSelf: "center" }} onPress={() => props.onPress()}>
+    <Pressable onLongPress={props.onLongPress} style={{ alignSelf: "center" }} onPress={props.onPress}>
         <View style={[styles.container, { width: props.width }]}>
             <Text style={styles.name}>{props.name}</Text>
         </View>

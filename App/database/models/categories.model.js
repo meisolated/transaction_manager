@@ -5,8 +5,6 @@ export default class categoriesModel {
         this.table = "categories"
     }
 
-
-
     /**
      * @description this element will return timestamp in seconds
      * @author meisolated

@@ -56,7 +56,7 @@ const CategoryScreen = (props) => {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <TopNavbar title="Categories" />
-            <View style={styles.container}>
+            <View style={[styles.container,]}>
                 {categories.length > 0 ? (
                     <FlatList initialNumToRender={10} data={categories} renderItem={renderCategories} keyExtractor={(item) => item.id} />
                 ) : (

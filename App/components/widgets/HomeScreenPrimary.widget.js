@@ -1,16 +1,52 @@
 import { View, Text, StyleSheet } from "react-native"
+import React from "react"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import color from "../../constant/color.js"
 import font from "../../constant/font.js"
+import ordersModel from "../../database/models/orders.model.js"
 import { numberSeparator } from "../../util/functions.js"
-
+import { startAndEndOfDat } from "../../util/functions.js"
 function HomeScreenPrimary() {
+    let today = startAndEndOfDat()
+    let db_order = new ordersModel()
+    let [widgetData, setWidgetData] = React.useState({ dailyTurnOver: 0, unpaid: 0, profit: 0, expense: 0 })
+
+    React.useEffect(() => {
+        db_order.getByTime(today.start, today.end).then(
+            (orders) => {
+                let total_amount = 0
+                let total_cost_price = 0
+                let total_unpaid = 0
+                orders.map((order) => {
+                    total_amount += order.total_amount
+                    total_cost_price += order.total_cost_amount
+                    if (order.payment_status == "unpaid") {
+                        total_unpaid += order.total_amount
+                    }
+                    setWidgetData({
+                        dailyTurnOver: total_amount,
+                        unpaid: total_unpaid,
+                        profit: total_amount - total_cost_price,
+                        expense: 0,
+                    })
+                })
+
+            })
+            .catch((err) => {
+                alert(err)
+            })
+    }, [])
+
+
+
+
+
     return (
         <View style={styles.daily_turnover}>
             <View style={styles.primary_info}>
                 <View style={styles.daily_turnover_wrapper}>
                     <View style={styles.daily_turnover_number}>
-                        <Text style={styles.common_text_style}>{numberSeparator(500000)}</Text>
+                        <Text style={styles.common_text_style}>{numberSeparator(widgetData.dailyTurnOver)}</Text>
                         <View style={styles.change_in_turnover_wrapper}>
                             <Text style={styles.change_in_turnover}>20%</Text>
                             <MaterialCommunityIcons name="arrow-up-bold-circle" size={20} color={color.green} />
@@ -20,18 +56,18 @@ function HomeScreenPrimary() {
                 </View>
                 {/* <MaterialCommunityIcons name="minus" size={25} color={color.black} /> */}
                 <View style={styles.bottom_not_received_text}>
-                    <Text style={styles.common_text_style}>{numberSeparator(5000)}</Text>
+                    <Text style={styles.common_text_style}>{numberSeparator(widgetData.unpaid)}</Text>
                     <Text style={styles.primary_info_bottom_text_style}>Receivable/Unpaid/StockLeft</Text>
                 </View>
             </View>
             <View style={styles.divider} />
             <View style={styles.secondary_info}>
                 <View style={styles.todays_profit}>
-                    <Text style={styles.common_text_style}>{numberSeparator(5808)}</Text>
+                    <Text style={styles.common_text_style}>{numberSeparator(widgetData.profit)}</Text>
                     <Text style={styles.primary_info_bottom_text_style}>Today's Profit</Text>
                 </View>
                 <View style={styles.todays_opex}>
-                    <Text style={styles.common_text_style}>{numberSeparator(5808)}</Text>
+                    <Text style={styles.common_text_style}>{numberSeparator(widgetData.expense)}</Text>
                     <Text style={styles.primary_info_bottom_text_style}>Today's Operating Expense (OPEX)</Text>
                 </View>
             </View>

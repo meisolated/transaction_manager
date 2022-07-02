@@ -19,3 +19,16 @@ export function convertTimestamp(ts) {
     return `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
     // return `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}` //?with seconds
 }
+
+
+export function startAndEndOfDat() {
+    const start = new Date()
+    start.setHours(0, 0, 0, 0)
+    let timestampState = Math.floor(new Date(start).getTime() / 1000)
+
+    const end = new Date()
+    end.setHours(23, 59, 59, 999)
+    let timestampEnd = Math.floor(new Date(end).getTime() / 1000)
+
+    return ({ start: timestampState, end: timestampEnd })
+}

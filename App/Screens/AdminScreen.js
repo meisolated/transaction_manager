@@ -8,7 +8,6 @@ function AdminScreen(props) {
     useEffect(() => {
         async function getOrderData() {
             let orders = await dbOrders.getOrderByTime(0, 1)
-            console.log(orders)
         }
         getOrderData()
     }, [])

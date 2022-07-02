@@ -43,7 +43,7 @@ const ShopData = (props) => {
     const onSavePress = () => {
         if (params.shopId) {
             db_shop
-                .updateById(params.shopId, [shop.name, shop.address, shop.phone, shop.qr_code])
+                .updateById(params.shopId, [shop.name, shop.address, shop.phone, shop.picture, shop.qr_code])
                 .then((result) => {
                     props.navigation.goBack()
                 })
@@ -97,12 +97,13 @@ const ShopData = (props) => {
                 </Pressable>
                 <TextInput icon="user" placeholder="Shop Name" value={shop.name} onChange={(text) => setShop({ ...shop, name: text })} />
                 <TextInput icon="map-pin" placeholder="Address" value={shop.address} onChange={(text) => setShop({ ...shop, address: text })} />
-                <TextInput icon="hash" placeholder="Phone" value={shop.phone} onChange={(text) => setShop({ ...shop, phone: text })} />
+                <TextInput type="numeric" icon="hash" placeholder="Phone" value={shop.phone} onChange={(text) => setShop({ ...shop, phone: text })} />
                 <Pressable onPress={onQRCodeButtonPress}>
                     <View style={[style.qr_code_wrapper, shop.qr_code && { backgroundColor: colors.green700 }]}>
                         {!shop.qr_code ? <Text style={[commonStyle.basic_text, { fontSize: 18, color: "white" }, shop.qr_code && { color: "white" }]}>Scan QR Code </Text> : <Icon name="check" size={30} color={colors.white} />}
                     </View>
                 </Pressable>
+                <Text style={[commonStyle.basic_text, { fontSize: 18 }]}>{shop.qr_code}</Text>
                 <View style={{ height: 50 }}>
                     <PrimaryButton onPress={() => onSavePress()} name={screen.button} width={d.width * 0.9} />
                 </View>

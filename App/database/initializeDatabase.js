@@ -1,5 +1,6 @@
 import { localStorage } from "./localStorage.js"
 import db from "./db"
+import ToastHandler from "../handler/Toast.handler.js"
 
 export async function deleteAllTables(cb) {
     let queries = [
@@ -18,8 +19,8 @@ export async function deleteAllTables(cb) {
         `DROP TABLE IF EXISTS suppliers`,
     ]
 
-    let donebefore = await localStorage.retrieveData("tablesExists")
-    if (donebefore == "true") return localStorage.storeData("tablesExists", "false")
+    let donebefore = await localStorage.retrieveData("tables")
+    if (donebefore == "true") return localStorage.storeData("tables", "false")
 
     db.transaction((tx) => {
         for (let i = 0; i < queries.length; i++) {
@@ -38,8 +39,8 @@ export async function deleteAllTables(cb) {
 // create table if not exists
 export async function createTables(cb) {
     // check if tables exists for not
-    let donebefore = await localStorage.retrieveData("tablesExists")
-    if (donebefore == "true") return cb({ done: 0, total: 0 })
+    let donebefore = await localStorage.retrieveData("tables")
+    if (donebefore == "true") return
 
     let queries = [
         `DROP TABLE IF EXISTS orders`,
@@ -52,9 +53,10 @@ export async function createTables(cb) {
 
         `CREATE TABLE orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            shop_id text,
+            shop_id bigint,
             items text NOT NULL,
             total_amount bigint NOT NULL,
+            total_cost_amount bigint NOT NULL,
             payment_status text NOT NULL,
             modified_at bigint NOT NULL,
             created_at bigint NOT NULL);`,
@@ -64,7 +66,8 @@ export async function createTables(cb) {
             order_id bigint NOT NULL,
             product_name text NOT NULL,
             quantity bigint NOT NULL,
-            product_price text NOT NULL,
+            product_price bigint NOT NULL,
+            product_cost_price bigint NOT NULL,
             modified_at bigint NOT NULL,
             created_at bigint NOT NULL);`,
 
@@ -94,7 +97,7 @@ export async function createTables(cb) {
             product_id bigint NOT NULL,
             number bigint NOT NULL,
             metric text NOT NULL,
-            cost_price text NOT NULL,
+            cost_price bigint NOT NULL,
             price bigint NOT NULL,
             created_at bigint NOT NULL,
             modified_at bigint NOT NULL);`,
@@ -119,8 +122,9 @@ export async function createTables(cb) {
                 queries[i],
                 [],
                 (tx, results) => {
-                    if (i === queries.length - 1) localStorage.storeData("tablesExists", "true")
-                    cb({ done: i + 1, total: queries.length })
+                    if (i === queries.length - 1) localStorage.storeData("tables", "true")
+                    if (i === queries.length - 1) ToastHandler("Tables created successfully")
+
                 },
                 (_, error) => console.log(error)
             )
@@ -140,14 +144,14 @@ export function insertDummyData() {
         let randomNumber = Math.floor(Math.random() * 100)
         db.transaction((tx) => {
             tx.executeSql(
-                "insert into orders (created_at, modified_at, total_amount, items, payment_status, shop_id) values (?, ?, ?, ?, ?, ?)",
-                [Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), randomNumber, '["151x1","151x1", "151x1"]', ["paid", "unpaid"][Math.floor(Math.random() * 2)], "1"],
+                "insert into orders (created_at, modified_at, total_amount, total_cost_amount, items, payment_status, shop_id) values (?, ?, ?, ?, ?, ?, ?)",
+                [Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), randomNumber, randomNumber, '["151x1","151x1", "151x1"]', ["paid", "unpaid"][Math.floor(Math.random() * 2)], "1"],
                 (_, result) => {
                     // add attributes to order
                     for (let j = 0; j < 3; j++) {
                         tx.executeSql(
-                            "insert into ordered_items (created_at, modified_at, order_id, product_name, quantity, product_price) values (?, ?, ?, ?, ?, ?)",
-                            [Math.floor(Date.now()), Math.floor(Date.now()), result.insertId, "product " + j, j, j * 10],
+                            "insert into ordered_items (created_at, modified_at, order_id, product_name, quantity, product_price, product_cost_price) values (?, ?, ?, ?, ?, ?, ?)",
+                            [Math.floor(Date.now()), Math.floor(Date.now()), result.insertId, "product " + j, j, j * 10, 10],
                             (_, result) => console.log("inserted ordered_items"),
                             (_, error) => console.log(error)
                         )

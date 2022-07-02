@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { ScrollView, View, Text, Animated, StyleSheet, Dimensions, Easing, Pressable, Button, Image } from "react-native"
 import commonStyle from "../../common/style.js"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
@@ -13,29 +13,31 @@ import productsModel from "../../database/models/products.model.js"
 import LoadingCircle from "../../components/widgets/loading/index.js"
 import { Feather as Icon } from "@expo/vector-icons"
 import shopsModel from "../../database/models/shops.model.js"
+import Toast from "../../handler/Toast.handler.js"
 
 const window = Dimensions.get("window")
 
 
 function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemToCard, getBack, navigation, qrCodeCallback }) {
+
+
+
+
     const db_shop = new shopsModel()
-    const [total, setTotal] = React.useState(0)
+    const [total, setTotal] = React.useState({ cost: 0, total: 0 })
     const [loading, setLoading] = React.useState(true)
-    const [cartData, setCartData] = React.useState({ paidStatus: "paid", qrCode: null, shopId: null })
+    const [cartData, setCartData] = React.useState({ paymentStatus: "unpaid", qrCode: null, shopId: null })
     const db_product = new productsModel()
 
     React.useEffect(() => {
         if (qrCodeCallback) {
-            console.log("qrCodeCallback", qrCodeCallback)
-            setCartData({ ...cartData, qrCode: qrCodeCallback })
             db_shop.getShopByQrCode(qrCodeCallback).then(shop => {
-                console.log(shop)
-                if (shop) {
-                    setCartData({ ...cartData, shopId: shop.id })
+                if (shop !== undefined) {
+                    setCartData({ ...cartData, shopId: shop.id, qrCode: qrCodeCallback })
                 }
                 else {
-                    db_shop.add(["Automatic", "nill", "00000", "nill", qrCodeCallback]).then(shop => {
-                        setCartData({ ...cartData, shopId: shop.insertId })
+                    db_shop.add(["Automatic", "nill", "", "nill", qrCodeCallback]).then(shop => {
+                        setCartData({ ...cartData, shopId: shop.insertId, qrCode: qrCodeCallback })
                     }).catch(err => {
                         console.log(err)
                     })
@@ -48,7 +50,7 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemT
             setLoading(true)
             handlePress(addItemToCard)
         }
-    }, [qrCodeCallback])
+    }, [qrCodeCallback, addItemToCard])
 
     function handlePress(addItemToCard) {
         db_product.getById(addItemToCard.productId).then(product => {
@@ -61,6 +63,7 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemT
                     product_id: _p.id,
                     quantity: 1,
                     price: _a.price,
+                    cost_price: _a.cost_price,
                     metric: _a.number + " " + _a.metric,
                 }
                 orderStateUpdate(_product)
@@ -79,8 +82,8 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemT
     }
 
     function handlerCheckout() {
-        console.log("🚀 ~ file: Checkout.js ~ line 79 ~ handlerCheckout ~ cart", cart)
-        console.log("🚀 ~ file: Checkout.js ~ line 80 ~ handlerCheckout ~ cartData", cartData)
+        if (!cartData.shopId) return alert("Please scan QR code")
+        navigation.navigate("OrderAdded", { cart, cartData: { ...cartData, totalPrice: total.total, costPrice: total.cost } })
     }
 
     function _updateCart(cartItem, quantity) {
@@ -89,10 +92,12 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemT
     }
     function _cartTotal() {
         let total = 0
+        let costTotal = 0
         cart.map((item) => {
             total += item.price * item.quantity
+            costTotal += item.cost_price * item.quantity
         })
-        setTotal(total)
+        setTotal({ ...total, total: total, cost: costTotal })
     }
     React.useEffect(() => {
         _cartTotal()
@@ -144,19 +149,19 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemT
                 <View style={checkoutStyle.order_settings_wrapper}>
                     <Text style={checkoutStyle.order_settings_title}>Order Settings</Text>
                     <View style={[checkoutStyle.order_settings]}>
-                        <SelectButton option1="paid" option2="unpaid" selected={cartData.paidStatus == "paid" ? 1 : 0} onPress={(x) => setCartData({ ...cartData, paidStatus: x })}></SelectButton>
+                        <SelectButton option1="paid" option2="unpaid" selected={cartData.paymentStatus == "paid" ? 1 : 0} onPress={(x) => setCartData({ ...cartData, paymentStatus: x })}></SelectButton>
                         <Pressable onPress={() => handleQRCodeScan()} style={{ flex: 1 }}>
-                            <View style={[checkoutStyle.shop_selected, cartData.qr_code ? { backgroundColor: colors.green600 } : null]}>
-                                <Text>{cartData.qr_code ? <Icon name={"check"} size={30} color={colors.white} /> : "Not Selected"}</Text>
+                            <View style={[checkoutStyle.shop_selected, cartData.qrCode ? { backgroundColor: colors.green600 } : null]}>
+                                <Text>{cartData.qrCode ? <Icon name={"check"} size={30} color={colors.white} /> : "Not Selected"}</Text>
                             </View>
                         </Pressable>
                     </View>
                 </View>
                 <View style={checkoutStyle.total_price_wrapper}>
                     <Text style={[commonStyle.basic_text, checkoutStyle.total_text]}>Total:</Text>
-                    <Text style={[commonStyle.number_text, checkoutStyle.total_price]}>{numberSeparator(total)}</Text>
+                    <Text style={[commonStyle.number_text, checkoutStyle.total_price]}>{numberSeparator(total.total)}</Text>
                     {/* <Button title="Checkout" onPress={() => handlePress()} /> */}
-                    <PrimaryButton width={window.width * .5} name="Checkout" onPress={() => handlerCheckout()} />
+                    <PrimaryButton width={window.width * .5} name="Checkout" onLongPress={() => handlerCheckout()} onPress={() => Toast("Long Press to Checkout")} />
                 </View>
             </View>
         </View >
@@ -183,6 +188,10 @@ const checkoutStyle = StyleSheet.create({
         fontSize: font.md,
         fontFamily: font.semiBold,
     },
+    item_subtitle: {
+        fontFamily: font.semiBold,
+        color: color.darkGrey,
+    },
     cart_item_image_wrapper: {
         justifyContent: "center",
         alignItems: "center",
@@ -208,9 +217,7 @@ const checkoutStyle = StyleSheet.create({
         flexDirection: "column",
         justifyContent: "center",
     },
-    item_subtitle: {
-        color: color.darkGrey,
-    },
+
     quantity_number: {
         justifyContent: "center",
         textAlign: "center",

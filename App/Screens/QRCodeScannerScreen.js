@@ -28,8 +28,14 @@ export default function QRCodeScanner(props) {
         else if (prevRoute.name === "ShopData") {
             return props.navigation.navigate("ShopData", { someData: { ...params?.shop, qr_code: md5Data }, shopID: params?.newShop })
         }
-        else if (prevRoute.name === "AddTransactions") {
-            return props.navigation.navigate("AddTransactions", { someData: { ...params?.order }, qr_code: md5Data })
+        else if (prevRoute.name === "AddOrder") {
+            return props.navigation.navigate("AddOrder", { someData: { ...params?.order }, qr_code: md5Data })
+        }
+        else if (prevRoute.name === "OrdersScreen") {
+            return props.navigation.navigate("OrdersScreen", { qr_code: md5Data })
+        }
+        else {
+            console.log(prevRoute.name)
         }
         // return props.navigation.navigate("ProductData", { someData: { ...params?.product, qr_code: data }, productID: params?.newProduct })
     }

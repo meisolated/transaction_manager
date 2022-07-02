@@ -39,9 +39,10 @@ export default class shopsModel {
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `SELECT * FROM ${this.table} WHERE id = ?`,
-                    id,
+                    `SELECT * FROM ${this.table} WHERE id = ${id}`,
+                    [],
                     (_, { rows }) => {
+
                         resolve(rows._array[0])
                     },
                     (_, error) => reject(error)
@@ -61,10 +62,9 @@ export default class shopsModel {
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `SELECT * FROM ${this.table} WHERE qr_code = ?`,
-                    qr_code,
+                    `SELECT * FROM ${this.table} WHERE qr_code = "${qr_code}"`,
+                    [],
                     (_, { rows }) => {
-                        console.log(rows)
                         resolve(rows._array[0])
                     },
                     (_, error) => reject(error)

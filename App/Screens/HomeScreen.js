@@ -7,7 +7,12 @@ import TopNavbar from "../Navigation/topNavbar.js"
 import HomeScreenPrimary from "../components/widgets/HomeScreenPrimary.widget.js"
 
 function HomeScreen(props) {
-    let [get, set] = React.useState({})
+
+    React.useEffect(() => {
+        createTables()
+        // insertDummyData()
+    }, [])
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -15,19 +20,7 @@ function HomeScreen(props) {
             <ScrollView>
                 <View style={{ flex: 1, marginBottom: 100 }}>
                     <HomeScreenPrimary />
-                    <Button title="Go to Transactions" onPress={() => props.navigation.navigate("Transactions")} />
-                    <Button title="Add Transactions" onPress={() => props.navigation.navigate("AddTransactions")} />
-                    <Button title="Admin" onPress={() => props.navigation.navigate("Admin")} />
-                    <Button title="EditProduct" onPress={() => props.navigation.navigate("ProductData")} />
-                    <Button title="TestScreen" onPress={() => props.navigation.navigate("TestScreen")} />
-                    <Button title="AddOrder" onPress={() => props.navigation.navigate("AddOrder")} />
-                    <Button title="OrderAdded" onPress={() => props.navigation.navigate("OrderAdded")} />
-                    {/* <Button title="CameraScreen" onPress={() => props.navigation.navigate("CameraScreen")} /> */}
-                    <Text>Change Things into Database</Text>
-                    <Button title="Insert dummy data" onPress={() => insertDummyData()} />
-                    <Button title="Create Tables" onPress={() => createTables((x) => set(x))} />
-                    <Button title="Delete All Tables" onPress={() => deleteAllTables((x) => set(x))} />
-                    <Text>{JSON.stringify(get)}</Text>
+                    {/* <Button title={"Create Tables"} onPress={() => insertDummyData()} /> */}
                 </View>
             </ScrollView>
             <BottomNavBar navigation={props.navigation} />

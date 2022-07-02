@@ -10,7 +10,6 @@ export default function CameraScreen() {
     const [scanned, setScanned] = useState(false)
 
     const handleBarCodeScanned = ({ type, data }) => {
-        console.log(`Bar code scanned: ${data}`)
         setScanned(true)
     }
 

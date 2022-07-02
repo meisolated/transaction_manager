@@ -1,5 +1,5 @@
-import React from "react"
-import { View, Text, StyleSheet, FlatList, Image } from "react-native"
+import React, { useMemo } from "react"
+import { View, Text, StyleSheet, FlatList, Image, Pressable } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { Feather as Icon } from "@expo/vector-icons"
@@ -11,12 +11,21 @@ import { convertTimestamp } from "../util/functions.js"
 import ordersModel from "../database/models/orders.model.js"
 import D from "../handler/Dimensions.handler.js"
 import Loading from "../components/widgets/loading"
+import { PrimaryButton } from "../components/button/index.js"
+import shopsModel from "../database/models/shops.model.js"
 
 let d = new D()
 function OrderScreen(props) {
+
+    const params = useMemo(() => {
+        return props.route.params || {}
+    }, [props.route.params])
+    let db_orders = new ordersModel()
+    let db_shop = new shopsModel()
+
+
     const [orders, setOrders] = React.useState([])
     const [loading, setLoading] = React.useState(true)
-    let db_orders = new ordersModel()
     React.useEffect(() => {
         db_orders.getAll().then((results) => {
             if (results.length > 0) {
@@ -31,29 +40,64 @@ function OrderScreen(props) {
         }
     }, [])
 
+    const onItemPress = (id) => {
+        props.navigation.navigate("OrderData", { orderId: id })
+    }
+
+    const onButtonPress = () => {
+        props.navigation.navigate("QRCodeScanner")
+    }
+
+    React.useEffect(() => {
+        if (params.qr_code) {
+            db_shop.getShopByQrCode(params.qr_code).then((shop) => {
+                if (shop) {
+                    db_orders.getByShopId(shop.id).then((orders) => {
+                        if (orders.length > 0) {
+                            setOrders(orders)
+                        } else {
+                            setOrders([])
+                        }
+                        setLoading(false)
+                    })
+                }
+                else {
+                    alert("Shop not found")
+                }
+            }).catch((err) => {
+                alert(err)
+            })
+
+        }
+    }, [params.qr_code])
+
+
+
     const renderOrders = ({ index, item }) => {
         return (
-            <View key={index} style={style.listItem}>
-                <View style={[{ width: 50, height: 50, backgroundColor: color.lightGrey, borderRadius: 10 }, commonStyles.center]}>
-                    {item.payment_status == "paid" ? <Image source={require("../assets/img/paid.png")} style={{ width: 40, height: 40 }} /> : <Icon name={"x-circle"} size={40} color={colors.red400} />}
-                </View>
+            <Pressable onPress={() => onItemPress(item.id)} style={{ flex: 1 }}>
+                <View key={index} style={style.listItem}>
+                    <View style={[{ width: 50, height: 50, backgroundColor: color.lightGrey, borderRadius: 10 }, commonStyles.center]}>
+                        {item.payment_status == "paid" ? <Image source={require("../assets/img/paid.png")} style={{ width: 40, height: 40 }} /> : <Icon name={"x-circle"} size={40} color={colors.red400} />}
+                    </View>
 
-                <View style={style.list_left}>
-                    <Text style={[commonStyles.basic_text_semiBold_20]}>₹{item.total_amount}</Text>
-                    <Text>{JSON.parse(item.items)[0]}</Text>
+                    <View style={style.list_left}>
+                        <Text style={[commonStyles.basic_text_semiBold_20]}>₹{item.total_amount}</Text>
+                        <Text>{JSON.parse(item.items)[0]}</Text>
+                    </View>
+                    <Text style={commonStyles.text_lite(15)}>{convertTimestamp(item.modified_at * 1000)}</Text>
+                    <View style={style.list_right}>
+                        <MaterialCommunityIcons name="chevron-right" color={"black"} size={26} />
+                    </View>
                 </View>
-                <Text style={commonStyles.text_lite(15)}>{convertTimestamp(item.modified_at * 1000)}</Text>
-                <View style={style.list_right}>
-                    <MaterialCommunityIcons name="chevron-right" color={"black"} size={26} />
-                </View>
-            </View>
+            </Pressable>
         )
     }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <TopNav title="Orders List" />
-            <View style={{ marginBottom: d.height * 0.15 }}>
+            <View style={{ marginBottom: d.height * 0.20 }}>
                 {orders.length > 0 ? (
                     <FlatList data={orders} renderItem={renderOrders} keyExtractor={(item) => item.id} />
                 ) : (
@@ -66,6 +110,9 @@ function OrderScreen(props) {
                         <Loading color="black" />
                     </View>
                 }
+            </View>
+            <View style={{ flex: 1, position: "absolute", bottom: 70, width: "100%" }}>
+                <PrimaryButton name="Scan QR Code" width={d.width * 0.95} onPress={onButtonPress} />
             </View>
             <BottomNav navigation={props.navigation} />
         </SafeAreaView>

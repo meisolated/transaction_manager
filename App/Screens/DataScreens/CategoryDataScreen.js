@@ -31,7 +31,6 @@ const CategoryData = (props) => {
     const onPressSave = () => {
         if (categories.name) {
             if (!params.id) {
-                console.log(categories)
                 db_categories
                     .add([categories.name, categories.picture])
                     .then(() => {

@@ -16,14 +16,14 @@ function BottomNavBar({ navigation }) {
                     <Text style={styles.bottomNavText}>Home</Text>
                 </View>
             </Pressable>
-            <Pressable onPress={() => navigation.navigate("Transactions")}>
+            <Pressable onPress={() => navigation.navigate("OrdersScreen")}>
                 <View style={styles.bottomNavItem}>
                     {/* <MaterialCommunityIcons name="cash-multiple" color={"#808080"} size={26} /> */}
                     <Transactions />
                     <Text style={styles.bottomNavText}>Orders</Text>
                 </View>
             </Pressable>
-            <Pressable onPress={() => navigation.navigate("Home")}>
+            <Pressable onPress={() => navigation.navigate("AddOrder")}>
                 <View style={styles.bottomNavItem}>
                     {/* <MaterialCommunityIcons name="plus-circle-outline" color={"#808080"} size={26} /> */}
                     <Add />
