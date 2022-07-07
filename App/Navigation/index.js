@@ -17,6 +17,7 @@ import CategoryScreen from "../Screens/CategoryScreen.js"
 import CategoryData from "../Screens/DataScreens/CategoryDataScreen.js"
 import OrderAdded from "../Screens/addOrder/OrderAddedScreen.js"
 import OrderDataScreen from "../Screens/DataScreens/OrderDataScreen.js"
+import LoginAndSignup from "../Screens/LoginAndSignupScreen.js"
 
 const Stack = createNativeStackNavigator()
 export function Navigation() {
@@ -43,6 +44,7 @@ export function Navigation() {
                 <Stack.Screen name="CategoryData" component={CategoryData} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="OrderAdded" component={OrderAdded} options={{ headerShown: false, animation: "none" }} />
                 <Stack.Screen name="OrderData" component={OrderDataScreen} options={{ headerShown: false, animation: "none" }} />
+                <Stack.Screen name="LoginAndSignup" component={LoginAndSignup} options={{ headerShown: false, animation: "none" }} />
                 {/* <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ headerShown: false, animation:"none"  }} /> */}
             </Stack.Navigator>
         </NavigationContainer>

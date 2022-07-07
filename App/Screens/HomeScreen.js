@@ -1,10 +1,12 @@
 import React from "react"
-import { View, Text, Button, StyleSheet, ScrollView } from "react-native"
+import { View, Text, Button, StyleSheet, ScrollView, StatusBar } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { createTables, deleteAllTables, insertDummyData, localStorage } from "../database/initializeDatabase.js"
 import BottomNavBar from "../Navigation/bottomNavbar.js"
 import TopNavbar from "../Navigation/topNavbar.js"
 import HomeScreenPrimary from "../components/widgets/HomeScreenPrimary.widget.js"
+import * as colors from "../constant/color.js"
+
 
 function HomeScreen(props) {
 
@@ -16,10 +18,13 @@ function HomeScreen(props) {
 
     return (
         <SafeAreaView style={styles.container}>
+
             <TopNavbar title={"Home"} />
             <ScrollView>
                 <View style={{ flex: 1, marginBottom: 100 }}>
                     <HomeScreenPrimary />
+                    <Button title={"Admin"} onPress={() => props.navigation.navigate("Admin")} />
+                    <Button title={"LoginAndSignup"} onPress={() => props.navigation.navigate("LoginAndSignup")} />
                     {/* <Button title={"Create Tables"} onPress={() => insertDummyData()} /> */}
                 </View>
             </ScrollView>
