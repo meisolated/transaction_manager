@@ -53,7 +53,7 @@ export async function createTables(cb) {
 
         `CREATE TABLE orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            shop_id bigint,
+            shop_id text NOT NULL,
             items text NOT NULL,
             total_amount bigint NOT NULL,
             total_cost_amount bigint NOT NULL,
@@ -73,6 +73,7 @@ export async function createTables(cb) {
 
         `CREATE TABLE shops (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            shop_id text NOT NULL,
             name text,
             address text,
             phone text,

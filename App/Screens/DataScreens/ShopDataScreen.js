@@ -74,7 +74,7 @@ const ShopData = (props) => {
         setScreen({ title: "New Shop", button: "Save" })
         if (params.shopId) {
             setScreen({ title: "Edit Shop", button: "Update" })
-            db_shop.getByID(params.shopId).then((result) => {
+            db_shop.getByShopId(params.shopId).then((result) => {
                 setShop(result[0])
             })
         }

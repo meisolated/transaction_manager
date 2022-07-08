@@ -18,8 +18,8 @@ const Shops = (props) => {
     let db_shop = new shopsModel()
     let [shops, setShops] = React.useState([])
     let [loading, setLoading] = React.useState(true)
-    const handleClick = (id) => {
-        props.navigation.push("ShopData", { shopId: id })
+    const handleClick = (shop_id) => {
+        props.navigation.push("ShopData", { shopId: shop_id })
     }
 
     React.useEffect(() => {
@@ -40,7 +40,7 @@ const Shops = (props) => {
 
     const renderShops = ({ item }) => {
         return (
-            <Pressable onPress={() => handleClick(item.id)}>
+            <Pressable onPress={() => handleClick(item.shop_id)}>
                 <View style={styles.shopItem}>
                     <Icons name="shopping-bag" size={30} color={color.primary} />
                     <Text style={[commonStyle.basic_text_semiBold_20, { marginLeft: 5, flex: 1 }]}>{item.name}</Text>

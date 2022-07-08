@@ -1,3 +1,4 @@
+import md5 from "md5"
 import db from "../db.js"
 
 export default class shopsModel {
@@ -17,11 +18,12 @@ export default class shopsModel {
     add = (data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
+                let shopId = md5(shopsModel.TSinSecs())
                 tx.executeSql(
-                    `INSERT INTO ${this.table} (name, address, phone, picture, qr_code, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ${shopsModel.TSinSecs()}, ${shopsModel.TSinSecs()})`,
+                    `INSERT INTO ${this.table} (shop_id, name, address, phone, picture, qr_code, created_at, modified_at) VALUES (${shopId}, ?, ?, ?, ?, ?, ${shopsModel.TSinSecs()}, ${shopsModel.TSinSecs()})`,
                     data,
                     (_, { rows, insertId }) => {
-                        resolve({ insertId: insertId, status: "done" })
+                        resolve({ shopId, status: "done" })
                     }
                     , (_, error) => reject(error)
                 )
@@ -96,14 +98,14 @@ export default class shopsModel {
      * @description get a shop by id
      * @author meisolated
      * @date 23/06/2022
-     * @param {*} id number
+     * @param {*} shop_id string
      * @memberof shopsModel
      */
-    getByID = (id) =>
+    getByShopId = (shop_id) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `SELECT * FROM ${this.table} WHERE id = ${id}`,
+                    `SELECT * FROM ${this.table} WHERE shop_id = ${shop_id}`,
                     [],
                     (_, result) => resolve(result.rows._array),
                     (_, error) => reject(error)

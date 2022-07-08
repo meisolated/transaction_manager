@@ -33,11 +33,11 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemT
         if (qrCodeCallback) {
             db_shop.getShopByQrCode(qrCodeCallback).then(shop => {
                 if (shop !== undefined) {
-                    setCartData({ ...cartData, shopId: shop.id, qrCode: qrCodeCallback })
+                    setCartData({ ...cartData, shopId: shop.shopId, qrCode: qrCodeCallback })
                 }
                 else {
                     db_shop.add(["Automatic", "nill", "", "nill", qrCodeCallback]).then(shop => {
-                        setCartData({ ...cartData, shopId: shop.insertId, qrCode: qrCodeCallback })
+                        setCartData({ ...cartData, shopId: shop.shopId, qrCode: qrCodeCallback })
                     }).catch(err => {
                         console.log(err)
                     })
