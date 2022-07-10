@@ -77,20 +77,16 @@ export default function ProductEditScreen(props) {
                     .then((res) => {
                         setSuppliers(res)
                         setState({ productID: params.productID, ScreenState: params.productID || "add" })
-
                     })
                     .catch((err) => alert(err))
-
             })
             .catch((err) => alert(err))
-        if (params.productID) {
+        if (params.productID !== null && params.productID !== undefined) {
             setScreen({ title: "Edit Product", button: "Update" })
             db_product
                 .getById(state.productID)
-                .then((result) => {
-                    let productDetails = result[0]
+                .then((productDetails) => {
                     db_product.getAttributes(state.productID).then((result) => {
-                        setLoading(false)
                         setProduct({
                             ...product,
                             name: productDetails.name,
@@ -101,14 +97,13 @@ export default function ProductEditScreen(props) {
                             suppliers: productDetails.supplier,
                             attribute: result,
                         })
+                        setLoading(false)
                     })
                 })
                 .catch((error) => alert("error" + error))
-        }
-        else {
+        } else {
             setLoading(false)
         }
-
     }, [state.ScreenState, state.productID, params.productID])
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -160,6 +155,8 @@ export default function ProductEditScreen(props) {
     }
     function updateAttribute(id, number, price, cost_price) {
         let finalArray = product.attribute
+        price = parseInt(price)
+        cost_price = parseInt(cost_price)
         finalArray.map((item, i) => {
             if (item.id === id) {
                 finalArray[i] = { ...item, number: number ? number : finalArray[i].number, price: price ? price : finalArray[i].price, cost_price: cost_price ? cost_price : finalArray[i].cost_price }
@@ -190,16 +187,18 @@ export default function ProductEditScreen(props) {
                     if (state.ScreenState == "add") {
                         db_product
                             .addNew([product.name, product.picture, product.desc, product.qr_code, product.category, product.suppliers])
-                            .then(({ insertId, status }) => {
+                            .then(({ productId, status }) => {
                                 if (status) {
                                     product.attribute.map((item) => {
                                         setLoading(false)
                                         db_product
-                                            .addNewAttribute([insertId, item.number, item.metric, item.price, item.cost_price])
+                                            .addNewAttribute([productId, item.number, item.metric, item.price, item.cost_price])
                                             .then(({ insertId, status }) => {
                                                 if (status) {
                                                     alert("Product Added")
                                                     props.navigation.navigate("Products")
+                                                } else {
+                                                    alert("Error")
                                                 }
                                             })
                                             .catch((error) => alert("error" + error))
@@ -209,19 +208,19 @@ export default function ProductEditScreen(props) {
                                     alert("Error")
                                 }
                             })
-                            .catch((e) => alert("Error" + e))
+                            .catch((e) => {
+                                setLoading(false)
+                                alert("Error: " + e)
+                            })
                     } else {
                         db_product
                             .update(state.productID, [product.name, product.desc, product.picture, product.qr_code, product.category, product.suppliers])
                             .then(({ status }) => {
-
                                 if (status) {
-                                    // delete all attribute
                                     db_product
                                         .deleteAttribute(state.productID)
                                         .then((result) => {
                                             if (result.status) {
-                                                // add new attribute
                                                 product.attribute.map((item) => {
                                                     db_product
                                                         .addNewAttribute([state.productID, item.number, item.metric, item.price, item.cost_price])
@@ -245,10 +244,14 @@ export default function ProductEditScreen(props) {
                             .catch((e) => alert("Error" + e))
                     }
                 } else {
+                    setLoading(false)
                     alert("Please fill all the fields")
                 }
             })
-            .catch((err) => alert(err))
+            .catch((err) => {
+                setLoading(false)
+                alert(err)
+            })
     }
     async function openImagePickerAsync() {
         let image = await ImagePickerHandler()
@@ -270,98 +273,102 @@ export default function ProductEditScreen(props) {
     return (
         <SafeAreaView style={style.container}>
             <TopNavbar title={screen.title} />
-            {!loading ? <ScrollView style={style.scrollView}>
-                <KeyboardAvoidingView>
-                    <View style={style.main}>
-                        <Pressable style={style.image} onPress={openImagePickerAsync}>
-                            {product.picture !== null ? (
-                                <View style={style.image}>
-                                    <Image source={{ uri: product.picture }} style={style.thumbnail} />
-                                </View>
-                            ) : (
-                                <View style={style.empty_image_container}>
-                                    <Text style={[commonStyle.basic_text, { fontSize: 18 }]}> Pick an Image</Text>
-                                </View>
-                            )}
-                        </Pressable>
-                        <TextInput type="default" placeholder="Name" icon="user" value={product.name} onChange={(data) => setProduct({ ...product, name: data })} />
-                        <TextInput type="default" placeholder="Description (optional)" icon="align-center" value={product.desc} onChange={(data) => setProduct({ ...product, desc: data })} />
-                        <View style={style.suppliers_and_category_wrapper}>
-                            <Pressable onPress={() => pickingCategory()}>
-                                <View style={style.suppliers_and_category_wrapper_item}>
-                                    <Text style={[commonStyle.basic_text_semiBold_20, { fontSize: 15 }]}>{product.category ? product.category : "Select Category"}</Text>
-                                </View>
+            {!loading ? (
+                <ScrollView style={style.scrollView}>
+                    <KeyboardAvoidingView>
+                        <View style={style.main}>
+                            <Pressable style={style.image} onPress={openImagePickerAsync}>
+                                {product.picture !== null ? (
+                                    <View style={style.image}>
+                                        <Image source={{ uri: product.picture }} style={style.thumbnail} />
+                                    </View>
+                                ) : (
+                                    <View style={style.empty_image_container}>
+                                        <Text style={[commonStyle.basic_text, { fontSize: 18 }]}> Pick an Image</Text>
+                                    </View>
+                                )}
                             </Pressable>
-                            <Pressable onPress={() => pickingSupplier()}>
-                                <View style={style.suppliers_and_category_wrapper_item}>
-                                    <Text style={[commonStyle.basic_text_semiBold_20, { fontSize: 15 }]}>{product.suppliers ? product.suppliers : "Select Suppliers"}</Text>
-                                </View>
-                            </Pressable>
-                        </View>
-                        <Text style={commonStyle.basic_text}>Attributes</Text>
-                        {/* –––––––––––––––––– Attributes –––––––––––––––––– */}
-                        {product.attribute.map((item, index) => {
-                            return (
-                                <View style={style.attribute_wrapper} key={index}>
-                                    <InputText
-                                        keyboardType="numeric"
-                                        style={[style.attribute_text_input, { flex: 1 }]}
-                                        defaultValue={item.number.toString()}
-                                        placeholder="Metric"
-                                        onChangeText={(data) => updateAttribute(item.id, data, null)}
-                                    />
-                                    <Pressable onPress={() => setPopup({ name: "metric", options: metrics, state: "active", id: item.id })}>
-                                        <View style={style.select_attribute}>
-                                            <Text style={{ fontFamily: font.bold, fontSize: 18 }}>{item.metric.split("(")[1].split(")")[0]}</Text>
-                                        </View>
-                                    </Pressable>
-                                    <InputText
-                                        keyboardType="numeric"
-                                        style={[style.attribute_text_input, { width: d.width * 0.2 }]}
-                                        placeholder="₹ Price"
-                                        defaultValue={item.price.toString()}
-                                        onChangeText={(data) => updateAttribute(item.id, null, data)}
-                                    />
-                                    <InputText
-                                        keyboardType="numeric"
-                                        style={[style.attribute_text_input, { width: d.width * 0.2 }]}
-                                        placeholder="₹ Cost Price"
-                                        defaultValue={item.cost_price.toString()}
-                                        onChangeText={(data) => updateAttribute(item.id, null, null, data)}
-                                    />
-                                    <Pressable onPress={() => deleteAttribute(item.id)}>
-                                        <Icons name={"x-circle"} style={{ color: colors.red400 }} size={30} />
-                                    </Pressable>
-                                </View>
-                            )
-                        })}
-                        {/* –––––––––––––––––– Attributes –––––––––––––––––– */}
-                        <ScrollView horizontal={true}>
-                            {suggestedNumbers.map((item, index) => (
-                                <View key={index} style={style.suggested_numbers}>
-                                    <Text style={style.suggested_numbers_number}>{item.number + " "}</Text>
-                                    <Text style={style.suggested_numbers_text}>{item.metrics}</Text>
-                                </View>
-                            ))}
-                        </ScrollView>
-                        <Text style={commonStyle.basic_text}>QR Code</Text>
-                        <View style={style.qrcode_wrapper}>
-                            <View style={style.qrcode_left}>
-                                <Text style={[commonStyle.basic_text_semiBold_20]}>{product.qr_code ? "Scanned" : "Not Selected"}</Text>
+                            <TextInput type="default" placeholder="Name" icon="user" value={product.name} onChange={(data) => setProduct({ ...product, name: data })} />
+                            <TextInput type="default" placeholder="Description (optional)" icon="align-center" value={product.desc} onChange={(data) => setProduct({ ...product, desc: data })} />
+                            <View style={style.suppliers_and_category_wrapper}>
+                                <Pressable onPress={() => pickingCategory()}>
+                                    <View style={style.suppliers_and_category_wrapper_item}>
+                                        <Text style={[commonStyle.basic_text_semiBold_20, { fontSize: 15 }]}>{product.category ? product.category : "Select Category"}</Text>
+                                    </View>
+                                </Pressable>
+                                <Pressable onPress={() => pickingSupplier()}>
+                                    <View style={style.suppliers_and_category_wrapper_item}>
+                                        <Text style={[commonStyle.basic_text_semiBold_20, { fontSize: 15 }]}>{product.suppliers ? product.suppliers : "Select Suppliers"}</Text>
+                                    </View>
+                                </Pressable>
                             </View>
-                            <View style={style.qrcode_left}>
-                                <Button title="Select QR Code" onPress={onQRCodeButtonPress} />
+                            <Text style={commonStyle.basic_text}>Attributes</Text>
+                            {/* –––––––––––––––––– Attributes –––––––––––––––––– */}
+                            {product.attribute.map((item, index) => {
+                                return (
+                                    <View style={style.attribute_wrapper} key={index}>
+                                        <InputText
+                                            keyboardType="numeric"
+                                            style={[style.attribute_text_input, { flex: 1 }]}
+                                            defaultValue={item.number.toString()}
+                                            placeholder="Metric"
+                                            onChangeText={(data) => updateAttribute(item.id, data, null)}
+                                        />
+                                        <Pressable onPress={() => setPopup({ name: "metric", options: metrics, state: "active", id: item.id })}>
+                                            <View style={style.select_attribute}>
+                                                <Text style={{ fontFamily: font.bold, fontSize: 18 }}>{item.metric.split("(")[1].split(")")[0]}</Text>
+                                            </View>
+                                        </Pressable>
+                                        <InputText
+                                            keyboardType="numeric"
+                                            style={[style.attribute_text_input, { width: d.width * 0.2 }]}
+                                            placeholder="₹ Price"
+                                            defaultValue={item.price.toString()}
+                                            onChangeText={(data) => updateAttribute(item.id, null, data)}
+                                        />
+                                        <InputText
+                                            keyboardType="numeric"
+                                            style={[style.attribute_text_input, { width: d.width * 0.2 }]}
+                                            placeholder="₹ Cost Price"
+                                            defaultValue={item.cost_price.toString()}
+                                            onChangeText={(data) => updateAttribute(item.id, null, null, data)}
+                                        />
+                                        <Pressable onPress={() => deleteAttribute(item.id)}>
+                                            <Icons name={"x-circle"} style={{ color: colors.red400 }} size={30} />
+                                        </Pressable>
+                                    </View>
+                                )
+                            })}
+                            {/* –––––––––––––––––– Attributes –––––––––––––––––– */}
+                            <ScrollView horizontal={true}>
+                                {suggestedNumbers.map((item, index) => (
+                                    <View key={index} style={style.suggested_numbers}>
+                                        <Text style={style.suggested_numbers_number}>{item.number + " "}</Text>
+                                        <Text style={style.suggested_numbers_text}>{item.metrics}</Text>
+                                    </View>
+                                ))}
+                            </ScrollView>
+                            <Text style={commonStyle.basic_text}>QR Code</Text>
+                            <View style={style.qrcode_wrapper}>
+                                <View style={style.qrcode_left}>
+                                    <Text style={[commonStyle.basic_text_semiBold_20]}>{product.qr_code ? "Scanned" : "Not Selected"}</Text>
+                                </View>
+                                <View style={style.qrcode_left}>
+                                    <Button title="Select QR Code" onPress={onQRCodeButtonPress} />
+                                </View>
                             </View>
+                            <OuterLineBtn text="Add New Attribute" onPress={addNewAttribute} />
+                            <View style={{ height: 50 }}>
+                                <PrimaryButton onPress={() => onSavePress()} width={d.width * 0.9} name="Save" />
+                            </View>
+                            <Text style={[commonStyle.basic_text_semiBold_20]}>{product.qr_code}</Text>
                         </View>
-                        <OuterLineBtn text="Add New Attribute" onPress={addNewAttribute} />
-                        <View style={{ height: 50 }}>
-                            <PrimaryButton onPress={() => onSavePress()} width={d.width * 0.9} name="Save" />
-                        </View>
-                        <Text style={[commonStyle.basic_text_semiBold_20]}>{product.qr_code}</Text>
-                    </View>
-                    {popup.state === "active" && <Popup return={(x) => selectedOption(x)} options={popup.options} />}
-                </KeyboardAvoidingView>
-            </ScrollView> : <LoadingCircle color="black" />}
+                        {popup.state === "active" && <Popup return={(x) => selectedOption(x)} options={popup.options} />}
+                    </KeyboardAvoidingView>
+                </ScrollView>
+            ) : (
+                <LoadingCircle color="black" />
+            )}
             {!keyboardStatus && <BottomNavBar navigation={props.navigation} />}
         </SafeAreaView>
     )

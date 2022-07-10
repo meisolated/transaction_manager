@@ -1,6 +1,7 @@
 import { localStorage } from "./localStorage.js"
 import db from "./db"
 import ToastHandler from "../handler/Toast.handler.js"
+import md5 from "md5"
 
 export async function deleteAllTables(cb) {
     let queries = [
@@ -53,6 +54,7 @@ export async function createTables(cb) {
 
         `CREATE TABLE orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_id text NOT NULL,
             shop_id text NOT NULL,
             items text NOT NULL,
             total_amount bigint NOT NULL,
@@ -63,7 +65,7 @@ export async function createTables(cb) {
 
         `CREATE TABLE ordered_items (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            order_id bigint NOT NULL,
+            order_id text NOT NULL,
             product_name text NOT NULL,
             quantity bigint NOT NULL,
             product_price bigint NOT NULL,
@@ -84,6 +86,7 @@ export async function createTables(cb) {
 
         `CREATE TABLE products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            product_id text NOT NULL,
             name text NOT NULL,
             picture text,
             description text,
@@ -95,7 +98,7 @@ export async function createTables(cb) {
 
         `CREATE TABLE products_attributes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            product_id bigint NOT NULL,
+            product_id text NOT NULL,
             number bigint NOT NULL,
             metric text NOT NULL,
             cost_price bigint NOT NULL,
@@ -136,23 +139,25 @@ export async function createTables(cb) {
 export function insertDummyData() {
     // delete all
     db.transaction((tx) => {
-        tx.executeSql(`DELETE FROM transactions`, [], () => console.log("deleted all transactions"))
+        tx.executeSql(`DELETE FROM orders`, [], () => console.log("deleted all order"))
+        tx.executeSql(`DELETE FROM ordered_items`, [], () => console.log("deleted all order"))
     })
 
     // insert 100 records in order
     for (let i = 0; i < 100; i++) {
         // generate random number
-        let randomNumber = Math.floor(Math.random() * 100)
+        let randomNumber = Math.floor(Math.random() * 1000)
+        let randomCostNumber = Math.floor(Math.random() * 500)
         db.transaction((tx) => {
             tx.executeSql(
                 "insert into orders (created_at, modified_at, total_amount, total_cost_amount, items, payment_status, shop_id) values (?, ?, ?, ?, ?, ?, ?)",
-                [Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), randomNumber, randomNumber, '["151x1","151x1", "151x1"]', ["paid", "unpaid"][Math.floor(Math.random() * 2)], "1"],
+                [Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), randomNumber, randomCostNumber, '["151x1","151x1", "151x1"]', ["paid", "unpaid"][Math.floor(Math.random() * 2)], "1"],
                 (_, result) => {
                     // add attributes to order
                     for (let j = 0; j < 3; j++) {
                         tx.executeSql(
                             "insert into ordered_items (created_at, modified_at, order_id, product_name, quantity, product_price, product_cost_price) values (?, ?, ?, ?, ?, ?, ?)",
-                            [Math.floor(Date.now()), Math.floor(Date.now()), result.insertId, "product " + j, j, j * 10, 10],
+                            [Math.floor(Date.now()), Math.floor(Date.now()), result.insertId, "product " + j, j, j * 1, 10],
                             (_, result) => console.log("inserted ordered_items"),
                             (_, error) => console.log(error)
                         )
@@ -166,11 +171,11 @@ export function insertDummyData() {
     // insert 100 records in shops
     for (let i = 0; i < 10; i++) {
         // generate random number
-        let randomNumber = Math.floor(Math.random() * 100)
         db.transaction((tx) => {
+            let randomNumber = md5(Math.floor(Math.random() * 100))
             tx.executeSql(
-                "insert into shops (created_at, modified_at, name, address, phone, picture, qr_code) values (?, ?, ?, ?, ?, ?, ?)",
-                [Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), "shop " + i, "address " + i, "phone " + i, "picture " + i, "qr_code " + i],
+                "insert into shops (shop_id, created_at, modified_at, name, address, phone, picture, qr_code) values (?, ?, ?, ?, ?, ?, ?, ?)",
+                [randomNumber, Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), "shop " + i, "address " + i, "phone " + i, "picture " + i, "qr_code " + i],
                 (_, result) => {
                     // add attributes to order
                     for (let j = 0; j < 3; j++) {

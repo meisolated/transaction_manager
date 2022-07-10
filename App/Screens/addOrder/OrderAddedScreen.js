@@ -72,7 +72,7 @@ const OrderAdded = (props) => {
                     params.cart.map((item, index) => {
                         console.log(item)
                         db_order
-                            .addNewItem([result.insertId, item.name, item.quantity, item.price, item.cost_price])
+                            .addNewItem([result.id, item.name, item.quantity, item.price, item.cost_price])
                             .catch((err) => {
                                 console.log(err)
                             })

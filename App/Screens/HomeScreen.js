@@ -6,6 +6,7 @@ import BottomNavBar from "../Navigation/bottomNavbar.js"
 import TopNavbar from "../Navigation/topNavbar.js"
 import HomeScreenPrimary from "../components/widgets/HomeScreenPrimary.widget.js"
 import * as colors from "../constant/color.js"
+import { randomIdGenerator } from "../util/functions.js"
 
 
 function HomeScreen(props) {
@@ -14,6 +15,9 @@ function HomeScreen(props) {
         createTables()
         // insertDummyData()
     }, [])
+
+    const onDummyData = () => insertDummyData()
+
 
 
     return (
@@ -25,7 +29,9 @@ function HomeScreen(props) {
                     <HomeScreenPrimary />
                     <Button title={"Admin"} onPress={() => props.navigation.navigate("Admin")} />
                     <Button title={"LoginAndSignup"} onPress={() => props.navigation.navigate("LoginAndSignup")} />
-                    {/* <Button title={"Create Tables"} onPress={() => insertDummyData()} /> */}
+                    <Button title={"Dummy"} onPress={() => onDummyData()} />
+                    <Button title={"Delete All Tables"} onPress={() => deleteAllTables(() => console.log("done"))} />
+                    <Button title={"randomIdGenerator"} onPress={() => randomIdGenerator()} />
                 </View>
             </ScrollView>
             <BottomNavBar navigation={props.navigation} />

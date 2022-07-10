@@ -1,3 +1,4 @@
+import { randomIdGenerator } from "../../util/functions.js"
 import db from "../db.js"
 
 export default class ordersModel {
@@ -25,12 +26,13 @@ export default class ordersModel {
     addNew = (data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
+                let id = randomIdGenerator()
                 tx.executeSql(
                     `INSERT INTO ${this.table_orders
-                    } (shop_id, items, total_amount, total_cost_amount, payment_status, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ${ordersModel.TSinSecs()}, ${ordersModel.TSinSecs()})`,
+                    } (order_id, shop_id, items, total_amount, total_cost_amount, payment_status, created_at, modified_at) VALUES ("${id}", ?, ?, ?, ?, ?, ${ordersModel.TSinSecs()}, ${ordersModel.TSinSecs()})`,
                     data,
                     (_, { rows, insertId }) => {
-                        resolve({ insertId, status: "done" })
+                        resolve({ id, status: "done" })
                     },
                     (_, error) => reject(error)
                 )
@@ -90,7 +92,7 @@ export default class ordersModel {
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `SELECT * FROM ${this.table_orders} WHERE id = ${id}`,
+                    `SELECT * FROM ${this.table_orders} WHERE order_id = "${id}"`,
                     [],
                     (_, { rows }) => {
                         resolve(rows._array[0])
@@ -111,7 +113,7 @@ export default class ordersModel {
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `SELECT * FROM ${this.table_orders} WHERE shop_id = ${shop_id}`,
+                    `SELECT * FROM ${this.table_orders} WHERE shop_id = "${shop_id}"`,
                     [],
                     (_, { rows }) => {
                         resolve(rows._array)
@@ -134,7 +136,7 @@ export default class ordersModel {
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `SELECT * FROM ${this.table_ordered_items} WHERE order_id = ${id}`,
+                    `SELECT * FROM ${this.table_ordered_items} WHERE order_id = "${id}"`,
                     [],
                     (_, { rows }) => {
                         resolve(rows._array)
@@ -165,6 +167,19 @@ export default class ordersModel {
                 )
             })
         })
+
+    getFinancialData = (after, before) => new Promise((resolve, reject) => {
+        db.transaction((tx) => {
+            tx.executeSql(
+                `SELECT total_amount, total_cost_amount, payment_status FROM ${this.table_orders} WHERE created_at BETWEEN ${after} AND ${before}`,
+                [],
+                (_, result) => {
+                    resolve(result.rows._array)
+                },
+                (_, error) => reject(error)
+            )
+        })
+    })
 
 
 

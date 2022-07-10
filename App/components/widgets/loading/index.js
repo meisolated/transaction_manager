@@ -22,7 +22,7 @@ export default class LoadingCircle extends Component {
         Animated.loop(
             Animated.timing(this.animated, {
                 toValue: 1,
-                duration: 500,
+                duration: 600,
                 useNativeDriver: true,
                 easing: Easing.linear,
             }),

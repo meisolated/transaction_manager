@@ -38,7 +38,7 @@ const ProductsScreen = (props) => {
 
     const renderProducts = ({ item }) => {
         return (
-            <Pressable onPress={() => onPressItem(item.id)}>
+            <Pressable onPress={() => onPressItem(item.product_id)}>
                 <View style={styles.productItem}>
                     <View style={styles.image_wrapper}>
                         {item.picture.includes("file") ? <Image source={{ uri: item.picture }} style={styles.productImage} /> : <Icons name="package" size={40} color={color.black} />}

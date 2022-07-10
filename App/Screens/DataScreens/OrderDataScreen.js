@@ -1,18 +1,18 @@
-import React, { useMemo } from "react"
-import { View, Text, StyleSheet } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
+import { PrimaryButton } from "../../components/button/index.js"
 import Loading from "../../components/widgets/loading/index.js"
 import ordersModel from "../../database/models/orders.model.js"
+import { SafeAreaView } from "react-native-safe-area-context"
 import BottomNavBar from "../../Navigation/bottomNavbar.js"
-import TopNavbar from "../../Navigation/topNavbar.js"
-import commonStyle from "../../common/style.js"
 import color, * as colors from "../../constant/color.js"
-import D from "../../handler/Dimensions.handler.js"
-import { PrimaryButton } from "../../components/button/index.js"
-import Toast from "../../handler/Toast.handler.js"
+import { View, Text, StyleSheet } from "react-native"
+import TopNavbar from "../../Navigation/topNavbar.js"
 import { Feather as Icon } from "@expo/vector-icons"
-
+import D from "../../handler/Dimensions.handler.js"
+import Toast from "../../handler/Toast.handler.js"
+import commonStyle from "../../common/style.js"
+import React, { useMemo } from "react"
 let d = new D()
+
 const OrderDataScreen = (props) => {
     let db_order = new ordersModel()
     let params = useMemo(() => {
@@ -39,7 +39,6 @@ const OrderDataScreen = (props) => {
                                 alert(err)
                             }
                         )
-                        setOrder(order)
                     }
                 })
                 .catch((err) => {
@@ -51,7 +50,7 @@ const OrderDataScreen = (props) => {
     const onPressChangePaymentStatus = () => {
         let payment_status = order.payment_status == "paid" ? "unpaid" : "paid"
         db_order
-            .update(params.orderId, [order.shopId, order.items, order.total_amount, order.total_cost_amount, payment_status])
+            .update(params.orderId, [order.shop_id, order.items, order.total_amount, order.total_cost_amount, payment_status])
             .then((order) => {
                 Toast("Order " + payment_status)
                 props.navigation.navigate("OrdersScreen")

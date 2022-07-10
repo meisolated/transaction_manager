@@ -268,7 +268,7 @@ function ChooseProduct(props) {
             {products.map((item, index) => {
                 return (
                     <View style={commonStyle.center} key={"product" + index}>
-                        <TouchableOpacity style={ChooseCategoryStyle.item} onPress={() => props.onSelect({ key: "productId", value: item.id })}>
+                        <TouchableOpacity style={ChooseCategoryStyle.item} onPress={() => props.onSelect({ key: "productId", value: item.product_id })}>
                             <Image style={{ width: 70, height: 70 }} source={require("../assets/img/milk.png")} />
                             <View style={ChooseCategoryStyle.itemDetailsWrapper}>
                                 <Text style={ChooseCategoryStyle.title_text}>{item.name}</Text>

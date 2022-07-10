@@ -1,3 +1,4 @@
+import { randomIdGenerator } from "../../util/functions.js"
 import db from "../db.js"
 
 export default class productsModel {
@@ -19,13 +20,14 @@ export default class productsModel {
     addNew = (data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
+                let product_id = randomIdGenerator()
                 tx.executeSql(
-                    `INSERT INTO ${this.table_products} (name, picture, description, qr_code, category, supplier, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
+                    `INSERT INTO ${this.table_products} (product_id, name, picture, description, qr_code, category, supplier, created_at, modified_at) VALUES ("${product_id}", ?, ?, ?, ?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
                     data,
                     (_, { rows, insertId }) => {
                         // resolve(rows._array)
                         //!return inserted id
-                        resolve({ insertId: insertId, status: "done" })
+                        resolve({ productId: product_id, status: "done" })
                     },
                     (_, error) => reject(error)
                 )
@@ -103,16 +105,16 @@ export default class productsModel {
      * @description get a single product by id
      * @author meisolated
      * @date 22/06/2022
-     * @param {*} id number
+     * @param {*} product_id string
      * @memberof productsModel
      */
-    getById = (id) =>
+    getById = (product_id) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `SELECT * FROM ${this.table_products} WHERE id = ${id}`,
+                    `SELECT * FROM ${this.table_products} WHERE product_id = "${product_id}"`,
                     [],
-                    (_, result) => resolve(result.rows._array),
+                    (_, result) => resolve(result.rows._array[0]),
                     (_, error) => reject(error)
                 )
             })
@@ -122,14 +124,14 @@ export default class productsModel {
      * @description get all products attributes by product id
      * @author meisolated
      * @date 27/06/2022
-     * @param {*} id
+     * @param {*} product_id string
      * @memberof productsModel
      */
-    getAttributes = (id) =>
+    getAttributes = (product_id) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `SELECT * FROM ${this.table_products_attributes} WHERE product_id = ${id}`,
+                    `SELECT * FROM ${this.table_products_attributes} WHERE product_id = "${product_id}"`,
                     [],
                     (_, result) => resolve(result.rows._array),
                     (_, error) => reject(error)
@@ -182,7 +184,7 @@ export default class productsModel {
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `UPDATE ${this.table_products} SET name = ?, description = ?, picture = ?, qr_code = ?, category = ?, supplier = ?, modified_at = ${productsModel.TSinSecs()} WHERE id = ${id}`,
+                    `UPDATE ${this.table_products} SET name = ?, description = ?, picture = ?, qr_code = ?, category = ?, supplier = ?, modified_at = ${productsModel.TSinSecs()} WHERE product_id = ${id}`,
                     data,
                     (_, result) => resolve({ status: "done" }),
                     (_, error) => reject(error)

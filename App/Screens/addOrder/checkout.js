@@ -20,9 +20,6 @@ const window = Dimensions.get("window")
 
 function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemToCard, getBack, navigation, qrCodeCallback }) {
 
-
-
-
     const db_shop = new shopsModel()
     const [total, setTotal] = React.useState({ cost: 0, total: 0 })
     const [loading, setLoading] = React.useState(true)
@@ -54,13 +51,13 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemT
 
     function handlePress(addItemToCard) {
         db_product.getById(addItemToCard.productId).then(product => {
-            let _p = product[0]
+            let _p = product
             db_product.getAttributesById(addItemToCard.productAttributeId).then(attributes => {
                 let _a = attributes[0]
                 let _product = {
                     id: _p.id,
                     name: _p.name,
-                    product_id: _p.id,
+                    product_id: _p.product_id,
                     quantity: 1,
                     price: _a.price,
                     cost_price: _a.cost_price,
