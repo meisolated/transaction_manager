@@ -38,6 +38,13 @@ function SettingScreen(props) {
                     <MaterialCommunityIcons style={{ alignSelf: "flex-end" }} name="chevron-right" color={color.primary} size={30} />
                 </View>
             </Pressable>
+            <Pressable onPress={() => props.navigation.navigate("Connections")}>
+                <View style={styles.settingsItem}>
+                    <Icons name="users" size={30} color={color.primary} />
+                    <Text style={[commonStyle.basic_text_semiBold_20, { marginLeft: 5, flex: 1, }]}>Connections</Text>
+                    <MaterialCommunityIcons style={{ alignSelf: "flex-end" }} name="chevron-right" color={color.primary} size={30} />
+                </View>
+            </Pressable>
             <BottomNavBar navigation={props.navigation} />
         </SafeAreaView>
     )

@@ -6,6 +6,7 @@ import OrderDataScreen from "../Screens/DataScreens/OrderDataScreen.js"
 import OrderAdded from "../Screens/addOrder/OrderAddedScreen.js"
 import LoginAndSignup from "../Screens/LoginAndSignupScreen.js"
 import ShopData from "../Screens/DataScreens/ShopDataScreen.js"
+import ConnectionsScreen from "../Screens/ConnectionsScreen.js"
 import { NavigationContainer } from "@react-navigation/native"
 import QRCodeScanner from "../Screens/QRCodeScannerScreen.js"
 import SuppliersScreen from "../Screens/SuppliersScreen.js"
@@ -20,25 +21,27 @@ import HomeScreen from "../Screens/HomeScreen.js"
 import Shops from "../Screens/ShopsScreen.js"
 import { StatusBar } from "expo-status-bar"
 import React from "react"
-
 const Stack = createNativeStackNavigator()
 export function Navigation() {
     let [loggedIn, setLoggedIn] = React.useState({ loggedIn: false, show: false })
 
     React.useEffect(() => {
-        localStorage
-            .retrieveData("userToken")
-            .then((res) => {
-                if (res) {
-                    setLoggedIn({ loggedIn: true, show: true })
-                }
-                else {
-                    setLoggedIn({ loggedIn: false, show: true })
-                }
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+        setInterval(() => {
+            localStorage
+                .retrieveData("userToken")
+                .then((res) => {
+                    if (res) {
+                        setLoggedIn({ loggedIn: true, show: true })
+                    }
+                    else {
+                        setLoggedIn({ loggedIn: false, show: true })
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }, 2000)
+
     }, [])
 
     const LoggedOutStack = () => (
@@ -65,6 +68,8 @@ export function Navigation() {
             <Stack.Screen name="CategoryData" component={CategoryData} options={{ headerShown: false, animation: "none" }} />
             <Stack.Screen name="OrderAdded" component={OrderAdded} options={{ headerShown: false, animation: "none" }} />
             <Stack.Screen name="OrderData" component={OrderDataScreen} options={{ headerShown: false, animation: "none" }} />
+            <Stack.Screen name="Connections" component={ConnectionsScreen} options={{ headerShown: false, animation: "none" }} />
+
             {/* <Stack.Screen name="LoginAndSignup" component={LoginAndSignup} options={{ headerShown: false, animation: "none" }} /> */}
         </Stack.Navigator>
     )

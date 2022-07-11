@@ -39,10 +39,11 @@ function LoginAndSignup(props) {
             const _data = qs.stringify({ phone: data.phoneNumber })
             const config = { method: "POST", url: apiUrl + "login", headers: { "Content-Type": "application/x-www-form-urlencoded" }, data: _data }
             axios(config).then(res => {
-                if (res.data.status === "success") {
+                console.log(res.data)
+                if (res.data.status == "success") {
                     localStorage.storeData("userToken", res.data.token)
                     ToastHandler("Login Success")
-                    return props.navigation.navigate("Home")
+                    // return props.navigation.navigate("Home")
                 } else {
                     alert(res.data.message)
                 }
@@ -62,7 +63,7 @@ function LoginAndSignup(props) {
                     if (res.data.status === "success") {
                         localStorage.storeData("userToken", res.data.token)
                         ToastHandler("Signup Success")
-                        return props.navigation.navigate("Home")
+                        // return props.navigation.navigate("Home")
                     } else {
                         alert(res.data.message)
                     }

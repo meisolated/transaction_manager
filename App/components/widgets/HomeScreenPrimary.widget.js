@@ -35,51 +35,52 @@ function HomeScreenPrimary() {
                         })
                         if (index == orders.length - 1) return setLoading(false)
                     })
-                }
-                else {
+                } else {
                     setLoading(false)
                 }
-
-
             })
             .catch((err) => {
+                setLoading(false)
                 alert(err)
             })
     }, [])
 
-
     return (
         <View style={[styles.daily_turnover, loading && { height: 200 }]}>
-            {!loading ? <View style={{ flex: 1 }}>
-                <View style={styles.primary_info}>
-                    <View style={styles.daily_turnover_wrapper}>
-                        <View style={styles.daily_turnover_number}>
-                            <Text style={styles.common_text_style}>{numberSeparator(widgetData.dailyTurnOver)}</Text>
-                            <View style={styles.change_in_turnover_wrapper}>
-                                <Text style={styles.change_in_turnover}>20%</Text>
-                                <MaterialCommunityIcons name="arrow-up-bold-circle" size={20} color={color.green} />
+            {!loading ? (
+                <View style={{ flex: 1 }}>
+                    <View style={styles.primary_info}>
+                        <View style={styles.daily_turnover_wrapper}>
+                            <View style={styles.daily_turnover_number}>
+                                <Text style={styles.common_text_style}>{numberSeparator(widgetData.dailyTurnOver)}</Text>
+                                <View style={styles.change_in_turnover_wrapper}>
+                                    <Text style={styles.change_in_turnover}>20%</Text>
+                                    <MaterialCommunityIcons name="arrow-up-bold-circle" size={20} color={color.green} />
+                                </View>
                             </View>
+                            <Text style={styles.primary_info_bottom_text_style}>Daily Turnover</Text>
                         </View>
-                        <Text style={styles.primary_info_bottom_text_style}>Daily Turnover</Text>
+                        {/* <MaterialCommunityIcons name="minus" size={25} color={color.black} /> */}
+                        <View style={styles.bottom_not_received_text}>
+                            <Text style={styles.common_text_style}>{numberSeparator(widgetData.unpaid)}</Text>
+                            <Text style={styles.primary_info_bottom_text_style}>Receivable/Unpaid/StockLeft</Text>
+                        </View>
                     </View>
-                    {/* <MaterialCommunityIcons name="minus" size={25} color={color.black} /> */}
-                    <View style={styles.bottom_not_received_text}>
-                        <Text style={styles.common_text_style}>{numberSeparator(widgetData.unpaid)}</Text>
-                        <Text style={styles.primary_info_bottom_text_style}>Receivable/Unpaid/StockLeft</Text>
+                    <View style={styles.divider} />
+                    <View style={styles.secondary_info}>
+                        <View style={styles.todays_profit}>
+                            <Text style={styles.common_text_style}>{numberSeparator(widgetData.profit)}</Text>
+                            <Text style={styles.primary_info_bottom_text_style}>Today's Profit</Text>
+                        </View>
+                        <View style={styles.todays_opex}>
+                            <Text style={styles.common_text_style}>{numberSeparator(widgetData.expense)}</Text>
+                            <Text style={styles.primary_info_bottom_text_style}>Today's Operating Expense (OPEX)</Text>
+                        </View>
                     </View>
                 </View>
-                <View style={styles.divider} />
-                <View style={styles.secondary_info}>
-                    <View style={styles.todays_profit}>
-                        <Text style={styles.common_text_style}>{numberSeparator(widgetData.profit)}</Text>
-                        <Text style={styles.primary_info_bottom_text_style}>Today's Profit</Text>
-                    </View>
-                    <View style={styles.todays_opex}>
-                        <Text style={styles.common_text_style}>{numberSeparator(widgetData.expense)}</Text>
-                        <Text style={styles.primary_info_bottom_text_style}>Today's Operating Expense (OPEX)</Text>
-                    </View>
-                </View>
-            </View> : <LoadingCircle color={colors.purple900} />}
+            ) : (
+                <LoadingCircle color={colors.purple900} />
+            )}
         </View>
     )
 }
