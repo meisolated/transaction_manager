@@ -52,3 +52,14 @@ export function startAndEndOfDat() {
 
     return { start: timestampState, end: timestampEnd }
 }
+
+/**
+ * 
+ * @param {*} t time in seconds
+ * @returns 
+ */
+export const sleep = (t) => new Promise(async (resolve, _reject) => {
+    setTimeout(() => {
+        resolve()
+    }, t * 1000)
+}) 

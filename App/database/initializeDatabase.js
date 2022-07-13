@@ -4,7 +4,7 @@ import ToastHandler from "../handler/Toast.handler.js"
 import md5 from "md5"
 import { randomIdGenerator } from "../util/functions.js"
 
-export async function deleteAllTables(cb) {
+export const deleteAllTables = (cb) => new Promise(async (resolve, reject) => {
     let queries = [
         `DROP TABLE IF EXISTS orders`,
 
@@ -31,15 +31,18 @@ export async function deleteAllTables(cb) {
                 [],
                 (tx, results) => {
                     cb({ done: i + 1, total: queries.length })
+                    if (i == queries.length - 1) {
+                        resolve()
+                    }
                 },
-                (_, error) => console.log(error)
+                (_, error) => reject(error)
             )
         }
     })
-}
+})
 
 // create table if not exists
-export async function createTables(cb) {
+export const createTables = async (cb) => new Promise(async (resolve, reject) => {
     // check if tables exists for not
     let donebefore = await localStorage.retrieveData("tables")
     if (donebefore == "true") return
@@ -129,13 +132,14 @@ export async function createTables(cb) {
                 (tx, results) => {
                     if (i === queries.length - 1) localStorage.storeData("tables", "true")
                     if (i === queries.length - 1) ToastHandler("Tables created successfully")
+                    if (i === queries.length - 1) resolve("Tables created successfully")
 
                 },
-                (_, error) => console.log(error)
+                (_, error) => reject(error)
             )
         }
     })
-}
+})
 
 export function insertDummyData() {
     // delete all

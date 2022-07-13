@@ -17,10 +17,10 @@ export default class productsModel {
      * @memberof productsModel
      * @returns {Promise<any>}
      */
-    addNew = (data) =>
+    addNew = (data, _product_id) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                let product_id = randomIdGenerator()
+                let product_id = _product_id ? _product_id : randomIdGenerator()
                 tx.executeSql(
                     `INSERT INTO ${this.table_products} (product_id, name, picture, description, qr_code, category, supplier, created_at, modified_at) VALUES ("${product_id}", ?, ?, ?, ?, ?, ?, ${productsModel.TSinSecs()}, ${productsModel.TSinSecs()})`,
                     data,
@@ -159,7 +159,6 @@ export default class productsModel {
         })
 
 
-    //!Delete it
     getAllAttributes = () =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
