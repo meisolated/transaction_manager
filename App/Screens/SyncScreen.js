@@ -2,13 +2,10 @@ import { View, Text, StyleSheet, FlatList, Image, Pressable, ActivityIndicator, 
 import { SafeAreaView } from "react-native-safe-area-context"
 import BottomNavBar from "../Navigation/bottomNavbar.js"
 import { PrimaryButton } from "../components/button/"
-import color, * as colors from "../constant/color.js"
-import Loading from "../components/widgets/loading"
 import TopNavbar from "../Navigation/topNavbar.js"
 import D from "../handler/Dimensions.handler.js"
 import commonStyles from "../common/style.js"
 import React, { useMemo } from "react"
-import font from "../constant/font.js"
 import config from "../config/index.js"
 import qs from "qs"
 import { localStorage } from "../database/localStorage.js"
@@ -19,6 +16,7 @@ import ordersModel from "../database/models/orders.model.js"
 import shopsModel from "../database/models/shops.model.js"
 import axios from "axios"
 import { sleep } from "../util/functions.js"
+import * as colors from "../constant/color.js"
 import ToastHandler from "../handler/Toast.handler.js"
 import { createTables, deleteAllTables } from "../database/db_helpers.js"
 let d = new D()
@@ -46,7 +44,6 @@ const SyncScreen = (props) => {
     let db_shops = new shopsModel()
     let [loading, setLoading] = React.useState(false)
     let [loadingMessage, setLoadingMessage] = React.useState("Nothing")
-    let [test, setTest] = React.useState("")
 
     const onPressTakeBackup = async () => {
         function backupAll(table, data) {
@@ -80,6 +77,7 @@ const SyncScreen = (props) => {
                 let config = await apiConfig(table, "take", { data: _data, table })
                 axios(config)
                     .then((res) => {
+                        if (res.data.status === "error") return reject(res.data.message)
                         setLoadingMessage(`Backup complete for ${table}`)
                         resolve(`Backed up ${table}`)
                     })
@@ -88,7 +86,6 @@ const SyncScreen = (props) => {
                         reject(`Error backing up ${table} ${err}`)
                     })
             })
-        // let tables = ["categories"]
         let tables = ["suppliers", "products", "categories", "shops", "products_attributes"]
         setLoading(true)
         setLoadingMessage("Getting data from tables")
@@ -126,6 +123,7 @@ const SyncScreen = (props) => {
         await sleep(2)
         // delete all tables
         setLoadingMessage("Deleting all tables")
+        let done = 0
         deleteAllTables()
             .then(() => {
                 sleep(2).then(() => {
@@ -136,69 +134,80 @@ const SyncScreen = (props) => {
                             axios(config)
                                 .then(async (res) => {
                                     let data = res.data
+                                    if (data.categories.length == 0 && data.suppliers.length == 0 && data.products.length == 0 && data.shops.length == 0 && data.products_attributes.length == 0) {
+                                        setLoadingMessage("No data to restore")
+                                        return setLoading(false)
+                                    }
                                     data.categories.map(async (category, index) => {
                                         await db_categories
                                             .add([category.name, category.picture])
                                             .then(() => {
-                                                console.log("Added categories")
                                             })
                                             .catch((err) => {
                                                 console.log(err)
                                             })
                                         if (index === data.categories.length - 1) {
-                                            data.suppliers.map(async (supplier, index) => {
-                                                await db_suppliers
-                                                    .add([supplier.name, supplier.picture])
-                                                    .then(() => {
-                                                        console.log("Added suppliers")
-                                                    })
-                                                    .catch((err) => {
-                                                        console.log(err)
-                                                    })
-                                                if (index === data.categories.length - 1) {
-                                                    data.shops.map(async (shop, index) => {
-                                                        await db_shops
-                                                            .add([shop.name, shop.address, shop.phone, shop.picture, shop.qr_code])
-                                                            .then(() => {
-                                                                console.log("Added shops")
-                                                            })
-                                                            .catch((err) => {
-                                                                console.log(err)
-                                                            })
-                                                        if (index === data.categories.length - 1) {
-                                                            data.products.map(async (product, index) => {
-                                                                await db_products
-                                                                    .addNew([product.name, product.picture, product.description, product.qr_code, product.category, product.supplier], product.product_id)
-                                                                    .then(() => {
-                                                                        console.log("Added products")
-                                                                    })
-                                                                    .catch((err) => {
-                                                                        console.log(err)
-                                                                    })
-                                                                if (index === data.categories.length - 1) {
-                                                                    data.productsAttributes.map(async (product_attribute, index) => {
-                                                                        await db_products
-                                                                            .addNewAttribute([product_attribute.product_id, product_attribute.number, product_attribute.metric, product_attribute.price, product_attribute.cost_price])
-                                                                            .then(() => {
-                                                                                console.log("Added products_attributes")
-                                                                            })
-                                                                            .catch((err) => {
-                                                                                console.log(err)
-                                                                            })
-                                                                        if (index === data.categories.length - 1) {
-                                                                            setLoadingMessage("Restore complete")
-                                                                            sleep(2).then(() => {
-                                                                                setLoading(false)
-                                                                            })
-                                                                        }
-                                                                    })
-                                                                }
-                                                            })
-                                                        }
-                                                    })
-                                                }
-                                            })
+                                            done++
+                                            setLoadingMessage(done + " tables restored out of 5")
                                         }
+                                    })
+                                    data.suppliers.map(async (supplier, index) => {
+                                        await db_suppliers
+                                            .add([supplier.name, supplier.picture])
+                                            .then(() => {
+                                            })
+                                            .catch((err) => {
+                                                console.log(err)
+                                            })
+                                        if (index === data.categories.length - 1) {
+                                            done++
+                                            setLoadingMessage(done + " tables restored out of 5")
+                                        }
+                                    })
+                                    data.shops.map(async (shop, index) => {
+                                        await db_shops
+                                            .add([shop.name, shop.address, shop.phone, shop.picture, shop.qr_code])
+                                            .then(() => {
+                                            })
+                                            .catch((err) => {
+                                                console.log(err)
+                                            })
+                                        if (index === data.categories.length - 1) {
+                                            done++
+                                            setLoadingMessage(done + " tables restored out of 5")
+                                        }
+                                    })
+                                    data.products.map(async (product, index) => {
+                                        await db_products
+                                            .addNew([product.name, product.picture, product.description, product.qr_code, product.category, product.supplier], product.product_id)
+                                            .then(() => {
+                                            })
+                                            .catch((err) => {
+                                                console.log(err)
+                                            })
+                                        if (index === data.categories.length - 1) {
+                                            done++
+                                            setLoadingMessage(done + " tables restored out of 5")
+                                        }
+                                    })
+                                    data.productsAttributes.map(async (product_attribute, index) => {
+                                        await db_products
+                                            .addNewAttribute([product_attribute.product_id, product_attribute.number, product_attribute.metric, product_attribute.price, product_attribute.cost_price])
+                                            .then(() => {
+                                            })
+                                            .catch((err) => {
+                                                console.log(err)
+                                            })
+                                        if (index === data.categories.length - 1) {
+                                            done++
+                                            setLoadingMessage(done + " tables restored out of 5")
+                                        }
+                                    })
+                                    sleep(30).then(() => {
+                                        setLoadingMessage("Restored " + done + " tables out of 5")
+                                        sleep(2).then(() => {
+                                            setLoading(false)
+                                        })
                                     })
                                 })
                                 .catch((err) => {
@@ -216,24 +225,21 @@ const SyncScreen = (props) => {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <TopNavbar title="Sync Database" />
+        <SafeAreaView style={{ flex: 1, backgroundColor: "white", }}>
+            <TopNavbar title="Backup & Restore" />
             <View style={styles.container}>
                 {!loading && (
                     <View>
-                        <View style={{ alignSelf: "center", height: 50 }}>
+                        <View style={{ height: 50 }}>
                             <PrimaryButton name={"Take Backup"} onPress={() => onPressTakeBackup()} width={d.width * 0.9} />
                         </View>
-                        <View style={{ alignSelf: "center", height: 50, margin: 10 }}>
-                            <PrimaryButton name={"RestoreBackup"} onPress={() => onPressRestoreBackup()} width={d.width * 0.9} />
+                        <View style={{ height: 50, margin: 10 }}>
+                            <PrimaryButton name={"Restore Backup"} onPress={() => onPressRestoreBackup()} width={d.width * 0.9} />
                         </View>
                     </View>
                 )}
                 {loading && <ActivityIndicator size="large" color={colors.purple600} />}
                 {loading && <Text style={[commonStyles.basic_text_semiBold_20, { alignSelf: "center", margin: 10 }]}>{loadingMessage}</Text>}
-                <ScrollView>
-                    <Text>{test}</Text>
-                </ScrollView>
             </View>
             <BottomNavBar navigation={props.navigation} />
         </SafeAreaView>
@@ -245,5 +251,8 @@ const styles = StyleSheet.create({
     container: {
         margin: 10,
         flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+
     },
 })

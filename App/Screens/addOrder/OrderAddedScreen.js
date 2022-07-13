@@ -1,15 +1,15 @@
 import { Feather as Icon } from "@expo/vector-icons"
 import React, { useMemo } from "react"
-import { View, Text, StyleSheet, Share, Linking } from "react-native"
+import { View, Text, StyleSheet, Linking } from "react-native"
 import { PrimaryButton } from "../../components/button/index.js"
 import LoadingCircle from "../../components/widgets/loading"
 import ordersModel from "../../database/models/orders.model.js"
 import shopsModel from "../../database/models/shops.model.js"
 import commonStyle from "../../common/style.js"
-
 import D from "../../handler/Dimensions.handler.js"
 import TextInput from "../../components/Form/TextInput.js"
 import ToastHandler from "../../handler/Toast.handler.js"
+import { numberSeparator } from "../../util/functions.js"
 let d = new D()
 
 const OrderAdded = (props) => {
@@ -22,7 +22,6 @@ const OrderAdded = (props) => {
     const [loading, setLoading] = React.useState(false)
     let [shareMessage, setShareMessage] = React.useState("")
     let [shop, setShop] = React.useState({ name: null, address: null, phone: null, picture: null, qr_code: null })
-    let [order, setOrder] = React.useState({})
 
     const onTextChange = (text) => {
         setShop({ ...shop, phone: text })
@@ -31,7 +30,7 @@ const OrderAdded = (props) => {
     React.useEffect(() => {
         let message = ""
         params.cart.map((item, index) => {
-            message = message + "*" + item.name.toUpperCase() + " [" + item.quantity + " x " + item.price + "] = ₹" + item.quantity * item.price + "." + "*\n"
+            message = message + "*" + item.name.toUpperCase() + " 『" + item.quantity + " x " + item.price + "』 ⥤  ₹" + item.quantity * item.price + "." + "*\n"
             if (params.cart.length - 1 == index) {
                 setShareMessage(message)
             }
@@ -98,9 +97,11 @@ const OrderAdded = (props) => {
             .catch((err) => {
                 ToastHandler("Error updating shop details")
             })
+        let header = "```[            " + shop.name + "            ]```\n\n"
         let symbol = params.cartData.paymentStatus.toUpperCase() == "PAID" ? "✅" : "❌"
+        const end = "\n```[      🌟Thank You🌟      ]```\n\n"
         Linking.openURL(
-            `whatsapp://send?text=${shareMessage}\n*Total Price: ${params.cartData.totalPrice}*\n*Payment Status: ${params.cartData.paymentStatus.toUpperCase()} ${symbol}*&phone="+91 ${shop.phone}"`
+            `whatsapp://send?text=${header + shareMessage}\n*Total Price: ${numberSeparator(params.cartData.totalPrice)}*\n*Payment Status: ${params.cartData.paymentStatus.toUpperCase()} ${symbol}* \n${end}\n&phone="+91 ${shop.phone}"`
         )
     }
 
@@ -112,6 +113,7 @@ const OrderAdded = (props) => {
             {/* <Text style={commonStyle.basic_text_semiBold_20} >Order ID: {params.orderData.orderId}</Text> */}
             <Text style={commonStyle.basic_text_semiBold_20}>Total Amount: ₹{params.cartData.totalPrice}</Text>
             <Text style={commonStyle.basic_text_semiBold_20}>Payment Status: {params.cartData.paymentStatus.toUpperCase()}</Text>
+            <TextInput type="default" onChange={(t) => setShop({ ...shop, name: t })} length={10} placeholder="Name" icon="user" style={{ height: 50, width: d.width * 0.9 }} value={shop.name} />
             <TextInput type="numeric" onChange={onTextChange} length={10} placeholder="Enter Shop Phone Number" icon="hash" style={{ height: 50, width: d.width * 0.9 }} value={shop.phone} />
             <View style={{ height: 50, width: d.width * 0.9 }}>
                 <PrimaryButton width={d.width * 0.95} name="Send via WhatsApp" onPress={onShare} />

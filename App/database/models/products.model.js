@@ -175,15 +175,15 @@ export default class productsModel {
      * @description update a product by id
      * @author meisolated
      * @date 22/06/2022
-     * @param {*} id number
+     * @param {*} product_id string
      * @param {*} data [name, description, picture, qr_code, category, supplier]
      * @memberof productsModel
      */
-    update = (id, data) =>
+    update = (product_id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `UPDATE ${this.table_products} SET name = ?, description = ?, picture = ?, qr_code = ?, category = ?, supplier = ?, modified_at = ${productsModel.TSinSecs()} WHERE product_id = ${id}`,
+                    `UPDATE ${this.table_products} SET name = ?, description = ?, picture = ?, qr_code = ?, category = ?, supplier = ?, modified_at = ${productsModel.TSinSecs()} WHERE product_id = "${product_id}"`,
                     data,
                     (_, result) => resolve({ status: "done" }),
                     (_, error) => reject(error)
@@ -243,7 +243,7 @@ export default class productsModel {
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `DELETE FROM ${this.table_products_attributes} WHERE product_id = ${product_id}`,
+                    `DELETE FROM ${this.table_products_attributes} WHERE product_id = "${product_id}"`,
                     [],
                     (_, result) => resolve({ status: "done" }),
                     (_, error) => reject(error)

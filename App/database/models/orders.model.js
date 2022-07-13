@@ -129,14 +129,14 @@ export default class ordersModel {
      * @description get ordered Items by order id
      * @author meisolated
      * @date 02/07/2022
-     * @param {*} id
+     * @param {*} order_id  string
      * @memberof ordersModel
      */
-    getItemsByOrderId = (id) =>
+    getItemsByOrderId = (order_id) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `SELECT * FROM ${this.table_ordered_items} WHERE order_id = "${id}"`,
+                    `SELECT * FROM ${this.table_ordered_items} WHERE order_id = "${order_id}"`,
                     [],
                     (_, { rows }) => {
                         resolve(rows._array)
@@ -206,11 +206,11 @@ export default class ordersModel {
      * @description to update ordered item by id [only single item can be update with this]
      * @author meisolated
      * @date 22/06/2022
-     * @param {*} id NUMBER
+     * @param {*} order_id string
      * @param {*} data ARRAY [product_name, quantity, product_price]
      * @memberof ordersModel
      */
-    updateItems = (id, data) =>
+    updateItems = (order_id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
@@ -219,7 +219,7 @@ export default class ordersModel {
                     quantity = ?,
                     product_price = ?,
                     modified_at = ${ordersModel.TSinSecs()},
-                    WHERE id = ${id}`,
+                    WHERE order_id = "${order_id}"`,
                     data,
                     (_, result) => resolve(result.rows._array),
                     (_, error) => reject(error)
@@ -231,15 +231,15 @@ export default class ordersModel {
      * @description to update order data by id
      * @author meisolated
      * @date 22/06/2022
-     * @param {*} id NUMBER
+     * @param {*} order_id string
      * @param {*} data ARRAY [shop_id, items, total_amount,total_cost_amount, payment_status]
      * @memberof ordersModel
      */
-    update = (id, data) =>
+    update = (order_id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `UPDATE ${this.table_orders} SET shop_id = ?, items = ?, total_amount = ?, total_cost_amount = ?, payment_status = ?, modified_at = ${ordersModel.TSinSecs()} WHERE id = ${id}`,
+                    `UPDATE ${this.table_orders} SET shop_id = ?, items = ?, total_amount = ?, total_cost_amount = ?, payment_status = ?, modified_at = ${ordersModel.TSinSecs()} WHERE order_id = "${order_id}"`,
                     data,
                     (_, result) => resolve(result.rows._array),
                     (_, error) => reject(error)
@@ -251,14 +251,14 @@ export default class ordersModel {
      * @description delete order by id
      * @author meisolated
      * @date 02/07/2022
-     * @param {*} id
+     * @param {*} order_id string
      * @memberof ordersModel
      */
-    deleteOrder = (id) =>
+    deleteOrder = (order_id) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `DELETE FROM ${this.table_orders} WHERE id = ${id}`,
+                    `DELETE FROM ${this.table_orders} WHERE order_id = "${order_id}"`,
                     [],
                     (_, result) => resolve(result.rows._array),
                     (_, error) => reject(error)

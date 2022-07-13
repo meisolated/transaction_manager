@@ -3,13 +3,16 @@ import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native"
 import * as color from "../../constant/color.js"
 import font from "../../constant/font.js"
 
-const componentName = (props) => (
-    <Pressable onLongPress={props.onLongPress} style={{ alignSelf: "center" }} onPress={props.onPress}>
-        <View style={[styles.container, { width: props.width }]}>
-            <Text style={styles.name}>{props.name}</Text>
-        </View>
-    </Pressable>
-)
+const componentName = (props) => {
+    let bgColor = props.color ? props.color : color.purple400
+    return (
+        <Pressable onLongPress={props.onLongPress} style={{ alignSelf: "center" }} onPress={props.onPress}>
+            <View style={[styles.container, { width: props.width, elevation: 5, backgroundColor: bgColor, }]}>
+                <Text style={styles.name}>{props.name}</Text>
+            </View>
+        </Pressable>
+    )
+}
 export default componentName
 
 const styles = StyleSheet.create({
@@ -17,7 +20,6 @@ const styles = StyleSheet.create({
         flex: 1,
         selfAlign: "center",
         alignItems: "center",
-        backgroundColor: color.purple400,
         elevation: 1,
         paddingTop: 10,
         paddingBottom: 10,

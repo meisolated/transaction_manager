@@ -11,27 +11,13 @@ import productsModel from "../database/models/products.model.js"
 
 
 function HomeScreen(props) {
-    let dbProducts = new productsModel()
     React.useEffect(() => {
         createTables()
-        // insertDummyData()
     }, [])
 
     const onDummyData = () => insertDummyData()
-
-    let [product, setProduct] = React.useState([])
-
     React.useEffect(() => {
-        dbProducts.getAll().then((results) => {
-            if (results.length > 0) {
-                setProduct(results)
-            } else {
-                setProduct([])
-            }
-        }
-        ).catch((err) => {
-            console.log(err)
-        })
+
     }, [])
 
 
@@ -43,12 +29,11 @@ function HomeScreen(props) {
             <ScrollView>
                 <View style={{ flex: 1, marginBottom: 100 }}>
                     <HomeScreenPrimary />
-                    <Button title={"Admin"} onPress={() => props.navigation.navigate("Admin")} />
+                    {/* <Button title={"Admin"} onPress={() => props.navigation.navigate("Admin")} />
                     <Button title={"LoginAndSignup"} onPress={() => props.navigation.navigate("LoginAndSignup")} />
                     <Button title={"Dummy"} onPress={() => onDummyData()} />
                     <Button title={"Delete All Tables"} onPress={() => deleteAllTables(() => console.log("done"))} />
-                    <Button title={"randomIdGenerator"} onPress={() => randomIdGenerator()} />
-                    <Text>{JSON.stringify(product)}</Text>
+                    <Button title={"randomIdGenerator"} onPress={() => randomIdGenerator()} /> */}
                 </View>
             </ScrollView>
             <BottomNavBar navigation={props.navigation} />

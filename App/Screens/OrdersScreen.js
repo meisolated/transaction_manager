@@ -53,7 +53,7 @@ function OrderScreen(props) {
                 .getShopByQrCode(params.qr_code)
                 .then((shop) => {
                     if (shop) {
-                        db_orders.getByShopId(shop.id).then((orders) => {
+                        db_orders.getByShopId(shop.shop_id).then((orders) => {
                             setLoading(false)
                             if (orders.length > 0) {
                                 setOrders(orders)

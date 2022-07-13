@@ -20,20 +20,13 @@ export function convertTimestamp(ts) {
     // return `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}` //?with seconds
 }
 
-
 const generateRandomString = (myLength) => {
-    const chars =
-        "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890"
-    const randomArray = Array.from(
-        { length: myLength },
-        (v, k) => chars[Math.floor(Math.random() * chars.length)]
-    )
+    const chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890"
+    const randomArray = Array.from({ length: myLength }, (v, k) => chars[Math.floor(Math.random() * chars.length)])
 
     const randomString = randomArray.join("")
     return randomString
 }
-
-
 
 export const randomIdGenerator = () => {
     // random string
@@ -54,12 +47,47 @@ export function startAndEndOfDat() {
 }
 
 /**
- * 
+ *
  * @param {*} t time in seconds
- * @returns 
+ * @returns
  */
-export const sleep = (t) => new Promise(async (resolve, _reject) => {
-    setTimeout(() => {
-        resolve()
-    }, t * 1000)
-}) 
+export const sleep = (t) =>
+    new Promise(async (resolve, _reject) => {
+        setTimeout(() => {
+            resolve()
+        }, t * 1000)
+    })
+
+export const convertTextToFont = (text) => {
+    let font = {
+        a: "🇦",
+        b: "🇧",
+        c: "🇨",
+        d: "🇩",
+        e: "🇪",
+        f: "🇫",
+        g: "🇬",
+        h: "🇭",
+        i: "🇮",
+        j: "🇯",
+        k: "🇰",
+        l: "🇱",
+        m: "🇲",
+        n: "🇳",
+        o: "🇴",
+        p: "🇵",
+        q: "🇶",
+        r: "🇷",
+        s: "🇸",
+        t: "🇹",
+        u: "🇺",
+        v: "🇻",
+        w: "🇼",
+        x: "🇽",
+        y: "🇾",
+        x: "🇿",
+    }
+    let fontText = text.split("").map((char) => font[char] || char).join("")
+    return fontText
+
+}

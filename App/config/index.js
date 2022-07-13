@@ -1,3 +1,3 @@
 export default {
-    apiUrl: "http://10.69.69.201:3001/"
+    apiUrl: "http://isosad.com:9800/"
 }
