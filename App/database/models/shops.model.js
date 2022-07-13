@@ -35,14 +35,14 @@ export default class shopsModel {
      * @description get a shop by id
      * @author meisolated
      * @date 30/06/2022
-     * @param {*} id NUMBER
+     * @param {*} shop_id text
      * @memberof shopsModel
      */
-    get = (id) =>
+    get = (shop_id) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `SELECT * FROM ${this.table} WHERE id = ${id}`,
+                    `SELECT * FROM ${this.table} WHERE shop_id = "${shop_id}"`,
                     [],
                     (_, { rows }) => {
 
@@ -118,15 +118,15 @@ export default class shopsModel {
      * @description update a shop by id
      * @author meisolated
      * @date 23/06/2022
-     * @param {*} id NUMBER
+     * @param {*} shop_id text
      * @param {*} data [name, address, phone, picture, qr_code]
      * @memberof shopsModel
      */
-    updateById = (id, data) =>
+    updateById = (shop_id, data) =>
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
                 tx.executeSql(
-                    `UPDATE ${this.table} SET name = ?, address = ?, phone = ?, picture = ?, qr_code = ? WHERE id = ${id}`,
+                    `UPDATE ${this.table} SET name = ?, address = ?, phone = ?, picture = ?, qr_code = ? WHERE shop_id = "${shop_id}"`,
                     data,
                     (_, result) => resolve(result.rows._array),
                     (_, error) => reject(error)

@@ -2,6 +2,7 @@ import { localStorage } from "./localStorage.js"
 import db from "./db"
 import ToastHandler from "../handler/Toast.handler.js"
 import md5 from "md5"
+import { randomIdGenerator } from "../util/functions.js"
 
 export async function deleteAllTables(cb) {
     let queries = [
@@ -148,16 +149,17 @@ export function insertDummyData() {
         // generate random number
         let randomNumber = Math.floor(Math.random() * 1000)
         let randomCostNumber = Math.floor(Math.random() * 500)
+        let randomId = randomIdGenerator()
         db.transaction((tx) => {
             tx.executeSql(
-                "insert into orders (created_at, modified_at, total_amount, total_cost_amount, items, payment_status, shop_id) values (?, ?, ?, ?, ?, ?, ?)",
-                [Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), randomNumber, randomCostNumber, '["151x1","151x1", "151x1"]', ["paid", "unpaid"][Math.floor(Math.random() * 2)], "1"],
+                "insert into orders (order_id, created_at, modified_at, total_amount, total_cost_amount, items, payment_status, shop_id) values (?, ?, ?, ?, ?, ?, ?, ?)",
+                [randomId, Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), randomNumber, randomCostNumber, '["151x1","151x1", "151x1"]', ["paid", "unpaid"][Math.floor(Math.random() * 2)], "1"],
                 (_, result) => {
                     // add attributes to order
                     for (let j = 0; j < 3; j++) {
                         tx.executeSql(
-                            "insert into ordered_items (created_at, modified_at, order_id, product_name, quantity, product_price, product_cost_price) values (?, ?, ?, ?, ?, ?, ?)",
-                            [Math.floor(Date.now()), Math.floor(Date.now()), result.insertId, "product " + j, j, j * 1, 10],
+                            "insert into ordered_items (order_id, created_at, modified_at, order_id, product_name, quantity, product_price, product_cost_price) values (?, ?, ?, ?, ?, ?, ?, ?)",
+                            [randomId, Math.floor(Date.now()), Math.floor(Date.now()), result.insertId, "product " + j, j, j * 1, 10],
                             (_, result) => console.log("inserted ordered_items"),
                             (_, error) => console.log(error)
                         )
@@ -177,15 +179,6 @@ export function insertDummyData() {
                 "insert into shops (shop_id, created_at, modified_at, name, address, phone, picture, qr_code) values (?, ?, ?, ?, ?, ?, ?, ?)",
                 [randomNumber, Math.floor(Date.now() / 1000), Math.floor(Date.now() / 1000), "shop " + i, "address " + i, "phone " + i, "picture " + i, "qr_code " + i],
                 (_, result) => {
-                    // add attributes to order
-                    for (let j = 0; j < 3; j++) {
-                        tx.executeSql(
-                            "insert into products (created_at, modified_at, name, picture, description) values (?, ?, ?, ?, ?)",
-                            [Math.floor(Date.now()), Math.floor(Date.now()), "product " + j, "picture " + j, "description " + j],
-                            (_, result) => console.log("inserted products"),
-                            (_, error) => console.log(error)
-                        )
-                    }
                 },
                 (_, error) => console.log(error)
             )

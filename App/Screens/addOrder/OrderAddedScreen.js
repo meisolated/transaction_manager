@@ -9,6 +9,7 @@ import commonStyle from "../../common/style.js"
 
 import D from "../../handler/Dimensions.handler.js"
 import TextInput from "../../components/Form/TextInput.js"
+import ToastHandler from "../../handler/Toast.handler.js"
 let d = new D()
 
 const OrderAdded = (props) => {
@@ -37,6 +38,7 @@ const OrderAdded = (props) => {
         })
         // -------------------------------------------------
         // -------------------------------------------------
+
         if (params.cart && params.cartData) {
             let cartData = params.cartData
             let cart = params.cart
@@ -68,9 +70,7 @@ const OrderAdded = (props) => {
             db_order
                 .addNew([cartData.shopId, JSON.stringify(items), cartData.totalPrice, cartData.costPrice, cartData.paymentStatus])
                 .then((result) => {
-                    console.log("Order PLaced Successfully")
                     params.cart.map((item, index) => {
-                        console.log(item)
                         db_order
                             .addNewItem([result.id, item.name, item.quantity, item.price, item.cost_price])
                             .catch((err) => {
@@ -92,9 +92,11 @@ const OrderAdded = (props) => {
     const onShare = async () => {
         db_shop
             .updateById(params.cartData.shopId, [shop.name, shop.address, shop.phone, shop.picture, shop.qr_code])
-            .then((result) => { })
+            .then((result) => {
+                ToastHandler("Shop details updated")
+            })
             .catch((err) => {
-                console.log(err)
+                ToastHandler("Error updating shop details")
             })
         let symbol = params.cartData.paymentStatus.toUpperCase() == "PAID" ? "✅" : "❌"
         Linking.openURL(

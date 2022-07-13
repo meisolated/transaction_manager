@@ -26,22 +26,26 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemT
     const [cartData, setCartData] = React.useState({ paymentStatus: "unpaid", qrCode: null, shopId: null })
     const db_product = new productsModel()
 
+    const setShopId = (qr) => {
+        db_shop.getShopByQrCode(qr).then(shop => {
+            if (shop !== undefined) {
+                setCartData({ ...cartData, shopId: shop.shop_id, qrCode: qr })
+            }
+            else {
+                db_shop.add(["Automatic", "nill", "", "nill", qr]).then(shop => {
+                    setCartData({ ...cartData, shopId: shop.shopId, qrCode: qr })
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
+        }).catch(err => {
+            console.log("err", err)
+        })
+    }
+
     React.useEffect(() => {
         if (qrCodeCallback) {
-            db_shop.getShopByQrCode(qrCodeCallback).then(shop => {
-                if (shop !== undefined) {
-                    setCartData({ ...cartData, shopId: shop.shopId, qrCode: qrCodeCallback })
-                }
-                else {
-                    db_shop.add(["Automatic", "nill", "", "nill", qrCodeCallback]).then(shop => {
-                        setCartData({ ...cartData, shopId: shop.shopId, qrCode: qrCodeCallback })
-                    }).catch(err => {
-                        console.log(err)
-                    })
-                }
-            }).catch(err => {
-                console.log("err", err)
-            })
+            setShopId(qrCodeCallback)
         }
         if (addItemToCard) {
             setLoading(true)

@@ -255,7 +255,7 @@ export default function ProductEditScreen(props) {
     }
     async function openImagePickerAsync() {
         let image = await ImagePickerHandler()
-        setProduct({ ...product, picture: image })
+        setProduct({ ...product, picture: image.base64 })
     }
     React.useEffect(() => {
         const showSubscription = Keyboard.addListener("keyboardDidShow", () => {

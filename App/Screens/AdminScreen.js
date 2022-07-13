@@ -34,8 +34,8 @@ function AdminScreen(props) {
     let prefix = "data:image/png;base64,"
     async function openImagePickerAsync() {
         let image = await ImagePickerHandler()
-        console.log(image)
-        RNFS.readFile(image, 'base64')
+        console.log(JSON.stringify(image.base64))
+        RNFS.readFile(image.url, 'base64')
             .then(res => {
                 setImage(res)
             })

@@ -61,7 +61,7 @@ const ShopData = (props) => {
     const openImagePicker = async () => {
         let image = await ImagePickerHandler()
         if (image) {
-            setShop({ ...shop, picture: image })
+            setShop({ ...shop, picture: image.base64 })
         }
     }
 

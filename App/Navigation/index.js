@@ -21,6 +21,7 @@ import HomeScreen from "../Screens/HomeScreen.js"
 import Shops from "../Screens/ShopsScreen.js"
 import { StatusBar } from "expo-status-bar"
 import React from "react"
+import SyncScreen from "../Screens/SyncScreen.js"
 const Stack = createNativeStackNavigator()
 export function Navigation() {
     let [loggedIn, setLoggedIn] = React.useState({ loggedIn: false, show: false })
@@ -40,37 +41,38 @@ export function Navigation() {
                 .catch((err) => {
                     console.log(err)
                 })
-        }, 2000)
+        }, 1000)
 
     }, [])
 
     const LoggedOutStack = () => (
         <Stack.Navigator initialRouteName="LoginAndSignup">
-            <Stack.Screen name="LoginAndSignup" component={LoginAndSignup} options={{ headerShown: false, animation: "none" }} />
+            <Stack.Screen name="LoginAndSignup" component={LoginAndSignup} options={{ headerShown: false, }} />
         </Stack.Navigator>
     )
 
+    // animation: "none" 
+
     const LoggedInStack = () => (
         <Stack.Navigator initialRouteName="Home">
-            <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="OrdersScreen" component={OrdersScreen} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="AddOrder" component={AddOrder} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="QRCodeScanner" component={QRCodeScanner} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="Shops" component={Shops} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="ShopData" component={ShopData} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="ProductData" component={ProductDataScreen} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="Products" component={ProductsScreen} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="Suppliers" component={SuppliersScreen} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="SupplierData" component={SuppliersData} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="Categories" component={CategoryScreen} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="CategoryData" component={CategoryData} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="OrderAdded" component={OrderAdded} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="OrderData" component={OrderDataScreen} options={{ headerShown: false, animation: "none" }} />
-            <Stack.Screen name="Connections" component={ConnectionsScreen} options={{ headerShown: false, animation: "none" }} />
-
-            {/* <Stack.Screen name="LoginAndSignup" component={LoginAndSignup} options={{ headerShown: false, animation: "none" }} /> */}
+            <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false, }} />
+            <Stack.Screen name="OrdersScreen" component={OrdersScreen} options={{ headerShown: false, }} />
+            <Stack.Screen name="AddOrder" component={AddOrder} options={{ headerShown: false, }} />
+            <Stack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false, }} />
+            <Stack.Screen name="QRCodeScanner" component={QRCodeScanner} options={{ headerShown: false, }} />
+            <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false, }} />
+            <Stack.Screen name="Shops" component={Shops} options={{ headerShown: false, }} />
+            <Stack.Screen name="ShopData" component={ShopData} options={{ headerShown: false, }} />
+            <Stack.Screen name="ProductData" component={ProductDataScreen} options={{ headerShown: false, }} />
+            <Stack.Screen name="Products" component={ProductsScreen} options={{ headerShown: false, }} />
+            <Stack.Screen name="Suppliers" component={SuppliersScreen} options={{ headerShown: false, }} />
+            <Stack.Screen name="SupplierData" component={SuppliersData} options={{ headerShown: false, }} />
+            <Stack.Screen name="Categories" component={CategoryScreen} options={{ headerShown: false, }} />
+            <Stack.Screen name="CategoryData" component={CategoryData} options={{ headerShown: false, }} />
+            <Stack.Screen name="OrderAdded" component={OrderAdded} options={{ headerShown: false, }} />
+            <Stack.Screen name="OrderData" component={OrderDataScreen} options={{ headerShown: false, }} />
+            <Stack.Screen name="Connections" component={ConnectionsScreen} options={{ headerShown: false, }} />
+            <Stack.Screen name="Sync" component={SyncScreen} options={{ headerShown: false, }} />
         </Stack.Navigator>
     )
 

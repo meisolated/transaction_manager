@@ -168,7 +168,7 @@ const ChooseCategory = (props) => {
 // ------------------------------------------------------END----------------------------------------------------------------
 // --------------------------------------------------ChooseSupplier--------------------------------------------------------------------
 function ChooseSupplier(props) {
-    //get suppliers
+    //get  
     const [suppliers, setSuppliers] = React.useState([])
     const [loading, setLoading] = React.useState(true)
     const db_suppliers = new suppliersModel()
@@ -238,7 +238,6 @@ function ChooseProduct(props) {
     const [products, setProducts] = React.useState([])
     const [loading, setLoading] = React.useState(true)
     const db_products = new productsModel()
-
     React.useEffect(() => {
         db_products
             .getByCategoryAndSupplier(props.product.category, props.product.supplier)

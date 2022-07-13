@@ -13,6 +13,7 @@ import axios from "axios"
 import qs from "qs"
 import { localStorage } from "../database/localStorage.js"
 import ToastHandler from "../handler/Toast.handler.js"
+import config from "../config/index.js"
 const d = new D()
 
 function LoginAndSignup(props) {
@@ -33,13 +34,12 @@ function LoginAndSignup(props) {
     }
 
     const onClickLogin = () => {
-        let apiUrl = "http://10.69.69.171:3001/"
+        let apiUrl = config.apiUrl
         if (state.loginOrSignup === "login") {
             if (!data.phoneNumber.length === 10) return alert("Please fill phone number field properly")
             const _data = qs.stringify({ phone: data.phoneNumber })
             const config = { method: "POST", url: apiUrl + "login", headers: { "Content-Type": "application/x-www-form-urlencoded" }, data: _data }
             axios(config).then(res => {
-                console.log(res.data)
                 if (res.data.status == "success") {
                     localStorage.storeData("userToken", res.data.token)
                     ToastHandler("Login Success")

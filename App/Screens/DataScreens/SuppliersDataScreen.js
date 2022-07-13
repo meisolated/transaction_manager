@@ -67,7 +67,7 @@ const SuppliersData = (props) => {
     }
     let openImagePickerAsync = async () => {
         let image = await ImagePickerHandler()
-        setSupplier({ ...supplier, picture: image })
+        setSupplier({ ...supplier, picture: image.base64 })
     }
     return (
         <SafeAreaView style={{ flex: 1 }}>

@@ -69,7 +69,7 @@ const CategoryData = (props) => {
 
     let openImagePickerAsync = async () => {
         let image = await ImagePickerHandler()
-        setCategories({ ...categories, picture: image })
+        setCategories({ ...categories, picture: image.base64 })
     }
     return (
         <SafeAreaView style={{ flex: 1 }}>

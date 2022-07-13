@@ -1,5 +1,5 @@
 import * as ImagePicker from "expo-image-picker"
-
+import RNFS from "react-native-fs"
 
 export default async () => {
     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -11,5 +11,7 @@ export default async () => {
     if (pickerResult.cancelled === true) {
         return
     }
-    return pickerResult.uri
+    let prefix = "data:image/png;base64,"
+    let base64 = await RNFS.readFile(pickerResult.uri, "base64")
+    return { url: pickerResult.uri, base64: prefix + base64 }
 }

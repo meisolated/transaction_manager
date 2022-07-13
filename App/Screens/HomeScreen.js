@@ -7,16 +7,32 @@ import TopNavbar from "../Navigation/topNavbar.js"
 import HomeScreenPrimary from "../components/widgets/HomeScreenPrimary.widget.js"
 import * as colors from "../constant/color.js"
 import { randomIdGenerator } from "../util/functions.js"
+import productsModel from "../database/models/products.model.js"
 
 
 function HomeScreen(props) {
-
+    let dbProducts = new productsModel()
     React.useEffect(() => {
         createTables()
         // insertDummyData()
     }, [])
 
     const onDummyData = () => insertDummyData()
+
+    let [product, setProduct] = React.useState([])
+
+    React.useEffect(() => {
+        dbProducts.getAll().then((results) => {
+            if (results.length > 0) {
+                setProduct(results)
+            } else {
+                setProduct([])
+            }
+        }
+        ).catch((err) => {
+            console.log(err)
+        })
+    }, [])
 
 
 
@@ -32,6 +48,7 @@ function HomeScreen(props) {
                     <Button title={"Dummy"} onPress={() => onDummyData()} />
                     <Button title={"Delete All Tables"} onPress={() => deleteAllTables(() => console.log("done"))} />
                     <Button title={"randomIdGenerator"} onPress={() => randomIdGenerator()} />
+                    <Text>{JSON.stringify(product)}</Text>
                 </View>
             </ScrollView>
             <BottomNavBar navigation={props.navigation} />
