@@ -108,6 +108,10 @@ const ChooseCategoryStyle = StyleSheet.create({
         flexDirection: "column",
         justifyContent: "center",
     },
+    scrollView: {
+        marginVertical: 20,
+        marginBottom: 150
+    },
 })
 
 const ChooseCategory = (props) => {
@@ -145,22 +149,24 @@ const ChooseCategory = (props) => {
         )
 
     return (
-        <View style={commonStyle.container}>
-            {categories.map((item, index) => {
-                return (
-                    <View style={commonStyle.center} key={"category" + index}>
-                        <TouchableOpacity style={ChooseCategoryStyle.item} onPress={() => props.onSelect({ key: "category", value: item.name })}>
-                            <Image style={{ width: 70, height: 70 }} source={require("../assets/img/milk.png")} />
-                            <View style={ChooseCategoryStyle.itemDetailsWrapper}>
-                                <Text style={ChooseCategoryStyle.title_text}>{item.name}</Text>
-                                <Text style={ChooseCategoryStyle.subtitle_text}>{item.name}</Text>
-                            </View>
-                            <MaterialCommunityIcons name="chevron-right" color={color.primary} size={30} />
-                        </TouchableOpacity>
-                        {categories.length - 1 !== index ? <View style={commonStyle.divider} /> : null}
-                    </View>
-                )
-            })}
+        <View style={`${commonStyle.container} `}>
+            <ScrollView style={ChooseCategoryStyle.scrollView}>
+                {categories.map((item, index) => {
+                    return (
+                        <View style={commonStyle.center} key={"category" + index}>
+                            <Pressable style={ChooseCategoryStyle.item} onPress={() => props.onSelect({ key: "category", value: item.name })}>
+                                <Image style={{ width: 70, height: 70 }} source={require("../assets/img/milk.png")} />
+                                <View style={ChooseCategoryStyle.itemDetailsWrapper}>
+                                    <Text style={ChooseCategoryStyle.title_text}>{item.name}</Text>
+                                    <Text style={ChooseCategoryStyle.subtitle_text}>{item.name}</Text>
+                                </View>
+                                <MaterialCommunityIcons name="chevron-right" color={color.primary} size={30} />
+                            </Pressable>
+                            {categories.length - 1 !== index ? <View style={commonStyle.divider} /> : null}
+                        </View>
+                    )
+                })}
+            </ScrollView>
         </View>
     )
 }
@@ -202,30 +208,32 @@ function ChooseSupplier(props) {
         )
     return (
         <View style={commonStyle.container}>
-            {suppliers.map((item, index) => {
-                let company = _.toLower(item.name)
-                // let img = company == "madhusudan" ? require(`../assets/img/amul_logo.png`) : require(`../assets/img/madhusudan_logo.png`)
-                let img =
-                    company == "madhusudan"
-                        ? "https://isosad.com/transaction_manager/img/madhusudan_logo.png"
-                        : company == "amul"
-                            ? "https://isosad.com/transaction_manager/img/amul_logo.png"
-                            : item.picture
-                                ? item.picture
-                                : "https://isosad.com/transaction_manager/img/madhusudan_logo.png"
-                return (
-                    <View style={commonStyle.center} key={"company" + index}>
-                        <TouchableOpacity style={ChooseCategoryStyle.item} onPress={() => props.onSelect({ key: "supplier", value: item.name })}>
-                            <Image style={{ resizeMode: "contain", width: 70, height: 70 }} source={{ uri: img }} />
-                            <View style={ChooseCategoryStyle.itemDetailsWrapper}>
-                                <Text style={ChooseCategoryStyle.title_text}>{item.name}</Text>
-                            </View>
-                            <MaterialCommunityIcons name="chevron-right" color={color.primary} size={30} />
-                        </TouchableOpacity>
-                        {suppliers.length - 1 !== index ? <View style={commonStyle.divider} /> : null}
-                    </View>
-                )
-            })}
+            <ScrollView style={ChooseCategoryStyle.scrollView}>
+                {suppliers.map((item, index) => {
+                    let company = _.toLower(item.name)
+                    // let img = company == "madhusudan" ? require(`../assets/img/amul_logo.png`) : require(`../assets/img/madhusudan_logo.png`)
+                    let img =
+                        company == "madhusudan"
+                            ? "https://isosad.com/transaction_manager/img/madhusudan_logo.png"
+                            : company == "amul"
+                                ? "https://isosad.com/transaction_manager/img/amul_logo.png"
+                                : item.picture
+                                    ? item.picture
+                                    : "https://isosad.com/transaction_manager/img/madhusudan_logo.png"
+                    return (
+                        <View style={commonStyle.center} key={"company" + index}>
+                            <TouchableOpacity style={ChooseCategoryStyle.item} onPress={() => props.onSelect({ key: "supplier", value: item.name })}>
+                                <Image style={{ resizeMode: "contain", width: 70, height: 70 }} source={{ uri: img }} />
+                                <View style={ChooseCategoryStyle.itemDetailsWrapper}>
+                                    <Text style={ChooseCategoryStyle.title_text}>{item.name}</Text>
+                                </View>
+                                <MaterialCommunityIcons name="chevron-right" color={color.primary} size={30} />
+                            </TouchableOpacity>
+                            {suppliers.length - 1 !== index ? <View style={commonStyle.divider} /> : null}
+                        </View>
+                    )
+                })}
+            </ScrollView>
         </View>
     )
 }
@@ -264,21 +272,23 @@ function ChooseProduct(props) {
         )
     return (
         <View style={commonStyle.container}>
-            {products.map((item, index) => {
-                return (
-                    <View style={commonStyle.center} key={"product" + index}>
-                        <TouchableOpacity style={ChooseCategoryStyle.item} onPress={() => props.onSelect({ key: "productId", value: item.product_id })}>
-                            <Image style={{ width: 70, height: 70 }} source={require("../assets/img/milk.png")} />
-                            <View style={ChooseCategoryStyle.itemDetailsWrapper}>
-                                <Text style={ChooseCategoryStyle.title_text}>{item.name}</Text>
-                                <Text style={ChooseCategoryStyle.subtitle_text}>{item.name}</Text>
-                            </View>
-                            <MaterialCommunityIcons name="chevron-right" color={color.primary} size={30} />
-                        </TouchableOpacity>
-                        {products.length - 1 !== index ? <View style={commonStyle.divider} /> : null}
-                    </View>
-                )
-            })}
+            <ScrollView style={ChooseCategoryStyle.scrollView}>
+                {products.map((item, index) => {
+                    return (
+                        <View style={commonStyle.center} key={"product" + index}>
+                            <TouchableOpacity style={ChooseCategoryStyle.item} onPress={() => props.onSelect({ key: "productId", value: item.product_id })}>
+                                <Image style={{ width: 70, height: 70 }} source={require("../assets/img/milk.png")} />
+                                <View style={ChooseCategoryStyle.itemDetailsWrapper}>
+                                    <Text style={ChooseCategoryStyle.title_text}>{item.name}</Text>
+                                    <Text style={ChooseCategoryStyle.subtitle_text}>{item.name}</Text>
+                                </View>
+                                <MaterialCommunityIcons name="chevron-right" color={color.primary} size={30} />
+                            </TouchableOpacity>
+                            {products.length - 1 !== index ? <View style={commonStyle.divider} /> : null}
+                        </View>
+                    )
+                })}
+            </ScrollView>
         </View>
     )
 }
@@ -315,21 +325,23 @@ function ChooseProductAttribute(props) {
         )
     return (
         <View style={commonStyle.container}>
-            {products.map((item, index) => {
-                return (
-                    <View style={commonStyle.center} key={"product" + index}>
-                        <TouchableOpacity style={ChooseCategoryStyle.item} onPress={() => props.onSelect({ key: "productAttributeId", value: item.id })}>
-                            <Image style={{ width: 70, height: 70 }} source={require("../assets/img/milk.png")} />
-                            <View style={ChooseCategoryStyle.itemDetailsWrapper}>
-                                <Text style={ChooseCategoryStyle.title_text}>{item.number + " " + item.metric}</Text>
-                                <Text style={ChooseCategoryStyle.subtitle_text}>₹{item.price}</Text>
-                            </View>
-                            <MaterialCommunityIcons name="chevron-right" color={color.primary} size={30} />
-                        </TouchableOpacity>
-                        {products.length - 1 !== index ? <View style={commonStyle.divider} /> : null}
-                    </View>
-                )
-            })}
+            <ScrollView style={ChooseCategoryStyle.scrollView}>
+                {products.map((item, index) => {
+                    return (
+                        <View style={commonStyle.center} key={"product" + index}>
+                            <TouchableOpacity style={ChooseCategoryStyle.item} onPress={() => props.onSelect({ key: "productAttributeId", value: item.id })}>
+                                <Image style={{ width: 70, height: 70 }} source={require("../assets/img/milk.png")} />
+                                <View style={ChooseCategoryStyle.itemDetailsWrapper}>
+                                    <Text style={ChooseCategoryStyle.title_text}>{item.number + " " + item.metric}</Text>
+                                    <Text style={ChooseCategoryStyle.subtitle_text}>₹{item.price}</Text>
+                                </View>
+                                <MaterialCommunityIcons name="chevron-right" color={color.primary} size={30} />
+                            </TouchableOpacity>
+                            {products.length - 1 !== index ? <View style={commonStyle.divider} /> : null}
+                        </View>
+                    )
+                })}
+            </ScrollView>
         </View>
     )
 }

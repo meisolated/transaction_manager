@@ -155,8 +155,8 @@ export default function ProductEditScreen(props) {
     }
     function updateAttribute(id, number, price, cost_price) {
         let finalArray = product.attribute
-        price = parseInt(price)
-        cost_price = parseInt(cost_price)
+        price = parseFloat(price)
+        cost_price = parseFloat(cost_price)
         finalArray.map((item, i) => {
             if (item.id === id) {
                 finalArray[i] = { ...item, number: number ? number : finalArray[i].number, price: price ? price : finalArray[i].price, cost_price: cost_price ? cost_price : finalArray[i].cost_price }

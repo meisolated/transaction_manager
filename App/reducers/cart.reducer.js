@@ -6,7 +6,8 @@ const cartReducer = (state = [], action) => {
             return state.filter((cart) => cart.id !== action.payload.id)
         case "UPDATE_CART":
             return state.map((item) => (item.id === action.payload.cartItemID ? { ...item, quantity: item.quantity + action.payload.quantity } : item))
-
+        case "CLEAR_CART":
+            return []
         default:
             return state
     }

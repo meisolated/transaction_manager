@@ -18,7 +18,7 @@ import Toast from "../../handler/Toast.handler.js"
 const window = Dimensions.get("window")
 
 
-function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemToCard, getBack, navigation, qrCodeCallback }) {
+function Checkout({ orderStateUpdate, cart, updateCart, clearCart, removeFromCart, addItemToCard, getBack, navigation, qrCodeCallback }) {
 
     const db_shop = new shopsModel()
     const [total, setTotal] = React.useState({ cost: 0, total: 0 })
@@ -84,6 +84,7 @@ function Checkout({ orderStateUpdate, cart, updateCart, removeFromCart, addItemT
 
     function handlerCheckout() {
         if (!cartData.shopId) return alert("Please scan QR code")
+        clearCart()
         navigation.navigate("OrderAdded", { cart, cartData: { ...cartData, totalPrice: total.total, costPrice: total.cost } })
     }
 
@@ -302,6 +303,7 @@ const mapDispatchToProps = (dispatch) => {
         orderStateUpdate: (order) => dispatch({ type: "ADD_CART", payload: order }),
         updateCart: (cartItemID, quantity) => dispatch({ type: "UPDATE_CART", payload: { cartItemID, quantity } }),
         removeFromCart: (cartItem) => dispatch({ type: "REMOVE_CART", payload: cartItem }),
+        clearCart: () => dispatch({ type: "CLEAR_CART" }),
     }
 }
 

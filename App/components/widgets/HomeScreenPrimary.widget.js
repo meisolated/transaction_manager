@@ -17,20 +17,21 @@ function HomeScreenPrimary() {
         db_order
             .getFinancialData(today.start, today.end)
             .then((orders) => {
+
                 if (orders.length > 0) {
                     let total_amount = 0
                     let total_cost_price = 0
                     let total_unpaid = 0
                     orders.map((order, index) => {
-                        total_amount += order.total_amount
-                        total_cost_price += order.total_cost_amount
+                        total_amount += parseFloat(order.total_amount)
+                        total_cost_price += parseFloat(order.total_cost_amount)
                         if (order.payment_status == "unpaid") {
-                            total_unpaid += order.total_amount
+                            total_unpaid += parseFloat(order.total_amount)
                         }
                         setWidgetData({
                             dailyTurnOver: total_amount,
                             unpaid: total_unpaid,
-                            profit: total_amount - total_cost_price,
+                            profit: (total_amount - total_cost_price).toFixed(2),
                             expense: 0,
                         })
                         if (index == orders.length - 1) return setLoading(false)
@@ -44,7 +45,7 @@ function HomeScreenPrimary() {
                 alert(err)
             })
     }, [])
-
+    // console.log(widgetData)
     return (
         <View style={[styles.daily_turnover, loading && { height: 200 }]}>
             {!loading ? (

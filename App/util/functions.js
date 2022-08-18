@@ -1,12 +1,13 @@
 import md5 from "md5"
 export function numberSeparator(_num) {
-    var num = _num
+    let end = _num.toString().includes(".") ? "." + _num.toString().split(".")[1] : ""
+    var num = _num.toString().includes(".") ? _num.toString().split(".")[0] : _num
     num = num.toString()
     var lastThree = num.substring(num.length - 3)
     var otherNumbers = num.substring(0, num.length - 3)
     if (otherNumbers != "") lastThree = "," + lastThree
     var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree
-    return "₹" + res
+    return "₹" + res + end
 }
 
 export function currentTimestamp() {
